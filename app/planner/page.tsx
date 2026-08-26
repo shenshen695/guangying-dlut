@@ -32,7 +32,7 @@ export default function PlannerPage() {
   const mapHref = plan ? `/map?spots=${encodeURIComponent(plan.selectedSpotIds.join(","))}&style=${encodeURIComponent(plan.style)}` : "/map";
 
   return <main className="min-h-screen bg-mist"><div className="mx-auto max-w-6xl px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
-    <header className="flex items-center justify-between border-b border-ink/10 pb-5"><Link href="/" className="text-sm font-bold tracking-[.18em] text-ink">光影工大</Link><span className="text-xs text-slate-500">毕业照企划生成器</span></header>
+    <header className="flex items-center justify-between border-b border-ink/10 pb-5"><Link href="/" className="text-sm font-bold tracking-[.18em] text-ink">光影大工</Link><span className="text-xs text-slate-500">毕业照企划生成器</span></header>
     <section className="grid gap-8 py-12 lg:grid-cols-[.9fr_1.1fr] lg:py-16">
       <div><p className="text-[11px] font-semibold tracking-[.24em] text-sea">SHOOTING PLANNER</p><h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink sm:text-5xl">先选效果，再生成路线</h1><p className="mt-4 max-w-xl text-sm leading-7 text-slate-600">当前演示使用真实点位规则匹配，不会编造地点；后续接入模型时仍沿用同一输入和输出结构。</p>
         <form onSubmit={submit} className="mt-8 space-y-6 rounded-[1.75rem] border border-ink/10 bg-white/70 p-5 sm:p-7">
