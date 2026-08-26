@@ -1,0 +1,31 @@
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f6f2; color: #16202a; }
+.leaflet-container { font-family: inherit; background: #e6ece8; }
+.leaflet-control-zoom { border: 0 !important; box-shadow: 0 8px 22px rgba(22,32,42,.14) !important; }
+.leaflet-control-zoom a { width: 34px !important; height: 34px !important; line-height: 34px !important; border: 0 !important; color: #16202a !important; background: rgba(255,255,255,.94) !important; }
+.leaflet-control-zoom a:first-child { border-radius: 12px 12px 0 0; }
+.leaflet-control-zoom a:last-child { border-radius: 0 0 12px 12px; }
+.numbered-marker { width: 36px; height: 36px; border-radius: 9999px; display: grid; place-items: center; background: #16202a; color: #fff; border: 3px solid #fff; box-shadow: 0 5px 16px rgba(22,32,42,.25); font-size: 11px; letter-spacing: .04em; font-weight: 800; transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.numbered-marker.is-selected { background: #de8068; transform: scale(1.16); box-shadow: 0 0 0 5px rgba(222,128,104,.18), 0 7px 20px rgba(22,32,42,.28); }
+.map-route-line { stroke-dasharray: 4 9; }
+.spot-sheet { bottom: max(.75rem, env(safe-area-inset-bottom)); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+.map-shell .leaflet-container { height: 100%; width: 100%; }
+.scene-mint { background: linear-gradient(145deg, #d9ece9, #f5f2e7); }
+.scene-sand { background: linear-gradient(145deg, #e9e3d6, #f8f7f1); }
+.scene-blue { background: linear-gradient(145deg, #dce8ee, #f7eee8); }
+.scene-coral { background: linear-gradient(145deg, #ead9d2, #f7eee8); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .numbered-marker { transition: none; }
+}
+@media (max-width: 1023px) {
+  .map-shell .leaflet-bottom.leaflet-right { bottom: calc(var(--map-sheet-offset, 11rem) + env(safe-area-inset-bottom)); transition: bottom .3s ease; }
+  .map-shell.is-sheet-collapsed { --map-sheet-offset: 10.5rem; }
+  .map-shell.is-sheet-expanded { --map-sheet-offset: 62dvh; }
+}
