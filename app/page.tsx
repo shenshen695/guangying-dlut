@@ -1,20 +1,30 @@
 import Link from "next/link";
-
-const scenes = [
-  { name: "校园开场", note: "从南门走进青春记忆", tone: "scene-mint", mark: "↘" },
-  { name: "建筑纪实", note: "把熟悉的教学楼写进一帧", tone: "scene-sand", mark: "▥" },
-  { name: "湖畔收尾", note: "在凌水湖留下毕业侧影", tone: "scene-blue", mark: "◒" },
-  { name: "花墙一帧", note: "用明亮色彩结束这段路", tone: "scene-coral", mark: "✳" },
-];
-const routeStops = ["南门", "伯川", "主楼", "一馆", "凌水湖", "花墙"];
+import { CoralRule, Eyebrow, IllustratedMap, PageShell, RouteSummaryStrip, SeasonCard, seasons } from "@/components/guangying-ui";
 
 export default function HomePage() {
-  return <main className="min-h-screen overflow-hidden bg-mist"><div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
-    <header className="flex items-center justify-between border-b border-ink/10 pb-5"><Link href="/" className="text-sm font-bold tracking-[.22em] text-ink">G•DUT / 2025</Link><span className="rounded-full border border-ink/10 bg-white/60 px-3 py-1.5 text-[11px] tracking-wide text-slate-500">校园毕业摄影地图</span></header>
-    <section className="relative pb-16 pt-16 sm:pb-20 sm:pt-24 lg:pt-28"><div className="pointer-events-none absolute right-0 top-10 hidden h-64 w-64 rounded-full border border-sea/20 sm:block" /><div className="pointer-events-none absolute right-16 top-24 hidden h-32 w-32 rounded-full border border-coral/25 sm:block" /><p className="mb-5 text-[11px] font-semibold tracking-[.3em] text-sea">DALIAN UNIVERSITY OF TECHNOLOGY</p><h1 className="max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.04em] text-ink sm:text-7xl lg:text-8xl">光影工大<span className="text-coral">.</span></h1><p className="mt-7 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">把校园摄影师熟悉的机位、光线和路线，变成每个人都能探索的毕业影像地图。</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/planner" className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-sea">生成我的毕业影像路线 <span aria-hidden>↗</span></Link><Link href="/map?route=classic-graduation" className="inline-flex items-center gap-3 rounded-full border border-ink/15 bg-white/40 px-6 py-3.5 text-sm font-semibold text-ink transition hover:border-sea hover:text-sea">探索毕业摄影地图</Link></div><div className="mt-12 flex items-center gap-4 text-xs text-slate-400"><span className="h-px w-12 bg-coral" /><span>6 个校园节点 · 企划与地图联动</span></div></section>
-    <section className="mb-8 flex items-end justify-between"><div><p className="text-[11px] font-semibold tracking-[.24em] text-sea">PHOTO MOODS</p><h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">把毕业日，走成一组照片</h2></div><span className="hidden text-xs text-slate-400 sm:block">FRAME YOUR CAMPUS</span></section>
-    <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">{scenes.map((scene, index) => <Link key={scene.name} href="/route/classic-graduation" className={`group relative aspect-[.88] overflow-hidden rounded-[1.4rem] border border-ink/5 ${scene.tone} p-4 transition hover:-translate-y-1 sm:p-5`}><span className="text-[11px] font-semibold tracking-[.18em] text-ink/45">0{index + 1}</span><span className="absolute right-5 top-4 text-2xl font-light text-ink/35 transition group-hover:rotate-12 group-hover:text-coral">{scene.mark}</span><div className="absolute inset-x-4 bottom-4 sm:inset-x-5 sm:bottom-5"><p className="text-lg font-semibold text-ink">{scene.name}</p><p className="mt-1 text-xs leading-5 text-slate-600">{scene.note}</p></div><span className="absolute bottom-0 left-0 h-1 w-0 bg-coral transition-all duration-300 group-hover:w-full" /></Link>)}</section>
-    <section className="mt-16 rounded-[1.75rem] border border-ink/10 bg-white/60 p-5 sm:mt-20 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-[11px] font-semibold tracking-[.24em] text-sea">FEATURED ROUTE</p><h2 className="mt-2 text-2xl font-semibold text-ink">工大经典毕业线</h2><p className="mt-1 text-sm text-slate-500">从南门走进青春记忆</p></div><Link href="/route/classic-graduation" className="text-sm font-semibold text-coral hover:text-ink">查看完整路线 →</Link></div><div className="mt-7 flex flex-wrap items-center gap-y-4">{routeStops.map((stop, index) => <div key={stop} className="flex items-center"><div className="flex items-center gap-2"><span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[10px] font-bold text-white">{String(index + 1).padStart(2, "0")}</span><span className="text-sm font-medium text-ink">{stop}</span></div>{index < routeStops.length - 1 && <span className="mx-3 h-px w-5 bg-coral/50 sm:w-8" />}</div>)}</div></section>
-    <footer className="pb-2 pt-12 text-xs text-slate-400">光影工大 · 校园毕业影像地图与摄影师连接平台</footer>
-  </div></main>;
+  return (
+    <PageShell active="主页" actionLabel="生成路线" actionHref="/planner" containerClassName="gy-home-container">
+      <section className="gy-home-layout">
+        <div className="gy-home-intro">
+          <Eyebrow>四季入口</Eyebrow>
+          <h1 className="gy-hero-title">先选毕业季节，再生成校园路线</h1>
+          <CoralRule />
+          <p className="gy-body-copy">把工大熟悉的机位、光线和路线，变成一份可执行的毕业照拍摄企划。</p>
+          <div className="gy-season-grid">
+            {seasons.map((season, index) => (
+              <SeasonCard key={season.name} season={season} active={index === 0} />
+            ))}
+          </div>
+        </div>
+        <IllustratedMap selectedSlug="south-gate" />
+      </section>
+      <RouteSummaryStrip title="春日花阶企划" />
+      <p className="gy-home-footnote">
+        路线与机位来自学生共建贡献　
+        <Link href="/contribute" style={{ color: "var(--teal)" }}>
+          了解共建计划 ↗
+        </Link>
+      </p>
+    </PageShell>
+  );
 }

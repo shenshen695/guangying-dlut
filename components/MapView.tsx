@@ -75,7 +75,7 @@ export default function MapView({ spots, route, selectedSpotId, sheetExpanded, o
       return [longitude, latitude] as [number, number];
     });
     const routeGeoJSON: RouteGeoJSON = { type: "FeatureCollection", features: coordinates.length > 1 ? [{ type: "Feature", properties: { routeId: route.id }, geometry: { type: "LineString", coordinates } }] : [] };
-    if (routeGeoJSON.features.length) layersRef.current.route = L.geoJSON(routeGeoJSON as any, { style: { className: "map-route-line", color: "#de8068", weight: 3, opacity: 0.78, dashArray: "4 9", lineCap: "round" } }).addTo(map);
+    if (routeGeoJSON.features.length) layersRef.current.route = L.geoJSON(routeGeoJSON as any, { style: { className: "map-route-line", color: "#167b75", weight: 4, opacity: 0.82, dashArray: "8 10", lineCap: "round" } }).addTo(map);
     if (selectedSpotId) { const selected = spots.find((spot) => spot.id === selectedSpotId); if (selected) { const reduceMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches; map.flyTo(wgs84ToGcj02(selected.latitude, selected.longitude), Math.max(map.getZoom(), 16), { duration: reduceMotion ? 0 : 0.65 }); } }
   }
 

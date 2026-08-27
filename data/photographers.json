@@ -1,0 +1,138 @@
+[
+  {
+    "slug": "ruoshui",
+    "name": "若水",
+    "identity": "摄影社成员",
+    "intro": "长期拍摄大工毕业季，偏清透、自然、学院纪实，熟悉南门到主楼的清晨光线。",
+    "familiarRoutes": ["春日花阶线", "经典毕业线"],
+    "familiarSpots": ["南门", "伯川", "主楼"],
+    "styles": ["海风清透", "学院纪实", "自然光"],
+    "seasons": ["春", "夏"],
+    "mutualStatus": "可互勉",
+    "authorized": true,
+    "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn", "qq": "000000" },
+    "avatar": "/assets/ui/season-spring.png",
+    "portfolio": [
+      { "id": "ruoshui-01", "title": "南门清晨开场", "image": "/assets/ui/season-spring.png", "spot": "南门", "season": "春", "style": "海风清透", "categories": ["毕业照", "人像"] },
+      { "id": "ruoshui-02", "title": "伯川台阶回望", "image": "/assets/ui/season-summer.png", "spot": "伯川", "season": "春", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
+      { "id": "ruoshui-03", "title": "主楼学士服合影", "image": "/assets/ui/season-autumn.png", "spot": "主楼", "season": "夏", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
+      { "id": "ruoshui-04", "title": "凌水湖侧影收尾", "image": "/assets/ui/route-cover-spring.png", "spot": "凌水湖", "season": "春", "style": "清透湖畔", "categories": ["湖畔", "人像"] }
+    ]
+  },
+  {
+    "slug": "ming",
+    "name": "Ming",
+    "identity": "校友摄影者",
+    "intro": "校友摄影者，常拍建筑线条、长廊和胶片感毕业照，适合想要安静纪念感的同学。",
+    "familiarRoutes": ["经典毕业线", "春日花阶线"],
+    "familiarSpots": ["伯川", "一馆", "主楼"],
+    "styles": ["复古胶片", "建筑纪实", "学院纪实"],
+    "seasons": ["秋", "冬"],
+    "mutualStatus": "可约拍",
+    "authorized": true,
+    "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
+    "avatar": "/assets/ui/season-autumn.png",
+    "portfolio": [
+      { "id": "ming-01", "title": "伯川长廊", "image": "/assets/ui/season-autumn.png", "spot": "伯川", "season": "秋", "style": "复古胶片", "categories": ["建筑", "胶片感"] },
+      { "id": "ming-02", "title": "一馆教学楼日常", "image": "/assets/ui/season-summer.png", "spot": "一馆", "season": "秋", "style": "学院纪实", "categories": ["建筑", "毕业照"] },
+      { "id": "ming-03", "title": "主楼低机位", "image": "/assets/ui/route-cover-spring.png", "spot": "主楼", "season": "冬", "style": "建筑纪实", "categories": ["建筑", "毕业照"] },
+      { "id": "ming-04", "title": "冬日室内备选", "image": "/assets/ui/season-winter.png", "spot": "一馆", "season": "冬", "style": "胶片感", "categories": ["室内", "胶片感"] }
+    ]
+  },
+  {
+    "slug": "lin",
+    "name": "林同学",
+    "identity": "摄影爱好者",
+    "intro": "偏爱湖边侧影和自然抓拍，擅长轻松、松弛的双人或小组人像。",
+    "familiarRoutes": ["凌水湖线", "春日花阶线"],
+    "familiarSpots": ["凌水湖", "花墙"],
+    "styles": ["海风清透", "湖畔人像", "电影氛围"],
+    "seasons": ["夏", "秋"],
+    "mutualStatus": "可互勉",
+    "authorized": false,
+    "contact": {},
+    "avatar": "/assets/ui/season-summer.png",
+    "portfolio": [
+      { "id": "lin-01", "title": "凌水湖侧影", "image": "/assets/ui/season-winter.png", "spot": "凌水湖", "season": "夏", "style": "湖畔人像", "categories": ["湖畔", "人像"] },
+      { "id": "lin-02", "title": "湖边草坪抓拍", "image": "/assets/ui/season-spring.png", "spot": "凌水湖", "season": "秋", "style": "电影氛围", "categories": ["湖畔", "人像"] },
+      { "id": "lin-03", "title": "花墙自然半身", "image": "/assets/ui/season-autumn.png", "spot": "花墙", "season": "夏", "style": "海风清透", "categories": ["人像"] }
+    ]
+  },
+  {
+    "slug": "yu",
+    "name": "Yu",
+    "identity": "在校学生",
+    "intro": "熟悉主楼、一馆和室内备选空间，适合冬季或阴天毕业照企划。",
+    "familiarRoutes": ["主楼线", "室内备选线", "经典毕业线"],
+    "familiarSpots": ["主楼", "一馆", "伯川"],
+    "styles": ["学院纪实", "室内自然光", "浅色简洁"],
+    "seasons": ["冬", "春"],
+    "mutualStatus": "暂不互勉",
+    "authorized": true,
+    "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
+    "avatar": "/assets/ui/season-winter.png",
+    "portfolio": [
+      { "id": "yu-01", "title": "主楼冬日合影", "image": "/assets/ui/season-winter.png", "spot": "主楼", "season": "冬", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
+      { "id": "yu-02", "title": "一馆室内窗边", "image": "/assets/ui/season-summer.png", "spot": "一馆", "season": "冬", "style": "室内自然光", "categories": ["室内", "人像"] },
+      { "id": "yu-03", "title": "主楼正式照", "image": "/assets/ui/route-cover-spring.png", "spot": "主楼", "season": "春", "style": "浅色简洁", "categories": ["毕业照", "建筑"] }
+    ]
+  },
+  {
+    "slug": "ache",
+    "name": "阿澈",
+    "identity": "摄影社成员",
+    "intro": "擅长花墙、南门和双人互动，能把毕业照拍得轻快但不过度摆拍。",
+    "familiarRoutes": ["花墙线", "春日花阶线"],
+    "familiarSpots": ["花墙", "南门", "凌水湖"],
+    "styles": ["海风清透", "双人互动", "复古胶片"],
+    "seasons": ["春", "夏"],
+    "mutualStatus": "可约拍",
+    "authorized": true,
+    "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
+    "avatar": "/assets/ui/season-spring.png",
+    "portfolio": [
+      { "id": "ache-01", "title": "花墙半身侧脸", "image": "/assets/ui/season-spring.png", "spot": "花墙", "season": "春", "style": "海风清透", "categories": ["人像", "毕业照"] },
+      { "id": "ache-02", "title": "南门并肩入校", "image": "/assets/ui/route-cover-spring.png", "spot": "南门", "season": "夏", "style": "双人互动", "categories": ["毕业照", "人像"] },
+      { "id": "ache-03", "title": "花墙胶片感", "image": "/assets/ui/season-autumn.png", "spot": "花墙", "season": "夏", "style": "复古胶片", "categories": ["胶片感", "人像"] },
+      { "id": "ache-04", "title": "湖边互动收尾", "image": "/assets/ui/season-winter.png", "spot": "凌水湖", "season": "春", "style": "清透湖畔", "categories": ["湖畔", "人像"] }
+    ]
+  },
+  {
+    "slug": "beichen",
+    "name": "北辰",
+    "identity": "校友摄影者",
+    "intro": "擅长夜景、逆光和胶片质感，适合想拍电影氛围毕业照的同学。",
+    "familiarRoutes": ["校园夜线", "经典毕业线"],
+    "familiarSpots": ["主楼", "凌水湖", "一馆"],
+    "styles": ["电影氛围", "复古胶片", "夜景"],
+    "seasons": ["秋", "冬"],
+    "mutualStatus": "可约拍",
+    "authorized": true,
+    "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
+    "avatar": "/assets/ui/season-autumn.png",
+    "portfolio": [
+      { "id": "beichen-01", "title": "主楼夜景", "image": "/assets/ui/season-autumn.png", "spot": "主楼", "season": "秋", "style": "电影氛围", "categories": ["夜景", "建筑"] },
+      { "id": "beichen-02", "title": "凌水湖剪影", "image": "/assets/ui/season-winter.png", "spot": "凌水湖", "season": "秋", "style": "复古胶片", "categories": ["夜景", "湖畔", "胶片感"] },
+      { "id": "beichen-03", "title": "一馆晚间人像", "image": "/assets/ui/season-summer.png", "spot": "一馆", "season": "冬", "style": "夜景人像", "categories": ["夜景", "人像"] }
+    ]
+  },
+  {
+    "slug": "suyi",
+    "name": "素衣",
+    "identity": "摄影爱好者",
+    "intro": "偏单人浅色、花束和安静校园感，适合不想太隆重的轻量毕业照。",
+    "familiarRoutes": ["春日花阶线"],
+    "familiarSpots": ["南门", "伯川", "花墙"],
+    "styles": ["浅色系", "海风清透", "单人肖像"],
+    "seasons": ["春"],
+    "mutualStatus": "可互勉",
+    "authorized": false,
+    "contact": {},
+    "avatar": "/assets/ui/route-cover-spring.png",
+    "portfolio": [
+      { "id": "suyi-01", "title": "南门单人花束", "image": "/assets/ui/route-cover-spring.png", "spot": "南门", "season": "春", "style": "浅色系", "categories": ["毕业照", "人像"] },
+      { "id": "suyi-02", "title": "伯川慢走", "image": "/assets/ui/season-summer.png", "spot": "伯川", "season": "春", "style": "海风清透", "categories": ["人像", "建筑"] },
+      { "id": "suyi-03", "title": "花墙轻肖像", "image": "/assets/ui/season-spring.png", "spot": "花墙", "season": "春", "style": "单人肖像", "categories": ["人像"] }
+    ]
+  }
+]
