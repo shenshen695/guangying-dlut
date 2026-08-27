@@ -3,20 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Spot } from "@/types/spot";
 import type { Route } from "@/types/route";
+import mapPointsData from "@/data/map-points.json";
 
 type Props = { spots: Spot[]; route: Route; selectedSpotId: string | null; sheetExpanded: boolean; onSelect: (id: string) => void };
 
-const anchors: Record<string, { x: number; y: number }> = {
-  "south-gate": { x: 31, y: 91 },
-  bochuan: { x: 36, y: 57 },
-  "main-building": { x: 52, y: 44 },
-  "first-building": { x: 52, y: 36 },
-  "ling-shui-lake": { x: 35, y: 27 },
-  "flower-wall": { x: 58, y: 20 },
-  "lover-road": { x: 22, y: 58 },
-  "lover-slope": { x: 31, y: 51 },
-  "chairman-statue": { x: 50, y: 44 },
-};
+const anchors = Object.fromEntries((mapPointsData as Array<{ id: string; x: number; y: number }>).map(({ id, x, y }) => [id, { x, y }])) as Record<string, { x: number; y: number }>;
 
 export default function MapView({ spots, route, selectedSpotId, onSelect }: Props) {
   const [zoom, setZoom] = useState(1);
