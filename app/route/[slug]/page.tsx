@@ -47,6 +47,7 @@ export default function RouteDetailPage({ params }: { params: { slug: string } }
           <div className="gy-map-detail-actions" style={{ marginTop: 28 }}>
             <Link href={routeMapHref} className="gy-primary-button">在地图中查看</Link>
             <Link href={plannerHref} className="gy-secondary-button">用此路线生成企划</Link>
+            <Link href={`/works/submit?route=${route.slug}`} className="gy-secondary-button">上传这条路线作品</Link>
           </div>
         </div>
         <IllustratedMap selectedSlug={firstSpot?.slug || "south-gate"} compact />

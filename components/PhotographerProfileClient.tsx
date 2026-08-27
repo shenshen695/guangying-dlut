@@ -46,7 +46,10 @@ export default function PhotographerProfileClient({ photographer }: { photograph
           <h1 className="gy-page-title">摄影者档案</h1>
           <p className="gy-body-copy">查看熟悉大工点位的摄影者、作品风格与授权联系方式。</p>
         </div>
-        <Link href="/photographers" className="gy-secondary-button">返回摄影者目录</Link>
+        <div className="gy-photographer-home-actions">
+          <Link href={`/works/submit?photographer=${photographer.slug}`} className="gy-primary-button">上传作品</Link>
+          <Link href="/photographers" className="gy-secondary-button">返回摄影者目录</Link>
+        </div>
       </div>
 
       <div className="gy-photographer-home-layout">

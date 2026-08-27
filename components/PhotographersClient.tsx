@@ -41,31 +41,34 @@ export default function PhotographersClient() {
   return (
     <main className="gy-page">
       <div className="gy-container">
-        <TopNav active="摄影者" actionLabel="提交档案" actionHref="/contribute" />
+        <TopNav active="摄影者" actionLabel="上传作品" actionHref="/works/submit" />
         <section className="gy-directory-head">
           <div>
             <Eyebrow muted>PHOTOGRAPHERS</Eyebrow>
             <h1 className="gy-page-title">摄影者档案</h1>
             <p className="gy-body-copy">查看熟悉大工点位的摄影者、作品风格与授权联系方式。</p>
           </div>
-          <div className="gy-filter-bar">
-            <select value={season} onChange={(event) => setSeason(event.target.value)} aria-label="按季节筛选">
-              <option>全部</option>
-              <option>春</option>
-              <option>夏</option>
-              <option>秋</option>
-              <option>冬</option>
-            </select>
-            <select value={route} onChange={(event) => setRoute(event.target.value)} aria-label="按路线筛选">
-              {routeOptions.map((name) => <option key={name}>{name}</option>)}
-            </select>
-            <select value={availability} onChange={(event) => setAvailability(event.target.value)} aria-label="按互勉状态筛选">
-              <option>全部</option>
-              <option>可互勉</option>
-              <option>可约拍</option>
-              <option>暂不互勉</option>
-            </select>
-            <label><input type="checkbox" checked={authOnly} onChange={(event) => setAuthOnly(event.target.checked)} /> 已授权</label>
+          <div className="gy-directory-tools">
+            <Link href="/contribute" className="gy-secondary-button">提交摄影者档案</Link>
+            <div className="gy-filter-bar">
+              <select value={season} onChange={(event) => setSeason(event.target.value)} aria-label="按季节筛选">
+                <option>全部</option>
+                <option>春</option>
+                <option>夏</option>
+                <option>秋</option>
+                <option>冬</option>
+              </select>
+              <select value={route} onChange={(event) => setRoute(event.target.value)} aria-label="按路线筛选">
+                {routeOptions.map((name) => <option key={name}>{name}</option>)}
+              </select>
+              <select value={availability} onChange={(event) => setAvailability(event.target.value)} aria-label="按互勉状态筛选">
+                <option>全部</option>
+                <option>可互勉</option>
+                <option>可约拍</option>
+                <option>暂不互勉</option>
+              </select>
+              <label><input type="checkbox" checked={authOnly} onChange={(event) => setAuthOnly(event.target.checked)} /> 已授权</label>
+            </div>
           </div>
         </section>
 

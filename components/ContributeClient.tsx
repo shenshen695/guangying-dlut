@@ -41,6 +41,7 @@ export default function ContributeClient() {
           <Eyebrow muted>CO-BUILD SPOTS</Eyebrow>
           <h1 className="gy-page-title">把你发现的机位，加入光影大工</h1>
           <p className="gy-body-copy" style={{ marginTop: 16 }}>摄影社、摄影者和同学可以提交坐标、图片与技巧，进入待审核队列后再展示到地图。</p>
+          <p className="gy-inline-note">只是上传已有点位作品？<Link href="/works/submit">前往上传作品</Link></p>
         </section>
 
         <section className="gy-contribute-layout">

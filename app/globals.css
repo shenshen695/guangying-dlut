@@ -1621,6 +1621,153 @@ img {
   background: #fae8e1;
 }
 
+.gy-directory-tools {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+}
+
+.gy-directory-tools > .gy-secondary-button {
+  min-height: 36px;
+  padding: 0 16px;
+  border-color: var(--line);
+}
+
+.gy-photographer-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.gy-inline-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.gy-inline-note a {
+  color: var(--teal);
+}
+
+.gy-work-submit-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  padding-top: 42px;
+}
+
+.gy-work-submit-source {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  max-width: 520px;
+}
+
+.gy-work-submit-layout {
+  display: grid;
+  grid-template-columns: minmax(720px, 1fr) 420px;
+  gap: 26px;
+  padding-top: 28px;
+  align-items: start;
+}
+
+.gy-work-submit-form .gy-form-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.gy-work-form-block {
+  margin-top: 18px;
+}
+
+.gy-work-submit-success {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 13px 15px;
+  border: 1px solid rgba(22, 123, 117, 0.32);
+  border-radius: 6px;
+  background: rgba(225, 238, 233, 0.62);
+}
+
+.gy-work-submit-success strong {
+  color: var(--teal);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.gy-work-submit-success span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gy-work-submit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.gy-work-review-panel h2 {
+  margin: 0 0 12px;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.gy-review-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.62);
+}
+
+.gy-review-flow span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gy-review-flow span.is-active {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(225, 238, 233, 0.58);
+}
+
+.gy-review-flow b {
+  color: var(--quiet);
+  font-weight: 400;
+}
+
+.gy-work-review-list {
+  max-height: 480px;
+  overflow: auto;
+  margin-top: 18px;
+  padding-right: 4px;
+}
+
+.gy-input-card input:disabled {
+  color: var(--quiet);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 /* Compact desktop rhythm for 1440x900 / 1536x864 demo screens. */
 .gy-container {
   min-height: 100vh;
@@ -2122,6 +2269,27 @@ img {
   padding-top: 28px;
 }
 
+.gy-work-submit-head {
+  padding-top: 32px;
+}
+
+.gy-work-submit-layout {
+  gap: 22px;
+  padding-top: 22px;
+}
+
+.gy-work-submit-form .gy-upload-box {
+  min-height: 112px;
+}
+
+.gy-work-submit-form .gy-textarea-card textarea {
+  min-height: 76px;
+}
+
+.gy-work-review-list {
+  max-height: 430px;
+}
+
 .gy-textarea-card {
   margin-top: 12px;
 }
@@ -2186,7 +2354,8 @@ img {
   .gy-spot-layout,
   .gy-photographer-layout,
   .gy-photographer-home-layout,
-  .gy-contribute-layout {
+  .gy-contribute-layout,
+  .gy-work-submit-layout {
     grid-template-columns: 1fr;
   }
 

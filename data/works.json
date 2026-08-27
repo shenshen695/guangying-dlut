@@ -1,0 +1,53 @@
+[
+  {
+    "id": "work-flower-wall-review",
+    "title": "花墙侧逆光人像",
+    "photographerName": "若水",
+    "photographerSlug": "ruoshui",
+    "spotSlug": "flower-wall",
+    "spotName": "花墙",
+    "routeSlug": "classic-graduation",
+    "routeName": "春日花阶毕业线",
+    "season": "春",
+    "styleTags": ["清透自然", "电影氛围"],
+    "description": "傍晚侧逆光，人物靠近花墙但不贴墙，保留一点树影和背景层次。",
+    "images": ["/assets/ui/season-spring.png"],
+    "status": "待审核",
+    "submittedAt": "今天 14:20",
+    "note": "等待确认图片授权和点位归属。"
+  },
+  {
+    "id": "work-lake-approved",
+    "title": "凌水湖木桥侧影",
+    "photographerName": "林同学",
+    "photographerSlug": "lin",
+    "spotSlug": "ling-shui-lake",
+    "spotName": "凌水湖",
+    "routeSlug": "classic-graduation",
+    "routeName": "春日花阶毕业线",
+    "season": "夏",
+    "styleTags": ["清透自然", "低饱和"],
+    "description": "湖边木桥外侧低角度拍摄，适合双人慢走和背影收尾。",
+    "images": ["/assets/ui/season-winter.png"],
+    "status": "已通过",
+    "submittedAt": "昨天 19:12",
+    "note": "已进入摄影者作品档案演示队列。"
+  },
+  {
+    "id": "work-bochuan-needs-more",
+    "title": "伯川台阶低机位",
+    "photographerName": "Ming",
+    "photographerSlug": "ming",
+    "spotSlug": "bochuan",
+    "spotName": "伯川",
+    "routeSlug": "classic-graduation",
+    "routeName": "春日花阶毕业线",
+    "season": "秋",
+    "styleTags": ["学院纪实", "复古胶片"],
+    "description": "从台阶下方偏左拍摄建筑纵深，人物做回望或并肩上台阶动作。",
+    "images": ["/assets/ui/season-autumn.png"],
+    "status": "需补充",
+    "submittedAt": "8 月 26 日",
+    "note": "需补充第二张参考图或授权说明。"
+  }
+]

@@ -86,6 +86,7 @@ export default function SpotDetailPage({ params }: { params: { slug: string } })
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 34 }}>
             <Link href={`/map?spot=${spot.id}`} className="gy-primary-button">返回地图</Link>
             <Link href={familiarPhotographers[0] ? `/photographers/${familiarPhotographers[0].slug}` : "/photographers"} className="gy-secondary-button">查看熟悉摄影者</Link>
+            <Link href={`/works/submit?spot=${spot.slug}&route=${relatedRoute.slug}`} className="gy-secondary-button">上传这个点位的作品</Link>
           </div>
         </div>
       </section>
