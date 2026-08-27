@@ -1,5 +1,4 @@
 export type CrowdLevel = "低" | "中" | "高";
-export type Season = "春" | "夏" | "秋" | "冬";
 
 export type CameraSpot = {
   id: string;
@@ -12,7 +11,7 @@ export type CameraSpot = {
   verified: boolean;
 };
 
-export type Spot = {
+export type MapSpot = {
   id: string;
   slug: string;
   name: string;
@@ -26,13 +25,6 @@ export type Spot = {
   shootingTips: string;
   /** 用于企划模块筛选真实点位，避免 AI 编造地点。 */
   tags: string[];
-  seasons: Season[];
-  referenceImages: string[];
-  sunDirection: string;
-  focalLength: string;
-  cameraPosition: string;
-  actionSuggestion: string;
-  routeRole: string;
   recommendedTimeSlots: Array<"morning" | "afternoon" | "evening" | "golden_hour">;
   hasIndoorBackup: boolean;
   /** 1=步行负担低，2=中等，3=较高。 */

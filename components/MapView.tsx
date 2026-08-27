@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Spot } from "@/types/spot";
+import type { MapSpot as Spot } from "@/types/map-spot";
 import type { Route } from "@/types/route";
 import mapPointsData from "@/data/map-points.json";
 

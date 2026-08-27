@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { ChangeEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import mapPointsData from "@/data/map-points.json";
-import spotsData from "@/data/spots.json";
-import type { Spot } from "@/types/spot";
+import spotsData from "@/data/map-spots.json";
+import type { MapSpot as Spot } from "@/types/map-spot";
 
 type EditorPoint = {
   id: string;
