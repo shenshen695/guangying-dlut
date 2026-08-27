@@ -1,14 +1,15 @@
 [
   {"id":"south-gate","x":32.6,"y":89.5,"name":"南门","imageSrc":"","description":"从南门走进校园，也走进毕业照的第一幕。开阔的入口和校名标识适合作为路线开场。","bestTime":"08:00–09:30","seasonNote":""},
-  {"id":"bochuan","x":25.1,"y":60.4,"name":"伯川","imageSrc":"","description":"伯川周边有清晰的建筑线条和安静的步行空间，适合拍摄同学之间自然交流的片段。","bestTime":"09:00–10:30","seasonNote":""},
-  {"id":"main-building","x":40.9,"y":52.6,"name":"主楼","imageSrc":"","description":"主楼是毕业路线里的校园记忆核心。宽阔广场适合个人肖像、班级合影和带建筑轮廓的纪念照。","bestTime":"14:00–16:00","seasonNote":""},
+  {"id":"bochuan","x":25.1,"y":60.4,"name":"伯川","imageSrc":"/images/spots/伯川图书馆正门流云.jpg","imageFileName":"伯川图书馆正门流云.jpg","description":"伯川周边有清晰的建筑线条和安静的步行空间，适合拍摄同学之间自然交流的片段。","bestTime":"09:00–10:30","seasonNote":""},
+  {"id":"main-building","x":40.5,"y":52.7,"name":"主楼","imageSrc":"","description":"主楼是毕业路线里的校园记忆核心。宽阔广场适合个人肖像、班级合影和带建筑轮廓的纪念照。","bestTime":"14:00–16:00","seasonNote":""},
   {"id":"first-building","x":44.9,"y":47.4,"name":"一馆","imageSrc":"","description":"一馆保留着熟悉的教学楼尺度，适合拍摄同学并肩走过、回望校园的轻松画面。","bestTime":"10:30–12:00","seasonNote":""},
-  {"id":"ling-shui-lake","x":36.3,"y":26.3,"name":"凌水湖","imageSrc":"","description":"湖面把校园的天空和树影都收进画面，适合在路线后半段放慢节奏，拍一组自然的侧影。","bestTime":"16:30–18:30","seasonNote":""},
+  {"id":"ling-shui-lake","x":37.5,"y":26.7,"name":"凌水湖","imageSrc":"/images/spots/倒影.jpg","imageFileName":"倒影.jpg","description":"湖面把校园的天空和树影都收进画面，适合在路线后半段放慢节奏，拍一组自然的侧影。","bestTime":"16:30–18:30","seasonNote":""},
   {"id":"flower-wall","x":58,"y":20,"name":"花墙","imageSrc":"","description":"花墙适合作为路线收尾，用一组颜色明亮、情绪轻快的照片，为毕业影像留下最后一帧。","bestTime":"17:00–18:30","seasonNote":""},
   {"id":"lover-road","x":21.6,"y":74.1,"name":"情人路","imageSrc":"","description":"一条被高大树木包围的校园林荫路，光斑、纵深和熟悉的校园气息都很适合毕业照。","bestTime":"09:00–11:00","seasonNote":"春夏树影最好看"},
   {"id":"lover-slope","x":54.1,"y":62.5,"name":"情人坡","imageSrc":"","description":"情人坡四季气质差异很大，冬季积雪后尤其适合拍清透的人像。","bestTime":"雪后 09:00–15:00","seasonNote":"冬季雪后最出片"},
-  {"id":"chairman-statue","x":35.6,"y":56.2,"name":"主席像","imageSrc":"","description":"主席像与主楼共同构成校园里辨识度很高的纪念性场景。","bestTime":"日落后或蓝调时刻","seasonNote":"蓝调与晴朗夜空更有氛围"},
-  {"id":"student-center","x":86.9,"y":51.3,"name":"大学生活动中心","imageSrc":"","description":"","bestTime":"","seasonNote":""},
+  {"id":"chairman-statue","x":36.5,"y":58.1,"name":"主席像","imageSrc":"/images/spots/主席像.jpg","imageFileName":"主席像.jpg","description":"主席像与主楼共同构成校园里辨识度很高的纪念性场景。","bestTime":"日落后或蓝调时刻","seasonNote":"蓝调与晴朗夜空更有氛围"},
+  {"id":"student-center","x":86.3,"y":51,"name":"大学生活动中心","imageSrc":"/images/spots/大学生活动中心又名大活楼.jpg","imageFileName":"大学生活动中心又名大活楼.jpg","description":"","bestTime":"","seasonNote":""},
   {"id":"second-building","x":45.4,"y":38.8,"name":"二馆","imageSrc":"","description":"","bestTime":"","seasonNote":""},
-  {"id":"comprehensive-one","x":67.9,"y":30,"name":"综一","imageSrc":"","description":"","bestTime":"","seasonNote":""}
+  {"id":"comprehensive-one","x":67.9,"y":30,"name":"综一","imageSrc":"","description":"","bestTime":"","seasonNote":""},
+  {"id":"landmark-mtbglalg","x":66.8,"y":58,"name":"校史馆","imageSrc":"/images/spots/校史馆.jpg","imageFileName":"校史馆.jpg","description":"","bestTime":"","seasonNote":""}
 ]
