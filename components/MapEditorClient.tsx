@@ -18,17 +18,20 @@ type EditorPoint = {
   seasonNote: string;
 };
 
-const STORAGE_KEY = "guangying-map-editor-v1";
+const STORAGE_KEY = "guangying-map-editor-v2";
 const spots = spotsData as Spot[];
-const initialPoints: EditorPoint[] = (mapPointsData as Array<{ id: string; x: number; y: number }>).map((point) => {
+const initialPoints: EditorPoint[] = (mapPointsData as Array<Partial<EditorPoint> & { id: string; x: number; y: number }>).map((point) => {
   const spot = spots.find((item) => item.id === point.id);
   return {
-    ...point,
-    name: spot?.name || point.id,
-    imageSrc: spot?.images?.[0]?.src || "",
-    description: spot?.description || "",
-    bestTime: spot?.bestTime || "",
-    seasonNote: spot?.seasonNote || "",
+    id: point.id,
+    x: point.x,
+    y: point.y,
+    name: point.name ?? spot?.name ?? point.id,
+    imageSrc: point.imageSrc ?? spot?.images?.[0]?.src ?? "",
+    imageFileName: point.imageFileName,
+    description: point.description ?? spot?.description ?? "",
+    bestTime: point.bestTime ?? spot?.bestTime ?? "",
+    seasonNote: point.seasonNote ?? spot?.seasonNote ?? "",
   };
 });
 
@@ -41,6 +44,7 @@ export default function MapEditorClient() {
   const [points, setPoints] = useState<EditorPoint[]>(initialPoints);
   const [selectedId, setSelectedId] = useState(initialPoints.find((point) => point.id === "lover-road")?.id || initialPoints[0]?.id || "");
   const [previews, setPreviews] = useState<Record<string, string>>({});
+  const [backgroundPreview, setBackgroundPreview] = useState("");
   const [notice, setNotice] = useState("点击地图即可移动当前标注");
   const selected = useMemo(() => points.find((point) => point.id === selectedId), [points, selectedId]);
 
@@ -94,6 +98,13 @@ export default function MapEditorClient() {
     setNotice("图片仅在本机预览；导出配置后请把原图放入 public/images/spots/");
   }
 
+  function uploadBackground(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setBackgroundPreview(URL.createObjectURL(file));
+    setNotice("新底图仅用于本机校准；确认后请将它作为正式校园底图接入项目");
+  }
+
   function saveDraft() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(points));
     setNotice("草稿已保存在当前浏览器");
@@ -126,7 +137,7 @@ export default function MapEditorClient() {
 
   return <main className="min-h-screen bg-[#f5f2e9] text-ink"><header className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 bg-white/85 px-5 py-4 backdrop-blur sm:px-8"><div><p className="text-[10px] font-semibold tracking-[.22em] text-coral">MAP STUDIO</p><h1 className="mt-1 text-xl font-semibold">校园地图点位编辑器</h1></div><div className="flex flex-wrap gap-2"><Link href="/map?route=campus-highlights" className="rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-semibold">查看正式地图</Link><button type="button" onClick={saveDraft} className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white">保存草稿</button><button type="button" onClick={exportConfig} className="rounded-full bg-coral px-4 py-2 text-xs font-semibold text-white">导出配置</button></div></header>
     <div className="grid min-h-[calc(100vh-77px)] lg:grid-cols-[minmax(420px,1.35fr)_minmax(340px,.65fr)]">
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-[#e9e4d6] p-3 sm:p-6"><div ref={stageRef} className="relative aspect-[1024/1792] h-auto max-h-[calc(100vh-125px)] w-full max-w-[580px] cursor-crosshair overflow-hidden shadow-[0_20px_70px_rgba(42,54,39,.18)]" onPointerDown={onMapPointer} onPointerMove={(event) => { if (event.buttons === 1) onMapPointer(event); }}><img src="/images/map/campus-q-map.jpg" alt="Q版校园地图编辑底图" className="absolute inset-0 h-full w-full object-cover" draggable={false} />{points.map((point) => <button key={point.id} type="button" className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border-2 px-2 py-1 text-[10px] font-bold shadow-lg transition ${point.id === selectedId ? "border-ink bg-coral text-white ring-4 ring-white/70" : "border-white bg-white/95 text-ink"}`} style={{ left: `${point.x}%`, top: `${point.y}%` }} onPointerDown={(event) => onMarkerPointer(event, point.id)} onPointerMove={(event) => onMarkerPointer(event, point.id)} aria-pressed={point.id === selectedId}><span>{point.id === selectedId ? "◎" : "•"}</span>{point.name}</button>)}</div><div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-ink/85 px-4 py-2 text-xs text-white shadow-lg">{notice}</div></section>
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-[#e9e4d6] p-3 sm:p-6"><label className="absolute right-4 top-4 z-30 cursor-pointer rounded-full border border-white/70 bg-white/95 px-4 py-2 text-xs font-semibold text-coral shadow-sm">试用新底图<input type="file" accept="image/*" onChange={uploadBackground} className="hidden" /></label><div ref={stageRef} className="relative aspect-[1024/1792] h-auto max-h-[calc(100vh-125px)] w-full max-w-[580px] cursor-crosshair overflow-hidden shadow-[0_20px_70px_rgba(42,54,39,.18)]" onPointerDown={onMapPointer} onPointerMove={(event) => { if (event.buttons === 1) onMapPointer(event); }}><img src={backgroundPreview || "/images/map/campus-q-map.jpg"} alt="校园地图编辑底图" className="absolute inset-0 h-full w-full object-cover" draggable={false} />{points.map((point) => <button key={point.id} type="button" className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border-2 px-2 py-1 text-[10px] font-bold shadow-lg transition ${point.id === selectedId ? "border-ink bg-coral text-white ring-4 ring-white/70" : "border-white bg-white/95 text-ink"}`} style={{ left: `${point.x}%`, top: `${point.y}%` }} onPointerDown={(event) => onMarkerPointer(event, point.id)} onPointerMove={(event) => onMarkerPointer(event, point.id)} aria-pressed={point.id === selectedId}><span>{point.id === selectedId ? "◎" : "•"}</span>{point.name}</button>)}</div><div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-ink/85 px-4 py-2 text-xs text-white shadow-lg">{notice}</div></section>
       <aside className="overflow-y-auto border-l border-ink/10 bg-[#fbfaf6] p-5 sm:p-7"><div className="flex items-center justify-between"><div><p className="text-[10px] font-semibold tracking-[.2em] text-sea">LANDMARKS</p><h2 className="mt-1 text-lg font-semibold">点位列表</h2></div><button type="button" onClick={addPoint} className="rounded-full border border-coral/30 bg-white px-3 py-2 text-xs font-semibold text-coral">＋ 新点位</button></div>
         <div className="mt-4 flex max-h-36 flex-wrap gap-2 overflow-y-auto">{points.map((point) => <button key={point.id} type="button" onClick={() => setSelectedId(point.id)} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${point.id === selectedId ? "bg-ink text-white" : "border border-ink/10 bg-white text-slate-500"}`}>{point.name}</button>)}</div>
         {selected && <div className="mt-6 space-y-4 border-t border-ink/10 pt-6"><label className="block text-xs font-semibold text-slate-500">点位名称<input value={selected.name} onChange={(event) => updateSelected({ name: event.target.value })} className="mt-2 w-full rounded-xl border border-ink/10 bg-white px-3 py-3 text-sm text-ink outline-none focus:border-coral" /></label><div className="grid grid-cols-2 gap-3"><label className="text-xs font-semibold text-slate-500">横向 X（%）<input type="number" min="0" max="100" step="0.1" value={selected.x} onChange={(event) => updateSelected({ x: clamp(Number(event.target.value)) })} className="mt-2 w-full rounded-xl border border-ink/10 bg-white px-3 py-3 text-sm text-ink" /></label><label className="text-xs font-semibold text-slate-500">纵向 Y（%）<input type="number" min="0" max="100" step="0.1" value={selected.y} onChange={(event) => updateSelected({ y: clamp(Number(event.target.value)) })} className="mt-2 w-full rounded-xl border border-ink/10 bg-white px-3 py-3 text-sm text-ink" /></label></div>
