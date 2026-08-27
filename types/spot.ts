@@ -32,6 +32,11 @@ export type Spot = {
   photoPlaceholder: string;
   /** 已整理并获得展示许可的机位样片。 */
   images?: Array<{ src: string; alt: string; caption?: string }>;
+  /** 地图首页优先展示的校园特色地标。 */
+  featured?: boolean;
+  /** 交给手机地图应用的精确导航入口。 */
+  navigationUrl?: string;
+  seasonNote?: string;
   verified: boolean;
   /** 预留给摄影师维护的多个具体机位，当前 Demo 为空。 */
   cameraSpots: CameraSpot[];
