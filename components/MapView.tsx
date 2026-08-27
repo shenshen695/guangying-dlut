@@ -7,7 +7,7 @@ import mapPointsData from "@/data/map-points.json";
 
 type Props = { spots: Spot[]; route: Route; selectedSpotId: string | null; sheetExpanded: boolean; onSelect: (id: string) => void };
 
-const anchors = Object.fromEntries((mapPointsData as Array<{ id: string; x: number; y: number }>).map(({ id, x, y }) => [id, { x, y }])) as Record<string, { x: number; y: number }>;
+const anchors = Object.fromEntries((mapPointsData as Array<{ id: string; x: number; y: number; name: string }>).map(({ id, x, y, name }) => [id, { x, y, name }])) as Record<string, { x: number; y: number; name: string }>;
 
 export default function MapView({ spots, route, selectedSpotId, onSelect }: Props) {
   const [zoom, setZoom] = useState(1);
@@ -17,9 +17,9 @@ export default function MapView({ spots, route, selectedSpotId, onSelect }: Prop
 
   useEffect(() => { if (selectedSpotId) setZoom((value) => Math.max(value, 1.08)); }, [selectedSpotId]);
 
-  return <div className="qmap-viewport" aria-label="Q版校园摄影地图"><div className="qmap-stage" style={{ transform: `scale(${zoom})`, transformOrigin: `${selectedAnchor.x}% ${selectedAnchor.y}%` }}>
-    <img className="qmap-art" src="/images/map/campus-q-map.jpg" alt="手绘Q版大连理工大学凌水校区地图" draggable={false} />
+  return <div className="qmap-viewport" aria-label="完整校园摄影地图"><div className="qmap-stage" style={{ transform: `scale(${zoom})`, transformOrigin: `${selectedAnchor.x}% ${selectedAnchor.y}%` }}>
+    <img className="qmap-art" src="/images/map/campus-screenshot-mosaic.jpg" alt="大连理工大学凌水校区完整校园图" draggable={false} />
     {route.id !== "campus-highlights" && <svg className="qmap-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points={routePoints} /></svg>}
-    {orderedSpots.map((spot, index) => { const anchor = anchors[spot.id]; if (!anchor) return null; const selected = selectedSpotId === spot.id; return <button key={spot.id} type="button" className={`qmap-marker ${spot.featured ? "is-featured" : ""} ${selected ? "is-selected" : ""}`} style={{ left: `${anchor.x}%`, top: `${anchor.y}%` }} onClick={() => onSelect(spot.id)} aria-pressed={selected} aria-label={`${spot.featured ? "推荐地标" : `第 ${index + 1} 站`}：${spot.name}`}><span className="qmap-marker-number">{spot.featured ? "★" : String(index + 1).padStart(2, "0")}</span><span className="qmap-marker-label">{spot.shortName}</span></button>; })}
+    {orderedSpots.map((spot, index) => { const anchor = anchors[spot.id]; if (!anchor) return null; const selected = selectedSpotId === spot.id; return <button key={spot.id} type="button" className={`qmap-marker ${spot.featured ? "is-featured" : ""} ${selected ? "is-selected" : ""}`} style={{ left: `${anchor.x}%`, top: `${anchor.y}%` }} onClick={() => onSelect(spot.id)} aria-pressed={selected} aria-label={`${spot.featured ? "推荐地标" : `第 ${index + 1} 站`}：${anchor.name}`}><span className="qmap-marker-number">{spot.featured ? "★" : String(index + 1).padStart(2, "0")}</span><span className="qmap-marker-label">{anchor.name}</span></button>; })}
   </div><div className="qmap-controls" aria-label="地图缩放"><button type="button" onClick={() => setZoom((value) => Math.min(1.6, value + 0.16))} aria-label="放大地图">＋</button><button type="button" onClick={() => setZoom((value) => Math.max(1, value - 0.16))} aria-label="缩小地图">−</button></div><button type="button" className="qmap-reset" onClick={() => setZoom(1)}>查看全景</button></div>;
 }
