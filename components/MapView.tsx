@@ -11,13 +11,14 @@ const anchors = Object.fromEntries((mapPointsData as Array<{ id: string; x: numb
 
 export default function MapView({ spots, route, selectedSpotId, onSelect }: Props) {
   const [zoom, setZoom] = useState(1);
+  const isZoomed = zoom >= 1.24;
   const orderedSpots = useMemo(() => route.spots.map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [route, spots]);
   const selectedAnchor = (selectedSpotId && anchors[selectedSpotId]) || { x: 50, y: 50 };
   const routePoints = orderedSpots.map((spot) => anchors[spot.id]).filter(Boolean).map((point) => `${point.x},${point.y}`).join(" ");
 
   useEffect(() => { if (selectedSpotId) setZoom((value) => Math.max(value, 1.08)); }, [selectedSpotId]);
 
-  return <div className="qmap-viewport" aria-label="完整校园摄影地图"><div className="qmap-stage" style={{ transform: `scale(${zoom})`, transformOrigin: `${selectedAnchor.x}% ${selectedAnchor.y}%` }}>
+  return <div className={isZoomed ? "qmap-viewport is-zoomed" : "qmap-viewport"} aria-label="完整校园摄影地图"><div className={isZoomed ? "qmap-stage is-zoomed" : "qmap-stage"} style={{ transform: `scale(${zoom})`, transformOrigin: `${selectedAnchor.x}% ${selectedAnchor.y}%` }}>
     <img className="qmap-art" src="/images/map/campus-screenshot-mosaic.jpg" alt="大连理工大学凌水校区完整校园图" draggable={false} />
     {route.id !== "campus-highlights" && <svg className="qmap-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points={routePoints} /></svg>}
     {orderedSpots.map((spot, index) => { const anchor = anchors[spot.id]; if (!anchor) return null; const selected = selectedSpotId === spot.id; return <button key={spot.id} type="button" className={`qmap-marker ${spot.featured ? "is-featured" : ""} ${selected ? "is-selected" : ""}`} style={{ left: `${anchor.x}%`, top: `${anchor.y}%` }} onClick={() => onSelect(spot.id)} aria-pressed={selected} aria-label={`${spot.featured ? "推荐地标" : `第 ${index + 1} 站`}：${anchor.name}`}><span className="qmap-marker-number">{spot.featured ? "★" : String(index + 1).padStart(2, "0")}</span><span className="qmap-marker-label">{anchor.name}</span></button>; })}

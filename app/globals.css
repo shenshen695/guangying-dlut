@@ -2670,39 +2670,90 @@ img {
 }
 
 .gy-live-campus-workspace .qmap-marker {
-  border: 1px solid rgba(22, 123, 117, 0.22);
-  background: rgba(255, 253, 249, 0.94);
+  gap: 0;
+  min-width: 28px;
+  min-height: 28px;
+  border: 0;
+  background: transparent;
   color: var(--ink);
-  box-shadow: 0 5px 14px rgba(42, 36, 28, 0.13);
+  padding: 0;
+  box-shadow: none;
+  overflow: visible;
 }
 
 .gy-live-campus-workspace .qmap-marker.is-selected {
-  background: var(--teal);
+  background: transparent;
   color: #fff;
-  box-shadow: 0 0 0 4px rgba(22, 123, 117, 0.14), 0 8px 20px rgba(42, 36, 28, 0.14);
+  box-shadow: none;
 }
 
 .gy-live-campus-workspace .qmap-marker.is-featured {
+  padding: 0;
   border-color: rgba(220, 111, 91, 0.56);
-  box-shadow: 0 0 0 3px rgba(255, 253, 249, 0.62), 0 6px 16px rgba(42, 36, 28, 0.14);
+  box-shadow: none;
 }
 
 .gy-live-campus-workspace .qmap-marker.is-featured.is-selected {
   border-color: var(--teal);
-  box-shadow: 0 0 0 4px rgba(22, 123, 117, 0.16), 0 8px 20px rgba(42, 36, 28, 0.16);
+  box-shadow: none;
 }
 
 .gy-live-campus-workspace .qmap-marker-number {
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(255, 253, 249, 0.95);
   background: var(--teal);
+  box-shadow: 0 4px 11px rgba(42, 36, 28, 0.16);
+  font-size: 9px;
 }
 
 .gy-live-campus-workspace .qmap-marker.is-featured .qmap-marker-number {
   background: var(--coral);
+  font-size: 10px;
 }
 
 .gy-live-campus-workspace .qmap-marker.is-selected .qmap-marker-number {
-  background: rgba(255, 253, 249, 0.96);
-  color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(22, 123, 117, 0.16), 0 7px 16px rgba(42, 36, 28, 0.17);
+}
+
+.gy-live-campus-workspace .qmap-marker-label {
+  display: inline-block;
+  max-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  border: 0 solid transparent;
+  background: transparent;
+  color: var(--ink);
+  opacity: 0;
+  padding: 0;
+  transform: translateX(-4px);
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  transition:
+    max-width 180ms ease,
+    margin-left 180ms ease,
+    opacity 140ms ease,
+    padding 180ms ease,
+    transform 180ms ease;
+}
+
+.gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker .qmap-marker-label,
+.gy-live-campus-workspace .qmap-marker:hover .qmap-marker-label,
+.gy-live-campus-workspace .qmap-marker.is-selected .qmap-marker-label {
+  max-width: 76px;
+  margin-left: 5px;
+  border-width: 1px;
+  border-color: rgba(222, 216, 206, 0.86);
+  border-radius: 4px;
+  background: rgba(255, 253, 249, 0.88);
+  box-shadow: 0 4px 12px rgba(42, 36, 28, 0.08);
+  opacity: 1;
+  padding: 4px 6px;
+  transform: translateX(0);
 }
 
 .gy-live-campus-workspace .qmap-controls {
@@ -3102,5 +3153,11 @@ img {
     border-radius: 5px;
     color: var(--teal);
     font-size: 12px;
+  }
+
+  .gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker .qmap-marker-label,
+  .gy-live-campus-workspace .qmap-marker:hover .qmap-marker-label,
+  .gy-live-campus-workspace .qmap-marker.is-selected .qmap-marker-label {
+    display: inline-block;
   }
 }
