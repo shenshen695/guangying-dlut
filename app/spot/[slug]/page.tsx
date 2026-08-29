@@ -7,6 +7,7 @@ import type { Photographer } from "@/types/photographer";
 import type { Route } from "@/types/route";
 import type { Spot } from "@/types/spot";
 import { CoralRule, Eyebrow, Field, PageShell, Pill } from "@/components/guangying-ui";
+import { getSpotNavigationUrl } from "@/lib/navigation";
 
 const spots = spotsData as Spot[];
 const routes = routesData as Route[];
@@ -20,6 +21,7 @@ export default function SpotDetailPage({ params }: { params: { slug: string } })
   const spot = spots.find((item) => item.slug === params.slug);
   if (!spot) notFound();
   const relatedRoute = routes.find((route) => route.spots.includes(spot.id)) || routes[0];
+  const navigationUrl = getSpotNavigationUrl(spot);
   const familiarPhotographers = photographers
     .filter((photographer) => photographer.familiarSpots.some((name) => name === spot.shortName || name === spot.name))
     .slice(0, 3);
@@ -85,6 +87,7 @@ export default function SpotDetailPage({ params }: { params: { slug: string } })
           </section>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 34 }}>
             <Link href={`/map?spot=${spot.id}`} className="gy-primary-button">返回地图</Link>
+            <a href={navigationUrl} target="_blank" rel="noreferrer" className="gy-secondary-button">打开地图导航到这里 ↗</a>
             <Link href={familiarPhotographers[0] ? `/photographers/${familiarPhotographers[0].slug}` : "/photographers"} className="gy-secondary-button">查看熟悉摄影者</Link>
             <Link href={`/works/submit?spot=${spot.slug}&route=${relatedRoute.slug}`} className="gy-secondary-button">上传这个点位的作品</Link>
           </div>

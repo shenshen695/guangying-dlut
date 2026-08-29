@@ -2653,6 +2653,8 @@ img {
   background:
     linear-gradient(90deg, rgba(255, 253, 249, 0.2), rgba(255, 253, 249, 0)),
     #f1eee5;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .gy-live-campus-workspace .qmap-stage {
@@ -2671,6 +2673,8 @@ img {
 
 .gy-live-campus-workspace .qmap-marker {
   gap: 0;
+  width: 28px;
+  height: 28px;
   min-width: 28px;
   min-height: 28px;
   border: 0;
@@ -2679,6 +2683,18 @@ img {
   padding: 0;
   box-shadow: none;
   overflow: visible;
+}
+
+.gy-live-campus-workspace .qmap-marker.is-zoomed {
+  width: auto;
+}
+
+.gy-live-campus-workspace .qmap-marker.is-compact {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
 }
 
 .gy-live-campus-workspace .qmap-marker.is-selected {
@@ -2719,7 +2735,7 @@ img {
 }
 
 .gy-live-campus-workspace .qmap-marker-label {
-  display: inline-block;
+  display: none !important;
   max-width: 0;
   margin-left: 0;
   overflow: hidden;
@@ -2741,10 +2757,35 @@ img {
     transform 180ms ease;
 }
 
-.gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker .qmap-marker-label,
-.gy-live-campus-workspace .qmap-marker:hover .qmap-marker-label,
-.gy-live-campus-workspace .qmap-marker.is-selected .qmap-marker-label {
-  max-width: 76px;
+.gy-live-campus-workspace .qmap-marker.is-compact .qmap-marker-label,
+.gy-live-campus-workspace .qmap-marker.is-compact:hover .qmap-marker-label,
+.gy-live-campus-workspace .qmap-marker.is-compact.is-selected .qmap-marker-label {
+  display: none !important;
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+  padding: 0;
+}
+
+.gy-live-campus-workspace .qmap-stage:not(.is-zoomed) .qmap-marker {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+}
+
+.gy-live-campus-workspace .qmap-stage:not(.is-zoomed) .qmap-marker-label,
+.gy-live-campus-workspace .qmap-stage:not(.is-zoomed) .qmap-marker:hover .qmap-marker-label,
+.gy-live-campus-workspace .qmap-stage:not(.is-zoomed) .qmap-marker.is-selected .qmap-marker-label,
+.gy-live-campus-workspace .qmap-stage:not(.is-zoomed) .qmap-marker.is-featured .qmap-marker-label {
+  display: none !important;
+}
+
+.gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker.is-zoomed .qmap-marker-label {
+  display: inline-flex !important;
+  align-items: center;
+  max-width: 68px;
   margin-left: 5px;
   border-width: 1px;
   border-color: rgba(222, 216, 206, 0.86);
@@ -2752,7 +2793,7 @@ img {
   background: rgba(255, 253, 249, 0.88);
   box-shadow: 0 4px 12px rgba(42, 36, 28, 0.08);
   opacity: 1;
-  padding: 4px 6px;
+  padding: 3px 6px;
   transform: translateX(0);
 }
 
@@ -3155,9 +3196,7 @@ img {
     font-size: 12px;
   }
 
-  .gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker .qmap-marker-label,
-  .gy-live-campus-workspace .qmap-marker:hover .qmap-marker-label,
-  .gy-live-campus-workspace .qmap-marker.is-selected .qmap-marker-label {
-    display: inline-block;
+  .gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker.is-zoomed .qmap-marker-label {
+    display: inline-flex !important;
   }
 }

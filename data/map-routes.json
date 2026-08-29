@@ -1,4 +1,4 @@
 [
-  {"id":"campus-highlights","slug":"campus-highlights","name":"校园必拍地标","subtitle":"先认识工大最有故事的地方","duration":"自由探索","walkingDistance":"按兴趣选择","recommendedTime":"点击地标查看介绍与导航","spots":["lover-road","lover-slope","chairman-statue","landmark-mtbglalg","student-center","second-building","comprehensive-one","ling-shui-lake","flower-wall","south-gate"]},
-  {"id":"classic-graduation","slug":"classic-graduation","name":"工大经典毕业线","subtitle":"从南门走进青春记忆","duration":"约 120 分钟","walkingDistance":"Demo估算 · 约 2.4 km","recommendedTime":"上午 08:00 出发，下午在凌水湖与花墙收尾","spots":["south-gate","bochuan","main-building","first-building","ling-shui-lake","flower-wall"]}
+  {"id":"campus-highlights","slug":"campus-highlights","name":"校园必拍地标","subtitle":"先认识大工最有故事的地方","duration":"自由探索","walkingDistance":"按兴趣选择","recommendedTime":"点击地标查看介绍与导航","spots":["lover-road","lover-slope","chairman-statue","landmark-mtbglalg","student-center","second-building","comprehensive-one","ling-shui-lake","flower-wall","south-gate"]},
+  {"id":"classic-graduation","slug":"classic-graduation","name":"大工经典毕业线","subtitle":"从南门走进青春记忆","duration":"约 120 分钟","walkingDistance":"Demo估算 · 约 2.4 km","recommendedTime":"上午 08:00 出发，下午在凌水湖与花墙收尾","spots":["south-gate","bochuan","main-building","first-building","ling-shui-lake","flower-wall"]}
 ]

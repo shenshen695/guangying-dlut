@@ -4,6 +4,7 @@ import routesData from "@/data/map-routes.json";
 import spotsData from "@/data/map-spots.json";
 import type { Route } from "@/types/route";
 import type { MapSpot as Spot } from "@/types/map-spot";
+import { getSpotNavigationUrl } from "@/lib/navigation";
 
 const routes = routesData as Route[];
 const spots = spotsData as Spot[];
@@ -18,6 +19,7 @@ export default function SpotDetailPage({ params }: { params: { slug: string } })
   const route = routes.find((item) => item.spots.includes(spot.id));
   const mapRoute = spot.featured ? "campus-highlights" : "classic-graduation";
   const hasPhotos = Boolean(spot.images?.length);
+  const navigationUrl = getSpotNavigationUrl(spot);
 
   return <main className="min-h-screen bg-mist"><div className="mx-auto max-w-6xl px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
     <header className="flex items-center justify-between border-b border-ink/10 pb-5"><Link href="/" className="text-sm font-bold tracking-[.18em] text-ink">光影大工</Link><Link href="/map?route=campus-highlights" className="text-sm text-slate-500 hover:text-sea">校园摄影地图 →</Link></header>
@@ -27,7 +29,7 @@ export default function SpotDetailPage({ params }: { params: { slug: string } })
       <div className="rounded-[1.5rem] border border-ink/8 bg-white/70 p-6 sm:p-7"><p className="text-[11px] font-semibold tracking-[.2em] text-sea">SHOOTING NOTE</p><h2 className="mt-2 text-xl font-semibold text-ink">拍摄建议</h2><p className="mt-3 text-sm leading-7 text-slate-600">{spot.shootingTips}</p></div>
     </div><aside className="space-y-4">
       <div className="rounded-[1.5rem] border border-ink/8 bg-white/70 p-6 sm:p-7"><p className="text-[11px] font-semibold tracking-[.2em] text-sea">FIELD NOTES</p><h2 className="mt-2 text-xl font-semibold text-ink">摄影攻略</h2><dl className="mt-6 space-y-5 text-sm"><div className="flex justify-between gap-4 border-b border-ink/8 pb-4"><dt className="text-slate-400">所属区域</dt><dd className="text-right font-medium text-ink">{spot.area}</dd></div><div className="flex justify-between gap-4 border-b border-ink/8 pb-4"><dt className="text-slate-400">最佳拍摄时间</dt><dd className="text-right font-medium text-ink">{spot.bestTime}</dd></div><div className="flex justify-between gap-4"><dt className="text-slate-400">人流程度</dt><dd className="text-right font-medium text-ink">{spot.crowdLevel}</dd></div></dl></div>
-      <div className="rounded-[1.5rem] bg-ink p-6 text-white sm:p-7"><p className="text-[10px] tracking-[.2em] text-white/45">MAP LOCATION</p><h2 className="mt-3 text-lg font-semibold">地图与导航</h2><div className="mt-4 flex items-center gap-3 text-sm text-white/75"><span className="grid h-9 w-9 place-items-center rounded-full bg-coral text-white">{spot.featured ? "★" : spot.name.slice(0, 1)}</span><span>{spot.featured ? "校园推荐地标" : `路线第 ${route ? route.spots.indexOf(spot.id) + 1 : "—"} 站`}<br /><span className="text-xs text-white/45">校园图负责发现，地图应用负责步行导航</span></span></div><div className="mt-6 flex flex-wrap gap-2"><Link href={`/map?route=${mapRoute}&spot=${spot.id}`} className="inline-flex rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-ink">在校园图中定位</Link>{spot.navigationUrl && <a href={spot.navigationUrl} target="_blank" rel="noreferrer" className="inline-flex rounded-full bg-coral px-4 py-2.5 text-sm font-semibold text-white">打开导航 ↗</a>}</div></div>
+      <div className="rounded-[1.5rem] bg-ink p-6 text-white sm:p-7"><p className="text-[10px] tracking-[.2em] text-white/45">MAP LOCATION</p><h2 className="mt-3 text-lg font-semibold">地图与导航</h2><div className="mt-4 flex items-center gap-3 text-sm text-white/75"><span className="grid h-9 w-9 place-items-center rounded-full bg-coral text-white">{spot.featured ? "★" : spot.name.slice(0, 1)}</span><span>{spot.featured ? "校园推荐地标" : `路线第 ${route ? route.spots.indexOf(spot.id) + 1 : "—"} 站`}<br /><span className="text-xs text-white/45">校园图负责发现，地图应用负责步行导航</span></span></div><div className="mt-6 flex flex-wrap gap-2"><Link href={`/map?route=${mapRoute}&spot=${spot.id}`} className="inline-flex rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-ink">在校园图中定位</Link><a href={navigationUrl} target="_blank" rel="noreferrer" className="inline-flex rounded-full bg-coral px-4 py-2.5 text-sm font-semibold text-white">打开地图导航到这里 ↗</a></div></div>
     </aside></section>
     <section className="mt-8 flex flex-wrap gap-3"><Link href="/map?route=campus-highlights" className="rounded-full bg-coral px-5 py-3 text-sm font-semibold text-white hover:bg-ink">继续探索校园地标 →</Link><p className="self-center text-xs text-slate-400">正式上线前请再次确认作品版权与出镜人肖像授权。</p></section>
   </div></main>;

@@ -9,7 +9,7 @@ export default function HomePage() {
           <Eyebrow>四季入口</Eyebrow>
           <h1 className="gy-hero-title">先选毕业季节，再生成校园路线</h1>
           <CoralRule />
-          <p className="gy-body-copy">把工大熟悉的机位、光线和路线，变成一份可执行的毕业照拍摄企划。</p>
+          <p className="gy-body-copy">把大工熟悉的机位、光线和路线，变成一份可执行的毕业照拍摄企划。</p>
           <div className="gy-season-grid">
             {seasons.map((season, index) => (
               <SeasonCard key={season.name} season={season} active={index === 0} />

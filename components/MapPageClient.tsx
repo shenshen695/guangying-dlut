@@ -10,6 +10,7 @@ import type { MapSpot as Spot } from "@/types/map-spot";
 import type { Route } from "@/types/route";
 import SpotCard from "@/components/MapSpotCard";
 import { TopNav } from "@/components/guangying-ui";
+import { getSpotNavigationUrl } from "@/lib/navigation";
 
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
@@ -48,6 +49,7 @@ export default function MapPageClient() {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const selectedSpot = routeSpots.find((spot) => spot.id === selectedSpotId) || routeSpots[0];
   const selectedIndex = Math.max(0, routeSpots.findIndex((spot) => spot.id === selectedSpotId));
+  const selectedNavigationUrl = selectedSpot ? getSpotNavigationUrl(selectedSpot) : "";
 
   useEffect(() => { setSelectedSpotId(initialId); setIsPlaying(false); setSheetExpanded(false); }, [initialId]);
   useEffect(() => { if (selectedSpotId) cardRefs.current[selectedSpotId]?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [selectedSpotId]);
@@ -134,7 +136,7 @@ export default function MapPageClient() {
                     {selectedSpot.seasonNote && <strong>推荐：{selectedSpot.seasonNote}</strong>}
                     <p><b>拍摄建议：</b>{selectedSpot.shootingTips}</p>
                     <div>
-                      {selectedSpot.navigationUrl && <a href={selectedSpot.navigationUrl} target="_blank" rel="noreferrer">打开导航 ↗</a>}
+                      <a href={selectedNavigationUrl} target="_blank" rel="noreferrer">打开地图导航到这里 ↗</a>
                       <Link href={`/map/spot/${selectedSpot.slug}`}>完整摄影攻略</Link>
                     </div>
                   </div>
@@ -152,12 +154,15 @@ export default function MapPageClient() {
               {controls}
             </div>
             <div className="gy-map-side-list">
-              {routeSpots.map((spot, index) => (
-                <div key={spot.id} ref={(node) => { cardRefs.current[spot.id] = node; }}>
-                  <SpotCard spot={spot} index={index} selected={selectedSpotId === spot.id} onSelect={() => { setSelectedSpotId(spot.id); setSheetExpanded(true); }} />
-                  {spot.navigationUrl && <a href={spot.navigationUrl} target="_blank" rel="noreferrer" className="gy-map-nav-link">打开地图导航到这里 ↗</a>}
-                </div>
-              ))}
+              {routeSpots.map((spot, index) => {
+                const navigationUrl = getSpotNavigationUrl(spot);
+                return (
+                  <div key={spot.id} ref={(node) => { cardRefs.current[spot.id] = node; }}>
+                    <SpotCard spot={spot} index={index} selected={selectedSpotId === spot.id} onSelect={() => { setSelectedSpotId(spot.id); setSheetExpanded(true); }} />
+                    <a href={navigationUrl} target="_blank" rel="noreferrer" className="gy-map-nav-link">打开地图导航到这里 ↗</a>
+                  </div>
+                );
+              })}
             </div>
             <p className="gy-map-side-footnote">完整校园图用于发现点位与展示摄影顺序；精确步行请以地图导航应用为准。</p>
           </aside>
