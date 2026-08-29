@@ -1651,6 +1651,12 @@ img {
   background: #fae8e1;
 }
 
+.gy-status-已拒绝 {
+  border-color: rgba(31, 33, 29, 0.18);
+  color: var(--muted) !important;
+  background: rgba(31, 33, 29, 0.06);
+}
+
 .gy-directory-tools {
   display: grid;
   justify-items: end;
@@ -1796,6 +1802,254 @@ img {
   color: var(--quiet);
   cursor: not-allowed;
   opacity: 0.72;
+}
+
+.gy-primary-button:disabled,
+.gy-secondary-button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.gy-backend-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.gy-backend-note a {
+  color: var(--teal);
+}
+
+.gy-auth-layout,
+.gy-admin-layout,
+.gy-dashboard-layout {
+  display: grid;
+  gap: 28px;
+  padding-top: 44px;
+}
+
+.gy-auth-layout {
+  grid-template-columns: minmax(420px, 0.76fr) minmax(520px, 1fr);
+  align-items: start;
+}
+
+.gy-auth-copy {
+  padding-top: 24px;
+}
+
+.gy-auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.gy-auth-links a,
+.gy-auth-tabs button,
+.gy-admin-tabs button {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.gy-auth-links a:hover,
+.gy-auth-tabs button.is-active,
+.gy-admin-tabs button.is-active {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.gy-auth-card {
+  padding: 26px;
+}
+
+.gy-auth-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gy-auth-form-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.gy-auth-state {
+  display: grid;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(22, 123, 117, 0.26);
+  border-radius: 6px;
+  background: rgba(225, 238, 233, 0.5);
+}
+
+.gy-auth-state strong {
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.gy-auth-state span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.gy-auth-state button {
+  width: max-content;
+  border: 0;
+  background: transparent;
+  color: var(--teal);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.gy-admin-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  padding-top: 42px;
+}
+
+.gy-admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.gy-admin-layout {
+  grid-template-columns: minmax(720px, 1fr) 390px;
+  align-items: start;
+  padding-top: 28px;
+}
+
+.gy-admin-list,
+.gy-admin-note-panel,
+.gy-dashboard-form,
+.gy-dashboard-side,
+.gy-admin-empty {
+  padding: 24px;
+}
+
+.gy-admin-list {
+  display: grid;
+  gap: 14px;
+  max-height: 620px;
+  overflow: auto;
+}
+
+.gy-admin-item {
+  display: grid;
+  gap: 15px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.gy-admin-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.gy-admin-item-main {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 16px;
+}
+
+.gy-admin-item-main img,
+.gy-admin-image-empty {
+  width: 108px;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  object-fit: cover;
+  background: rgba(225, 238, 233, 0.5);
+  color: var(--quiet);
+  font-size: 12px;
+}
+
+.gy-admin-image-empty {
+  display: grid;
+  place-items: center;
+}
+
+.gy-admin-meta,
+.gy-admin-note {
+  margin: 8px 0 0;
+  color: var(--quiet);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gy-admin-note {
+  color: var(--muted);
+}
+
+.gy-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gy-admin-actions .gy-primary-button,
+.gy-admin-actions .gy-secondary-button {
+  min-height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.gy-admin-note-panel h2,
+.gy-dashboard-form h2,
+.gy-dashboard-submissions h3,
+.gy-admin-empty h2 {
+  margin: 0 0 14px;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.gy-dashboard-layout {
+  grid-template-columns: minmax(740px, 1fr) 430px;
+  align-items: start;
+  padding-top: 28px;
+}
+
+.gy-dashboard-form .gy-form-grid,
+.gy-dashboard-contact .gy-form-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.gy-dashboard-contact {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.gy-dashboard-contact > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.gy-dashboard-side {
+  display: grid;
+  gap: 24px;
+  max-height: 680px;
+  overflow: auto;
 }
 
 /* Compact desktop rhythm for 1440x900 / 1536x864 demo screens. */
@@ -2961,7 +3215,10 @@ img {
   .gy-photographer-layout,
   .gy-photographer-home-layout,
   .gy-contribute-layout,
-  .gy-work-submit-layout {
+  .gy-work-submit-layout,
+  .gy-auth-layout,
+  .gy-admin-layout,
+  .gy-dashboard-layout {
     grid-template-columns: 1fr;
   }
 
@@ -3028,6 +3285,9 @@ img {
   .gy-season-grid,
   .gy-field-grid,
   .gy-form-grid,
+  .gy-auth-form-grid,
+  .gy-dashboard-form .gy-form-grid,
+  .gy-dashboard-contact .gy-form-grid,
   .gy-photographer-grid,
   .gy-work-grid,
   .gy-photo-stack {
@@ -3036,7 +3296,8 @@ img {
 
   .gy-directory-head,
   .gy-photographer-home-head,
-  .gy-work-head {
+  .gy-work-head,
+  .gy-admin-head {
     align-items: flex-start;
     flex-direction: column;
   }

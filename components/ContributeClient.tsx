@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Eyebrow, TopNav } from "@/components/guangying-ui";
+import { getBackendUserState, parseList, submitSpotSubmission, type BackendUserState } from "@/lib/supabase/backend";
 
 type ReviewStatus = "待审核" | "已通过" | "需补充";
 type ReviewItem = { name: string; status: ReviewStatus; note: string };
@@ -21,16 +22,47 @@ export default function ContributeClient() {
     sun: "东南侧光",
     lens: "50mm",
     season: "春 / 秋",
+    crowdLevel: "中",
     tips: "摄影者站在台阶下方偏左，人物从柱廊侧边慢走或回望。",
   });
   const [reviews, setReviews] = useState(initialReviews);
   const [submittedName, setSubmittedName] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [backendState, setBackendState] = useState<BackendUserState | null>(null);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    getBackendUserState().then(setBackendState);
+  }, []);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    const result = await submitSpotSubmission({
+      spotName: form.name.trim() || "未命名机位",
+      locationDescription: form.location.trim(),
+      recommendedTime: form.time.trim(),
+      sunDirection: form.sun.trim(),
+      focalLength: form.lens.trim(),
+      seasons: parseList(form.season),
+      crowdLevel: form.crowdLevel,
+      shootingTips: form.tips.trim(),
+      files,
+    });
+    setIsSubmitting(false);
+
+    if ("error" in result && result.error) {
+      setSubmitMessage(result.error);
+      return;
+    }
+
     const newItem = { name: form.name.trim() || "未命名机位", status: "待审核" as const, note: "刚刚提交，等待确认坐标、图片与技巧。" };
     setReviews((items) => [newItem, ...items.filter((item) => item.name !== newItem.name)]);
     setSubmittedName(newItem.name);
+    setSubmitMessage(result.message || "已提交，等待审核。");
   }
 
   return (
@@ -42,12 +74,21 @@ export default function ContributeClient() {
           <h1 className="gy-page-title">把你发现的机位，加入光影大工</h1>
           <p className="gy-body-copy" style={{ marginTop: 16 }}>摄影社、摄影者和同学可以提交坐标、图片与技巧，进入待审核队列后再展示到地图。</p>
           <p className="gy-inline-note">只是上传已有点位作品？<Link href="/works/submit">前往上传作品</Link></p>
+          <p className="gy-backend-note">
+            {backendState?.configured
+              ? backendState.user
+                ? `已连接 Supabase，当前账号：${backendState.user.email || "已登录用户"}`
+                : "已连接 Supabase，登录后可提交到真实审核队列。"
+              : "当前为演示模式，后端未连接；表单会写入本地待审核状态。"}
+            {backendState?.configured && !backendState.user ? <Link href="/login">去登录</Link> : null}
+          </p>
         </section>
 
         <section className="gy-contribute-layout">
           <form className="gy-panel gy-side-panel" onSubmit={submit}>
             <h2>提交机位</h2>
             {submittedName ? <p className="gy-submit-note">“{submittedName}” 已提交，当前状态：待审核。</p> : null}
+            {submitMessage ? <p className="gy-submit-note">{submitMessage}</p> : null}
             <div className="gy-form-grid">
               <div className="gy-input-card"><label>点位名称</label><input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
               <div className="gy-input-card"><label>位置描述</label><input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} /></div>
@@ -55,17 +96,18 @@ export default function ContributeClient() {
               <div className="gy-input-card"><label>太阳方向</label><input value={form.sun} onChange={(event) => setForm({ ...form, sun: event.target.value })} /></div>
               <div className="gy-input-card"><label>推荐焦段</label><input value={form.lens} onChange={(event) => setForm({ ...form, lens: event.target.value })} /></div>
               <div className="gy-input-card"><label>适合季节</label><input value={form.season} onChange={(event) => setForm({ ...form, season: event.target.value })} /></div>
+              <div className="gy-input-card"><label>拥挤度</label><select value={form.crowdLevel} onChange={(event) => setForm({ ...form, crowdLevel: event.target.value })}><option>低</option><option>中</option><option>高</option></select></div>
             </div>
             <label className="gy-textarea-card">
               <span>技巧说明</span>
               <textarea value={form.tips} onChange={(event) => setForm({ ...form, tips: event.target.value })} />
             </label>
             <label className="gy-upload-box">
-              <input type="file" accept="image/*" multiple />
-              <span>图片上传区域：参考成片、机位示意、技巧说明</span>
+              <input type="file" accept="image/*" multiple onChange={(event) => setFiles(Array.from(event.target.files || []))} />
+              <span>{files.length > 0 ? `已选择 ${files.length} 张图片：${files.map((file) => file.name).join(" / ")}` : "图片上传区域：参考成片、机位示意、技巧说明"}</span>
             </label>
             <div style={{ display: "flex", gap: 14, marginTop: 22, flexWrap: "wrap" }}>
-              <button type="submit" className="gy-primary-button">提交并进入待审核</button>
+              <button type="submit" className="gy-primary-button" disabled={isSubmitting}>{isSubmitting ? "提交中..." : "提交并进入待审核"}</button>
               <Link href="/map" className="gy-secondary-button">返回地图</Link>
             </div>
           </form>

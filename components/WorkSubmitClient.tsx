@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import photographersData from "@/data/photographers.json";
 import routesData from "@/data/routes.json";
@@ -13,6 +13,7 @@ import type { Route } from "@/types/route";
 import type { Season, Spot } from "@/types/spot";
 import type { StyleReference } from "@/types/planner";
 import type { SubmittedWork } from "@/types/work";
+import { getBackendUserState, submitWorkSubmission, type BackendUserState } from "@/lib/supabase/backend";
 
 const photographers = photographersData as Photographer[];
 const routes = routesData as Route[];
@@ -37,9 +38,12 @@ export default function WorkSubmitClient() {
     description: `${initialSpot.cameraPosition}，${initialSpot.actionSuggestion}。`,
   });
   const [styleTags, setStyleTags] = useState<StyleReference[]>(["清透自然"]);
-  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [submittedWork, setSubmittedWork] = useState<SubmittedWork | null>(null);
   const [reviews, setReviews] = useState<SubmittedWork[]>(seededWorks);
+  const [backendState, setBackendState] = useState<BackendUserState | null>(null);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedPhotographer = useMemo(
     () => photographers.find((item) => item.slug === form.photographerSlug),
@@ -50,6 +54,10 @@ export default function WorkSubmitClient() {
 
   const photographerName = selectedPhotographer?.name || form.photographerName.trim() || "未命名摄影者";
 
+  useEffect(() => {
+    getBackendUserState().then(setBackendState);
+  }, []);
+
   function toggleStyle(style: StyleReference) {
     setStyleTags((current) => {
       if (current.includes(style)) return current.length === 1 ? current : current.filter((item) => item !== style);
@@ -57,8 +65,29 @@ export default function WorkSubmitClient() {
     });
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    const result = await submitWorkSubmission({
+      title: form.title.trim() || `${selectedSpot.shortName}毕业作品`,
+      photographerName,
+      photographerProfileId: null,
+      spotSlug: selectedSpot.slug,
+      routeSlug: selectedRoute.slug,
+      season: form.season,
+      styleTags,
+      description: form.description.trim() || selectedSpot.shootingTips,
+      files,
+    });
+    setIsSubmitting(false);
+
+    if ("error" in result && result.error) {
+      setSubmitMessage(result.error);
+      return;
+    }
+
     const nextWork: SubmittedWork = {
       id: `work-demo-${Date.now()}`,
       title: form.title.trim() || `${selectedSpot.shortName}毕业作品`,
@@ -74,10 +103,11 @@ export default function WorkSubmitClient() {
       images: selectedSpot.referenceImages.slice(0, 1),
       status: "待审核",
       submittedAt: "刚刚",
-      note: fileNames.length > 0 ? `已选择 ${fileNames.length} 张图片，等待审核授权。` : "当前使用演示占位图，后续可替换为真实上传图片。",
+      note: files.length > 0 ? `已选择 ${files.length} 张图片，等待审核授权。` : "当前使用演示占位图，后续可替换为真实上传图片。",
     };
     setSubmittedWork(nextWork);
     setReviews((items) => [nextWork, ...items.filter((item) => item.id !== nextWork.id)]);
+    setSubmitMessage(result.message || "作品已提交，等待审核。");
   }
 
   return (
@@ -91,6 +121,14 @@ export default function WorkSubmitClient() {
             <h1 className="gy-page-title">上传作品</h1>
             <CoralRule />
             <p className="gy-body-copy">上传已有点位的摄影作品，关联摄影者、路线、季节和风格，审核后进入作品档案。</p>
+            <p className="gy-backend-note">
+              {backendState?.configured
+                ? backendState.user
+                  ? `已连接 Supabase，当前账号：${backendState.user.email || "已登录用户"}`
+                  : "已连接 Supabase，登录后可提交到真实作品审核队列。"
+                : "当前为演示模式，后端未连接；表单会写入本地待审核状态。"}
+              {backendState?.configured && !backendState.user ? <Link href="/login">去登录</Link> : null}
+            </p>
           </div>
           <div className="gy-work-submit-source">
             <Pill active>{selectedSpot.name}</Pill>
@@ -107,6 +145,7 @@ export default function WorkSubmitClient() {
                 <span>{submittedWork.title} · {submittedWork.spotName} · {submittedWork.submittedAt}</span>
               </div>
             ) : null}
+            {submitMessage ? <p className="gy-submit-note">{submitMessage}</p> : null}
 
             <div className="gy-form-grid">
               <div className="gy-input-card">
@@ -174,12 +213,12 @@ export default function WorkSubmitClient() {
             </label>
 
             <label className="gy-upload-box">
-              <input type="file" accept="image/*" multiple onChange={(event) => setFileNames(Array.from(event.target.files || []).map((file) => file.name))} />
-              <span>{fileNames.length > 0 ? fileNames.join(" / ") : "上传作品图片：当前为前端演示，暂不写入服务器"}</span>
+              <input type="file" accept="image/*" multiple onChange={(event) => setFiles(Array.from(event.target.files || []))} />
+              <span>{files.length > 0 ? files.map((file) => file.name).join(" / ") : "上传作品图片：演示模式本地记录，接入后写入 Supabase Storage"}</span>
             </label>
 
             <div className="gy-work-submit-actions">
-              <button type="submit" className="gy-primary-button">提交作品并进入待审核</button>
+              <button type="submit" className="gy-primary-button" disabled={isSubmitting}>{isSubmitting ? "提交中..." : "提交作品并进入待审核"}</button>
               <Link href="/photographers" className="gy-secondary-button">返回摄影者目录</Link>
             </div>
           </form>
