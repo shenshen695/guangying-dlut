@@ -1773,6 +1773,23 @@ img {
   margin-top: 22px;
 }
 
+.gy-consent-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.gy-consent-line input {
+  width: 15px;
+  height: 15px;
+  margin-top: 4px;
+  accent-color: var(--teal);
+}
+
 .gy-work-review-panel h2 {
   margin: 0 0 12px;
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
@@ -1850,7 +1867,9 @@ img {
 
 .gy-auth-layout,
 .gy-admin-layout,
-.gy-dashboard-layout {
+.gy-dashboard-layout,
+.gy-apply-layout,
+.gy-admin-workbench {
   display: grid;
   gap: 28px;
   padding-top: 44px;
@@ -1971,6 +1990,17 @@ img {
   font-size: 13px;
 }
 
+.gy-auth-register-note {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.58);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
 .gy-auth-entry-list {
   display: flex;
   flex-wrap: wrap;
@@ -1994,6 +2024,34 @@ img {
   justify-content: space-between;
   gap: 28px;
   padding-top: 42px;
+}
+
+.gy-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(96px, 1fr));
+  gap: 10px;
+  min-width: 340px;
+}
+
+.gy-admin-stats article {
+  display: grid;
+  gap: 6px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.64);
+}
+
+.gy-admin-stats span {
+  color: var(--quiet);
+  font-size: 12px;
+}
+
+.gy-admin-stats strong {
+  color: var(--teal);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 .gy-admin-tabs {
@@ -2087,11 +2145,154 @@ img {
 .gy-admin-note-panel h2,
 .gy-dashboard-form h2,
 .gy-dashboard-submissions h3,
-.gy-admin-empty h2 {
+.gy-admin-empty h2,
+.gy-admin-detail-panel h2,
+.gy-apply-side h2 {
   margin: 0 0 14px;
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
   font-size: 24px;
   font-weight: 500;
+}
+
+.gy-admin-workbench {
+  grid-template-columns: minmax(520px, 0.95fr) minmax(480px, 1.05fr);
+  align-items: stretch;
+  padding-top: 24px;
+}
+
+.gy-admin-queue,
+.gy-admin-detail-panel {
+  min-height: 560px;
+  padding: 22px;
+}
+
+.gy-admin-queue-list {
+  display: grid;
+  gap: 12px;
+  max-height: 600px;
+  margin-top: 18px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.gy-admin-queue-item {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.52);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.gy-admin-queue-item.is-active {
+  border-color: rgba(22, 123, 117, 0.72);
+  background: rgba(225, 238, 233, 0.48);
+}
+
+.gy-admin-queue-item img,
+.gy-admin-queue-item .gy-admin-image-empty {
+  width: 78px;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.gy-admin-queue-item span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.gy-admin-queue-item strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 17px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gy-admin-queue-item em,
+.gy-admin-queue-item small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gy-admin-detail-panel {
+  max-height: 660px;
+  overflow: auto;
+}
+
+.gy-admin-detail-images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.gy-admin-detail-images img,
+.gy-admin-detail-images .gy-admin-image-empty {
+  width: 100%;
+  aspect-ratio: 1.38;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  object-fit: cover;
+  background: rgba(225, 238, 233, 0.44);
+}
+
+.gy-admin-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.gy-admin-detail-grid div {
+  min-height: 72px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.56);
+}
+
+.gy-admin-detail-grid span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--teal);
+  font-size: 12px;
+}
+
+.gy-admin-detail-grid strong {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.gy-admin-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.gy-admin-review-actions .gy-primary-button,
+.gy-admin-review-actions .gy-secondary-button {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
 }
 
 .gy-dashboard-layout {
@@ -2124,6 +2325,45 @@ img {
   gap: 24px;
   max-height: 680px;
   overflow: auto;
+}
+
+.gy-apply-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  padding-top: 42px;
+}
+
+.gy-apply-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.gy-apply-layout {
+  grid-template-columns: minmax(720px, 1fr) 380px;
+  align-items: start;
+  padding-top: 26px;
+}
+
+.gy-apply-form,
+.gy-apply-side {
+  padding: 24px;
+}
+
+.gy-apply-form .gy-form-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.gy-apply-side {
+  display: grid;
+  gap: 18px;
+}
+
+.gy-review-flow.is-vertical {
+  align-items: flex-start;
 }
 
 /* Compact desktop rhythm for 1440x900 / 1536x864 demo screens. */
@@ -3297,7 +3537,9 @@ img {
   .gy-work-submit-layout,
   .gy-auth-layout,
   .gy-admin-layout,
-  .gy-dashboard-layout {
+  .gy-dashboard-layout,
+  .gy-apply-layout,
+  .gy-admin-workbench {
     grid-template-columns: 1fr;
   }
 
@@ -3365,6 +3607,9 @@ img {
   .gy-field-grid,
   .gy-form-grid,
   .gy-auth-form-grid,
+  .gy-apply-form .gy-form-grid,
+  .gy-admin-stats,
+  .gy-admin-detail-grid,
   .gy-dashboard-form .gy-form-grid,
   .gy-dashboard-contact .gy-form-grid,
   .gy-photographer-grid,
@@ -3376,9 +3621,25 @@ img {
   .gy-directory-head,
   .gy-photographer-home-head,
   .gy-work-head,
-  .gy-admin-head {
+  .gy-admin-head,
+  .gy-apply-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .gy-nav-actions,
+  .gy-apply-status,
+  .gy-work-submit-source {
+    justify-content: flex-start;
+  }
+
+  .gy-admin-queue-item {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .gy-admin-queue-item i {
+    grid-column: 2;
+    width: max-content;
   }
 
   .gy-profile-info-list div {

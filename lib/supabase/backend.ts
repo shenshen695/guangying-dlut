@@ -7,7 +7,8 @@ import type { SubmittedWork } from "@/types/work";
 import { demoModeMessage, getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export type BackendMode = "supabase" | "demo";
-export type Role = "user" | "photographer" | "admin";
+export type Role = "user" | "photographer_pending" | "photographer" | "admin";
+export type SignupIntent = "user" | "photographer_pending";
 export type SubmissionStatus = "pending" | "approved" | "needs_revision" | "rejected";
 export type ReviewTargetType = "spot" | "work" | "photographer";
 export type ReviewAction = "approve" | "reject" | "request_revision";
@@ -49,6 +50,22 @@ export type WorkSubmissionInput = {
   styleTags: string[];
   description: string;
   files: File[];
+  rightsConfirmed: boolean;
+};
+
+export type PhotographerApplicationInput = {
+  identity: string;
+  name: string;
+  bio: string;
+  styles: string[];
+  familiarSpots: string[];
+  representativeFiles: File[];
+  portfolioNote: string;
+  contactWechat: string;
+  contactEmail: string;
+  contactQq: string;
+  contactAuthorized: boolean;
+  rightsConfirmed: boolean;
 };
 
 export type AdminSubmission = {
@@ -61,6 +78,7 @@ export type AdminSubmission = {
   imageUrls: string[];
   submittedBy?: string | null;
   reviewNote?: string | null;
+  details?: Array<{ label: string; value: string }>;
 };
 
 export type DashboardSummary = {
@@ -85,6 +103,9 @@ export type PhotographerProfileDraft = {
   contact_email: string;
   contact_qq: string;
   status?: SubmissionStatus;
+  representative_image_urls?: string[];
+  portfolio_note?: string;
+  rights_confirmed?: boolean;
 };
 
 const photographers = photographersData as Photographer[];
@@ -95,6 +116,13 @@ export const statusLabel: Record<SubmissionStatus, string> = {
   approved: "已通过",
   needs_revision: "需补充",
   rejected: "已拒绝",
+};
+
+export const roleLabel: Record<Role, string> = {
+  user: "普通用户",
+  photographer_pending: "摄影师认证中",
+  photographer: "摄影师",
+  admin: "管理员",
 };
 
 const actionToStatus: Record<ReviewAction, SubmissionStatus> = {
@@ -176,6 +204,17 @@ function sanitizeFileName(name: string) {
   return name.replace(/[^\w.\-\u4e00-\u9fa5]/g, "-").replace(/-+/g, "-");
 }
 
+function makeProfileSlug(name: string, userId: string) {
+  const cleanName = sanitizeFileName(name.trim().toLowerCase()).replace(/\./g, "-").replace(/^-|-$/g, "");
+  return `${cleanName || "photographer"}-${userId.slice(0, 8)}`;
+}
+
+function isMissingColumnError(error: { code?: string; message?: string } | null | undefined) {
+  if (!error) return false;
+  const message = error.message || "";
+  return error.code === "42703" || error.code === "PGRST204" || message.includes("Could not find") || message.includes("column");
+}
+
 async function getCurrentUser() {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return { supabase: null, user: null };
@@ -216,22 +255,49 @@ export async function signInWithEmail(email: string, password: string) {
   return { ok: true, message: "登录成功。" };
 }
 
-export async function signUpWithEmail(email: string, password: string, displayName: string) {
+export async function signUpWithEmail(email: string, password: string, displayName: string, intent: SignupIntent = "user", identityType = "普通用户") {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return { ok: true, demo: true, message: `${demoModeMessage}，已展示本地注册状态。` };
-  const { error } = await supabase.auth.signUp({
+  const requestedRole: SignupIntent = intent === "photographer_pending" ? "photographer_pending" : "user";
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { display_name: displayName } },
+    options: {
+      data: {
+        display_name: displayName,
+        requested_role: requestedRole,
+        identity_type: identityType,
+      },
+    },
   });
   if (error) return { ok: false, message: error.message };
-  return { ok: true, message: "注册成功。如果 Supabase 开启邮件确认，请先完成邮箱确认。" };
+  if (requestedRole === "photographer_pending" && data.user) {
+    await requestPhotographerPendingRole();
+  }
+  return {
+    ok: true,
+    message: requestedRole === "photographer_pending"
+      ? "注册成功，账号已进入摄影师申请流程。请继续填写摄影师认证资料。"
+      : "注册成功。如果 Supabase 开启邮件确认，请先完成邮箱确认。",
+    requestedRole,
+  };
 }
 
 export async function signOut() {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return;
   await supabase.auth.signOut();
+}
+
+async function requestPhotographerPendingRole() {
+  const { supabase, user } = await getCurrentUser();
+  if (!supabase || !user) return;
+  const { error } = await supabase.rpc("request_photographer_role");
+  if (!error) return;
+  await supabase
+    .from("profiles")
+    .update({ role: "photographer_pending" })
+    .eq("id", user.id);
 }
 
 async function uploadSubmissionImages(kind: "spot-submissions" | "work-submissions" | "photographers", files: File[]) {
@@ -292,31 +358,100 @@ export async function submitWorkSubmission(input: WorkSubmissionInput) {
     return { mode: "demo" as const, id: `demo-work-${Date.now()}`, message: `${demoModeMessage}，已加入本地待审核状态。` };
   }
   if (!user) return { mode: "supabase" as const, error: "请先登录后上传作品。" };
+  if (!input.rightsConfirmed) return { mode: "supabase" as const, error: "请先确认作品为本人拍摄或已获授权。" };
 
   try {
     const imageUrls = await uploadSubmissionImages("work-submissions", input.files);
+    const payload = {
+      submitted_by: user.id,
+      photographer_profile_id: input.photographerProfileId || null,
+      title: input.title,
+      photographer_name: input.photographerName,
+      spot_slug: input.spotSlug,
+      route_slug: input.routeSlug,
+      season: input.season,
+      style_tags: input.styleTags,
+      image_urls: imageUrls,
+      description: input.description,
+      rights_confirmed: input.rightsConfirmed,
+      status: "pending",
+    };
     const { data, error } = await supabase
       .from("work_submissions")
-      .insert({
-        submitted_by: user.id,
-        photographer_profile_id: input.photographerProfileId || null,
-        title: input.title,
-        photographer_name: input.photographerName,
-        spot_slug: input.spotSlug,
-        route_slug: input.routeSlug,
-        season: input.season,
-        style_tags: input.styleTags,
-        image_urls: imageUrls,
-        description: input.description,
-        status: "pending",
-      })
+      .insert(payload)
       .select("id")
       .single();
 
+    if (error && isMissingColumnError(error)) {
+      const { rights_confirmed: _rightsConfirmed, ...legacyPayload } = payload;
+      const legacyResult = await supabase.from("work_submissions").insert(legacyPayload).select("id").single();
+      if (legacyResult.error) return { mode: "supabase" as const, error: legacyResult.error.message };
+      return { mode: "supabase" as const, id: legacyResult.data?.id as string, message: "作品已提交到 Supabase 待审核队列。" };
+    }
     if (error) return { mode: "supabase" as const, error: error.message };
     return { mode: "supabase" as const, id: data?.id as string, message: "作品已提交到 Supabase 待审核队列。" };
   } catch (error) {
     return { mode: "supabase" as const, error: error instanceof Error ? error.message : "上传失败。" };
+  }
+}
+
+export async function submitPhotographerApplication(input: PhotographerApplicationInput) {
+  const { supabase, user } = await getCurrentUser();
+  if (!supabase) {
+    return { mode: "demo" as const, id: `demo-photographer-${Date.now()}`, message: `${demoModeMessage}，摄影师认证已进入本地待审核状态。` };
+  }
+  if (!user) return { mode: "supabase" as const, error: "请先登录后提交摄影师认证。" };
+  if (!input.rightsConfirmed) return { mode: "supabase" as const, error: "请确认代表作品为本人拍摄或已获授权。" };
+
+  try {
+    await requestPhotographerPendingRole();
+    const imageUrls = await uploadSubmissionImages("photographers", input.representativeFiles.slice(0, 3));
+    const payload = {
+      user_id: user.id,
+      slug: makeProfileSlug(input.name, user.id),
+      name: input.name,
+      identity: input.identity,
+      bio: input.bio,
+      familiar_routes: [],
+      familiar_spots: input.familiarSpots,
+      styles: input.styles,
+      seasons: ["春", "夏", "秋", "冬"],
+      mutual_status: "可互勉",
+      contact_authorized: input.contactAuthorized,
+      contact_wechat: input.contactWechat,
+      contact_email: input.contactEmail,
+      contact_qq: input.contactQq,
+      representative_image_urls: imageUrls,
+      portfolio_note: input.portfolioNote,
+      rights_confirmed: input.rightsConfirmed,
+      status: "pending",
+    };
+
+    const result = await supabase
+      .from("photographer_profiles")
+      .upsert(payload, { onConflict: "user_id" })
+      .select("id")
+      .single();
+
+    if (result.error && isMissingColumnError(result.error)) {
+      const {
+        representative_image_urls: _representativeImageUrls,
+        portfolio_note: _portfolioNote,
+        rights_confirmed: _rightsConfirmed,
+        ...legacyPayload
+      } = payload;
+      const legacyResult = await supabase
+        .from("photographer_profiles")
+        .upsert(legacyPayload, { onConflict: "user_id" })
+        .select("id")
+        .single();
+      if (legacyResult.error) return { mode: "supabase" as const, error: legacyResult.error.message };
+      return { mode: "supabase" as const, id: legacyResult.data?.id as string, message: "摄影师认证已提交，等待管理员审核。" };
+    }
+    if (result.error) return { mode: "supabase" as const, error: result.error.message };
+    return { mode: "supabase" as const, id: result.data?.id as string, message: "摄影师认证已提交，等待管理员审核。" };
+  } catch (error) {
+    return { mode: "supabase" as const, error: error instanceof Error ? error.message : "摄影师认证提交失败。" };
   }
 }
 
@@ -361,6 +496,11 @@ export async function reviewSubmission(targetType: ReviewTargetType, id: string,
   const supabase = getSupabaseBrowserClient()!;
   const table = targetType === "spot" ? "spot_submissions" : targetType === "work" ? "work_submissions" : "photographer_profiles";
   const nextStatus = actionToStatus[action];
+  let photographerOwnerId = "";
+  if (targetType === "photographer") {
+    const { data } = await supabase.from("photographer_profiles").select("user_id").eq("id", id).maybeSingle();
+    photographerOwnerId = data?.user_id || "";
+  }
   const { error } = await supabase
     .from(table)
     .update({
@@ -372,6 +512,15 @@ export async function reviewSubmission(targetType: ReviewTargetType, id: string,
     .eq("id", id);
 
   if (error) return { ok: false, message: error.message };
+
+  if (targetType === "photographer" && photographerOwnerId) {
+    const nextRole: Role = nextStatus === "approved" ? "photographer" : nextStatus === "rejected" ? "user" : "photographer_pending";
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ role: nextRole })
+      .eq("id", photographerOwnerId);
+    if (profileError) return { ok: false, message: `审核状态已更新，但角色同步失败：${profileError.message}` };
+  }
 
   await supabase.from("review_logs").insert({
     target_type: targetType,
@@ -399,30 +548,49 @@ export async function getPhotographerDashboard(): Promise<{ mode: BackendMode; a
     };
   }
   if (!state.user || (state.profile?.role !== "photographer" && state.profile?.role !== "admin")) {
+    const pendingData = state.user && state.profile?.role === "photographer_pending"
+      ? await getOwnPhotographerDashboardData(state.user.id)
+      : { photographerProfile: null, spotSubmissions: [], workSubmissions: [] };
     return {
       mode: "supabase",
       allowed: false,
-      message: "请使用摄影师或管理员账号进入管理后台。",
-      data: { photographerProfile: null, spotSubmissions: [], workSubmissions: [] },
+      message: state.profile?.role === "photographer_pending"
+        ? "摄影师认证审核中。审核通过前不能进入正式摄影师后台，也不会公开展示主页。"
+        : "请先完成摄影师认证申请，审核通过后再进入摄影师后台。",
+      data: pendingData,
     };
   }
 
-  const supabase = getSupabaseBrowserClient()!;
-  const [profileResult, spotsResult, worksResult] = await Promise.all([
-    supabase.from("photographer_profiles").select("*").eq("user_id", state.user.id).maybeSingle(),
-    supabase.from("spot_submissions").select("*").eq("submitted_by", state.user.id).order("created_at", { ascending: false }),
-    supabase.from("work_submissions").select("*").eq("submitted_by", state.user.id).order("created_at", { ascending: false }),
-  ]);
+  const data = await getOwnPhotographerDashboardData(state.user.id);
+  if (state.profile.role !== "admin" && data.photographerProfile?.status !== "approved") {
+    return {
+      mode: "supabase",
+      allowed: false,
+      message: "摄影师认证审核中。审核通过前不能进入正式摄影师后台，也不会公开展示主页。",
+      data,
+    };
+  }
 
   return {
     mode: "supabase",
     allowed: true,
-    message: profileResult.error?.message || spotsResult.error?.message || worksResult.error?.message,
-    data: {
-      photographerProfile: profileResult.data ? mapPhotographerProfileDraft(profileResult.data) : null,
-      spotSubmissions: (spotsResult.data || []).map(mapSpotSubmission),
-      workSubmissions: (worksResult.data || []).map(mapWorkSubmission),
-    },
+    message: "已连接 Supabase 摄影师管理后台。",
+    data,
+  };
+}
+
+async function getOwnPhotographerDashboardData(userId: string): Promise<DashboardSummary> {
+  const supabase = getSupabaseBrowserClient()!;
+  const [profileResult, spotsResult, worksResult] = await Promise.all([
+    supabase.from("photographer_profiles").select("*").eq("user_id", userId).maybeSingle(),
+    supabase.from("spot_submissions").select("*").eq("submitted_by", userId).order("created_at", { ascending: false }),
+    supabase.from("work_submissions").select("*").eq("submitted_by", userId).order("created_at", { ascending: false }),
+  ]);
+
+  return {
+    photographerProfile: profileResult.data ? mapPhotographerProfileDraft(profileResult.data) : null,
+    spotSubmissions: (spotsResult.data || []).map(mapSpotSubmission),
+    workSubmissions: (worksResult.data || []).map(mapWorkSubmission),
   };
 }
 
@@ -491,6 +659,15 @@ function mapSpotSubmission(row: Record<string, any>): AdminSubmission {
     imageUrls: row.image_urls || [],
     submittedBy: row.submitted_by,
     reviewNote: row.review_note,
+    details: [
+      { label: "位置描述", value: row.location_description || "待补充" },
+      { label: "推荐时间", value: row.recommended_time || "待补充" },
+      { label: "太阳方向", value: row.sun_direction || "待补充" },
+      { label: "推荐焦段", value: row.focal_length || "待补充" },
+      { label: "适合季节", value: (row.seasons || []).join(" / ") || "待补充" },
+      { label: "拥挤度", value: row.crowd_level || "待补充" },
+      { label: "技巧说明", value: row.shooting_tips || "待补充" },
+    ],
   };
 }
 
@@ -505,6 +682,15 @@ function mapWorkSubmission(row: Record<string, any>): AdminSubmission {
     imageUrls: row.image_urls || [],
     submittedBy: row.submitted_by,
     reviewNote: row.review_note,
+    details: [
+      { label: "摄影者", value: row.photographer_name || "待补充" },
+      { label: "关联点位", value: row.spot_slug || "待补充" },
+      { label: "关联路线", value: row.route_slug || "待补充" },
+      { label: "季节", value: row.season || "待补充" },
+      { label: "风格标签", value: (row.style_tags || []).join(" / ") || "待补充" },
+      { label: "授权确认", value: row.rights_confirmed ? "已确认" : "未记录" },
+      { label: "拍摄说明", value: row.description || "待补充" },
+    ],
   };
 }
 
@@ -516,9 +702,18 @@ function mapPhotographerSubmission(row: Record<string, any>): AdminSubmission {
     summary: `${row.identity || "身份待补充"} / ${(row.familiar_routes || []).join("、")} / ${(row.styles || []).join("、")}`,
     status: row.status || "pending",
     createdAt: formatDate(row.created_at),
-    imageUrls: [],
+    imageUrls: row.representative_image_urls || [],
     submittedBy: row.user_id,
     reviewNote: row.review_note,
+    details: [
+      { label: "身份类型", value: row.identity || "待补充" },
+      { label: "熟悉点位", value: (row.familiar_spots || []).join(" / ") || "待补充" },
+      { label: "擅长风格", value: (row.styles || []).join(" / ") || "待补充" },
+      { label: "联系方式授权", value: row.contact_authorized ? "授权展示" : "不公开展示" },
+      { label: "作品授权确认", value: row.rights_confirmed ? "已确认" : "未记录" },
+      { label: "作品说明", value: row.portfolio_note || "待补充" },
+      { label: "简介", value: row.bio || "待补充" },
+    ],
   };
 }
 
@@ -539,6 +734,9 @@ function mapPhotographerProfileDraft(row: Record<string, any>): PhotographerProf
     contact_email: row.contact_email || "",
     contact_qq: row.contact_qq || "",
     status: row.status || "pending",
+    representative_image_urls: row.representative_image_urls || [],
+    portfolio_note: row.portfolio_note || "",
+    rights_confirmed: Boolean(row.rights_confirmed),
   };
 }
 

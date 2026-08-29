@@ -78,6 +78,8 @@ export default function PhotographerDashboardClient() {
     );
   }
 
+  const isPendingReview = !allowed && (profile.status === "pending" || profile.status === "needs_revision" || message.includes("认证审核中"));
+
   return (
     <main className="gy-page">
       <div className="gy-container">
@@ -99,8 +101,16 @@ export default function PhotographerDashboardClient() {
 
         {!allowed ? (
           <section className="gy-panel gy-admin-empty">
-            <h2>需要摄影师权限</h2>
-            <p className="gy-body-copy">请使用 role=photographer 或 role=admin 的账号登录。演示模式下会默认开放此页面。</p>
+            <h2>{isPendingReview ? "认证审核中" : "需要摄影师认证"}</h2>
+            <p className="gy-body-copy">
+              {isPendingReview
+                ? "审核通过前不能进入正式摄影师后台，也不会公开展示摄影者主页。你可以回到认证页查看或补充资料。"
+                : "请先登录并提交摄影师认证，审核通过后再进入正式摄影师后台。"}
+            </p>
+            <div className="gy-work-submit-actions">
+              <Link href="/photographer/apply" className="gy-primary-button">查看摄影师认证</Link>
+              <Link href="/login" className="gy-secondary-button">返回登录</Link>
+            </div>
           </section>
         ) : (
           <section className="gy-dashboard-layout">

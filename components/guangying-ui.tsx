@@ -140,11 +140,11 @@ export function TopNav({ active, actionLabel, actionHref }: { active: NavKey; ac
         ))}
       </nav>
       <div className="gy-nav-actions">
-        <Link href="/login" className="gy-login-button">
-          登录
-        </Link>
         <Link href={actionHref} className="gy-outline-button">
           {actionLabel} <span aria-hidden>↗</span>
+        </Link>
+        <Link href="/login" className="gy-outline-button gy-login-button">
+          登录
         </Link>
       </div>
     </header>

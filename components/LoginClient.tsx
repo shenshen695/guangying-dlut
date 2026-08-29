@@ -3,17 +3,27 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { CoralRule, Eyebrow, TopNav } from "@/components/guangying-ui";
-import { getBackendUserState, signInWithEmail, signOut, signUpWithEmail, type BackendUserState } from "@/lib/supabase/backend";
+import { getBackendUserState, roleLabel, signInWithEmail, signOut, signUpWithEmail, type BackendUserState, type Role, type SignupIntent } from "@/lib/supabase/backend";
+
+type RegisterChoice = "user" | "photographer" | "club";
+
+const registerOptions: Array<{ value: RegisterChoice; label: string; description: string }> = [
+  { value: "user", label: "普通用户", description: "查看路线、地图和摄影者目录。" },
+  { value: "photographer", label: "申请成为摄影师", description: "提交认证资料后等待管理员审核。" },
+  { value: "club", label: "摄影社成员", description: "以摄影社成员身份提交认证申请。" },
+];
 
 export default function LoginClient() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("大工摄影者");
+  const [registerChoice, setRegisterChoice] = useState<RegisterChoice>("user");
   const [state, setState] = useState<BackendUserState | null>(null);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [demoUser, setDemoUser] = useState(false);
+  const [demoRole, setDemoRole] = useState<Role>("user");
 
   async function refreshState() {
     const nextState = await getBackendUserState();
@@ -28,12 +38,17 @@ export default function LoginClient() {
     event.preventDefault();
     setIsSubmitting(true);
     setMessage("");
+    const requestedRole: SignupIntent = registerChoice === "user" ? "user" : "photographer_pending";
+    const identityType = registerChoice === "club" ? "摄影社成员" : registerChoice === "photographer" ? "摄影爱好者" : "普通用户";
     const result = mode === "login"
       ? await signInWithEmail(email.trim(), password)
-      : await signUpWithEmail(email.trim(), password, displayName.trim());
+      : await signUpWithEmail(email.trim(), password, displayName.trim(), requestedRole, identityType);
     setIsSubmitting(false);
     setMessage(result.message);
-    if (result.ok && "demo" in result && result.demo) setDemoUser(true);
+    if (result.ok && "demo" in result && result.demo) {
+      setDemoUser(true);
+      setDemoRole(mode === "register" ? requestedRole : "user");
+    }
     if (result.ok) await refreshState();
   }
 
@@ -46,8 +61,8 @@ export default function LoginClient() {
 
   const isDemoMode = state?.mode === "demo";
   const currentEmail = state?.user?.email || (demoUser ? email || "demo@dlut.edu.cn" : "");
-  const role = state?.profile?.role || (demoUser ? "photographer" : "user");
-  const roleLabel = role === "admin" ? "管理员" : role === "photographer" ? "摄影师" : "普通用户";
+  const role = state?.profile?.role || (demoUser ? demoRole : "user");
+  const selectedRegister = registerOptions.find((option) => option.value === registerChoice) || registerOptions[0];
   const roleActions = role === "admin"
     ? [
         { href: "/admin/submissions", label: "进入审核后台" },
@@ -59,9 +74,15 @@ export default function LoginClient() {
           { href: "/works/submit", label: "上传作品" },
           { href: "/contribute", label: "提交新机位" },
         ]
+      : role === "photographer_pending"
+        ? [
+            { href: "/photographer/apply", label: "查看认证申请" },
+            { href: "/", label: "返回首页" },
+          ]
       : [
           { href: "/", label: "返回首页" },
           { href: "/map", label: "查看地图" },
+          { href: "/photographer/apply", label: "申请成为摄影师" },
         ];
 
   const identities = [
@@ -105,7 +126,7 @@ export default function LoginClient() {
               <div className="gy-auth-state">
                 <span>当前登录状态</span>
                 <strong>{currentEmail}</strong>
-                <span>身份：{roleLabel}</span>
+                <span>身份：{roleLabel[role]}</span>
                 <div className="gy-auth-entry-list">
                   {roleActions.map((item) => (
                     <Link key={item.href} href={item.href}>
@@ -119,16 +140,24 @@ export default function LoginClient() {
               <div className="gy-auth-state is-quiet">
                 <span>当前登录状态</span>
                 <strong>未登录</strong>
-                <span>登录后可进入投稿、摄影师后台或审核后台。</span>
+                <span>登录后可进入投稿、摄影师认证或审核后台。</span>
               </div>
             )}
 
             <div className="gy-form-grid gy-auth-form-grid">
               {mode === "register" ? (
-                <div className="gy-input-card">
-                  <label>显示名称</label>
-                  <input value={displayName} onChange={(event) => setDisplayName(event.target.value)} />
-                </div>
+                <>
+                  <div className="gy-input-card">
+                    <label>显示名称</label>
+                    <input value={displayName} onChange={(event) => setDisplayName(event.target.value)} />
+                  </div>
+                  <div className="gy-input-card">
+                    <label>注册身份</label>
+                    <select value={registerChoice} onChange={(event) => setRegisterChoice(event.target.value as RegisterChoice)}>
+                      {registerOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                    </select>
+                  </div>
+                </>
               ) : null}
               <div className="gy-input-card">
                 <label>邮箱</label>
@@ -141,6 +170,12 @@ export default function LoginClient() {
             </div>
 
             {message ? <p className="gy-submit-note">{message}</p> : null}
+            {mode === "register" ? (
+              <p className="gy-auth-register-note">
+                当前选择：{selectedRegister.label}。{selectedRegister.description}
+                {registerChoice !== "user" ? " 注册后还需要进入摄影师认证页补充作品与联系方式。" : ""}
+              </p>
+            ) : null}
 
             <div className="gy-work-submit-actions">
               <button type="submit" className="gy-primary-button" disabled={isSubmitting}>{isSubmitting ? "处理中..." : mode === "login" ? "登录" : "注册"}</button>
@@ -151,6 +186,7 @@ export default function LoginClient() {
 
             <div className="gy-auth-links">
               <Link href="/">返回首页</Link>
+              <Link href="/photographer/apply">摄影师认证</Link>
               <Link href="/photographer/dashboard">摄影师后台</Link>
               <Link href="/admin/submissions">审核后台</Link>
             </div>

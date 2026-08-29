@@ -44,6 +44,7 @@ export default function WorkSubmitClient() {
   const [backendState, setBackendState] = useState<BackendUserState | null>(null);
   const [submitMessage, setSubmitMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [rightsConfirmed, setRightsConfirmed] = useState(false);
 
   const selectedPhotographer = useMemo(
     () => photographers.find((item) => item.slug === form.photographerSlug),
@@ -67,6 +68,35 @@ export default function WorkSubmitClient() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (backendState?.configured && !backendState.user) {
+      setSubmitMessage("请先登录后上传作品。");
+      return;
+    }
+    if (files.length === 0) {
+      setSubmitMessage("请至少上传一张作品图片。");
+      return;
+    }
+    if (!form.spotSlug) {
+      setSubmitMessage("请选择关联点位。");
+      return;
+    }
+    if (!form.season) {
+      setSubmitMessage("请选择季节。");
+      return;
+    }
+    if (styleTags.length === 0) {
+      setSubmitMessage("请选择至少一个风格标签。");
+      return;
+    }
+    if (!form.description.trim()) {
+      setSubmitMessage("请填写拍摄说明。");
+      return;
+    }
+    if (!rightsConfirmed) {
+      setSubmitMessage("请勾选作品授权确认。");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitMessage("");
 
@@ -80,6 +110,7 @@ export default function WorkSubmitClient() {
       styleTags,
       description: form.description.trim() || selectedSpot.shootingTips,
       files,
+      rightsConfirmed,
     });
     setIsSubmitting(false);
 
@@ -103,7 +134,7 @@ export default function WorkSubmitClient() {
       images: selectedSpot.referenceImages.slice(0, 1),
       status: "待审核",
       submittedAt: "刚刚",
-      note: files.length > 0 ? `已选择 ${files.length} 张图片，等待审核授权。` : "当前使用演示占位图，后续可替换为真实上传图片。",
+      note: `已选择 ${files.length} 张图片，并确认作品授权，等待审核。`,
     };
     setSubmittedWork(nextWork);
     setReviews((items) => [nextWork, ...items.filter((item) => item.id !== nextWork.id)]);
@@ -215,6 +246,11 @@ export default function WorkSubmitClient() {
             <label className="gy-upload-box">
               <input type="file" accept="image/*" multiple onChange={(event) => setFiles(Array.from(event.target.files || []))} />
               <span>{files.length > 0 ? files.map((file) => file.name).join(" / ") : "上传作品图片：演示模式本地记录，接入后写入 Supabase Storage"}</span>
+            </label>
+
+            <label className="gy-consent-line">
+              <input type="checkbox" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} />
+              <span>确认作品为本人拍摄或已获授权，允许用于光影大工作品审核与展示</span>
             </label>
 
             <div className="gy-work-submit-actions">

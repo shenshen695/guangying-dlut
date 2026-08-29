@@ -4,7 +4,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
   display_name text,
-  role text not null default 'user' check (role in ('user', 'photographer', 'admin')),
+  role text not null default 'user' check (role in ('user', 'photographer_pending', 'photographer', 'admin')),
   avatar_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -26,6 +26,9 @@ create table if not exists public.photographer_profiles (
   contact_wechat text,
   contact_email text,
   contact_qq text,
+  representative_image_urls text[] not null default '{}',
+  portfolio_note text,
+  rights_confirmed boolean not null default false,
   status text not null default 'pending' check (status in ('pending', 'approved', 'needs_revision', 'rejected')),
   review_note text,
   reviewed_by uuid references public.profiles(id),
@@ -69,6 +72,7 @@ create table if not exists public.work_submissions (
   style_tags text[] not null default '{}',
   image_urls text[] not null default '{}',
   description text,
+  rights_confirmed boolean not null default false,
   status text not null default 'pending' check (status in ('pending', 'approved', 'needs_revision', 'rejected')),
   review_note text,
   reviewed_by uuid references public.profiles(id),
@@ -76,6 +80,18 @@ create table if not exists public.work_submissions (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.photographer_profiles
+  add column if not exists representative_image_urls text[] not null default '{}',
+  add column if not exists portfolio_note text,
+  add column if not exists rights_confirmed boolean not null default false;
+
+alter table public.work_submissions
+  add column if not exists rights_confirmed boolean not null default false;
+
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles
+  add constraint profiles_role_check check (role in ('user', 'photographer_pending', 'photographer', 'admin'));
 
 create table if not exists public.review_logs (
   id uuid primary key default gen_random_uuid(),
@@ -129,7 +145,10 @@ begin
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data ->> 'display_name', split_part(new.email, '@', 1)),
-    'user'
+    case
+      when new.raw_user_meta_data ->> 'requested_role' = 'photographer_pending' then 'photographer_pending'
+      else 'user'
+    end
   )
   on conflict (id) do nothing;
   return new;
@@ -152,6 +171,22 @@ as $$
 $$;
 
 grant execute on function public.current_user_role() to anon, authenticated;
+
+create or replace function public.request_photographer_role()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.profiles
+  set role = 'photographer_pending'
+  where id = auth.uid()
+    and role in ('user', 'photographer_pending');
+end;
+$$;
+
+grant execute on function public.request_photographer_role() to authenticated;
 
 alter table public.profiles enable row level security;
 alter table public.photographer_profiles enable row level security;
@@ -178,7 +213,14 @@ drop policy if exists "profiles update own or admin" on public.profiles;
 create policy "profiles update own or admin" on public.profiles
 for update
 using (id = auth.uid() or public.current_user_role() = 'admin')
-with check (id = auth.uid() or public.current_user_role() = 'admin');
+with check (
+  public.current_user_role() = 'admin'
+  or (
+    id = auth.uid()
+    and role in (public.current_user_role(), 'photographer_pending')
+    and public.current_user_role() in ('user', 'photographer_pending', 'photographer')
+  )
+);
 
 drop policy if exists "photographer profiles public approved" on public.photographer_profiles;
 create policy "photographer profiles public approved" on public.photographer_profiles
@@ -188,13 +230,13 @@ using (status = 'approved' or user_id = auth.uid() or public.current_user_role()
 drop policy if exists "photographer profiles owner insert" on public.photographer_profiles;
 create policy "photographer profiles owner insert" on public.photographer_profiles
 for insert
-with check (user_id = auth.uid() and public.current_user_role() in ('photographer', 'admin'));
+with check (user_id = auth.uid() and public.current_user_role() in ('photographer_pending', 'photographer', 'admin'));
 
 drop policy if exists "photographer profiles owner update" on public.photographer_profiles;
 create policy "photographer profiles owner update" on public.photographer_profiles
 for update
 using ((user_id = auth.uid() and status in ('pending', 'needs_revision', 'approved')) or public.current_user_role() = 'admin')
-with check ((user_id = auth.uid() and public.current_user_role() in ('photographer', 'admin')) or public.current_user_role() = 'admin');
+with check ((user_id = auth.uid() and public.current_user_role() in ('photographer_pending', 'photographer', 'admin')) or public.current_user_role() = 'admin');
 
 drop policy if exists "spot submissions read approved own admin" on public.spot_submissions;
 create policy "spot submissions read approved own admin" on public.spot_submissions
