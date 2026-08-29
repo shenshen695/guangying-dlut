@@ -106,7 +106,7 @@ img {
 
 .gy-nav {
   display: grid;
-  grid-template-columns: 280px 1fr 170px;
+  grid-template-columns: 280px 1fr auto;
   align-items: center;
   gap: 24px;
   min-height: 48px;
@@ -165,6 +165,28 @@ img {
   background: var(--teal);
 }
 
+.gy-nav-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.gy-login-button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid rgba(22, 123, 117, 0.68);
+  border-radius: 4px;
+  background: rgba(255, 253, 249, 0.7);
+  color: var(--teal);
+  font-size: 14px;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
 .gy-outline-button,
 .gy-primary-button,
 .gy-secondary-button {
@@ -193,6 +215,7 @@ img {
 }
 
 .gy-outline-button:hover,
+.gy-login-button:hover,
 .gy-primary-button:hover,
 .gy-secondary-button:hover,
 .gy-season-card:hover,
@@ -1834,12 +1857,41 @@ img {
 }
 
 .gy-auth-layout {
-  grid-template-columns: minmax(420px, 0.76fr) minmax(520px, 1fr);
+  grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1fr);
   align-items: start;
 }
 
 .gy-auth-copy {
   padding-top: 24px;
+}
+
+.gy-identity-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.gy-identity-card {
+  display: grid;
+  gap: 7px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.54);
+  box-shadow: 0 14px 34px rgba(31, 33, 29, 0.04);
+}
+
+.gy-identity-card strong {
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.gy-identity-card span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
 }
 
 .gy-auth-links {
@@ -1893,6 +1945,11 @@ img {
   background: rgba(225, 238, 233, 0.5);
 }
 
+.gy-auth-state.is-quiet {
+  border-color: var(--line);
+  background: rgba(255, 253, 249, 0.58);
+}
+
 .gy-auth-state strong {
   color: var(--ink);
   font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
@@ -1912,6 +1969,23 @@ img {
   color: var(--teal);
   cursor: pointer;
   font-size: 13px;
+}
+
+.gy-auth-entry-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 2px;
+}
+
+.gy-auth-entry-list a {
+  min-height: 30px;
+  padding: 6px 10px;
+  border: 1px solid rgba(22, 123, 117, 0.42);
+  border-radius: 4px;
+  background: rgba(255, 253, 249, 0.58);
+  color: var(--teal);
+  font-size: 12px;
 }
 
 .gy-admin-head {
@@ -2078,7 +2152,7 @@ img {
 }
 
 .gy-nav {
-  grid-template-columns: 220px 1fr 150px;
+  grid-template-columns: 220px 1fr auto;
 }
 
 .gy-brand {
@@ -2095,6 +2169,11 @@ img {
 .gy-secondary-button {
   min-height: 40px;
   padding: 0 19px;
+}
+
+.gy-login-button {
+  min-height: 40px;
+  padding: 0 16px;
 }
 
 .gy-hero-title {
