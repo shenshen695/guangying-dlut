@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import photographersData from "@/data/photographers.json";
 import { Eyebrow, Pill, TopNav } from "@/components/guangying-ui";
 import type { Photographer } from "@/types/photographer";
+import { listApprovedPhotographers } from "@/lib/supabase/backend";
 
 const photographers = photographersData as Photographer[];
 
 export default function PhotographersClient() {
+  const [directory, setDirectory] = useState<Photographer[]>(photographers);
+  const [sourceMessage, setSourceMessage] = useState("");
   const [season, setSeason] = useState("全部");
   const [route, setRoute] = useState("全部");
   const [availability, setAvailability] = useState("全部");
@@ -18,19 +21,30 @@ export default function PhotographersClient() {
 
   const routeOptions = useMemo(() => {
     const names = new Set<string>();
-    photographers.forEach((item) => item.familiarRoutes.forEach((name) => names.add(name)));
+    directory.forEach((item) => item.familiarRoutes.forEach((name) => names.add(name)));
     return ["全部", ...Array.from(names)];
+  }, [directory]);
+
+  useEffect(() => {
+    listApprovedPhotographers().then((result) => {
+      if (result.photographers.length > 0 && result.mode === "supabase") {
+        setDirectory(result.photographers);
+      } else {
+        setDirectory(photographers);
+      }
+      setSourceMessage(result.message || "");
+    });
   }, []);
 
-  const filtered = useMemo(() => photographers.filter((item) => {
+  const filtered = useMemo(() => directory.filter((item) => {
     if (season !== "全部" && !item.seasons.includes(season as Photographer["seasons"][number])) return false;
     if (route !== "全部" && !item.familiarRoutes.some((value) => value.includes(route.replace("毕业线", "")) || route.includes(value))) return false;
     if (availability !== "全部" && item.mutualStatus !== availability) return false;
     if (authOnly && !item.authorized) return false;
     return true;
-  }), [season, route, availability, authOnly]);
+  }), [directory, season, route, availability, authOnly]);
 
-  const preview = photographers.find((item) => item.slug === previewSlug && filtered.some((match) => match.slug === item.slug)) || filtered[0] || photographers[0];
+  const preview = directory.find((item) => item.slug === previewSlug && filtered.some((match) => match.slug === item.slug)) || filtered[0] || directory[0] || photographers[0];
   const previewWorks = preview.portfolio.slice(0, 3).map((work) => work.title).join("、");
 
   function previewPhotographer(slug: string) {
@@ -47,6 +61,7 @@ export default function PhotographersClient() {
             <Eyebrow muted>PHOTOGRAPHERS</Eyebrow>
             <h1 className="gy-page-title">摄影者档案</h1>
             <p className="gy-body-copy">查看熟悉大工点位的摄影者、作品风格与授权联系方式。</p>
+            {sourceMessage ? <p className="gy-backend-note">{sourceMessage}</p> : null}
           </div>
           <div className="gy-directory-tools">
             <Link href="/contribute" className="gy-secondary-button">提交摄影者档案</Link>

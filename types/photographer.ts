@@ -20,9 +20,12 @@ export type PhotographerWork = {
   season: Season;
   style: string;
   categories: PhotographerWorkCategory[];
+  description?: string;
 };
 
 export type Photographer = {
+  sourceId?: string;
+  source?: "local" | "supabase";
   slug: string;
   name: string;
   identity: PhotographerIdentity;

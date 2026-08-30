@@ -54,13 +54,18 @@ export default function AdminSubmissionsClient() {
   }), [allItems]);
 
   async function handleReview(item: AdminSubmission, action: ReviewAction) {
-    const result = await reviewSubmission(item.type, item.id, action, reviewNote);
+    const note = reviewNote.trim();
+    if ((action === "request_revision" || action === "reject") && !note) {
+      setMessage("需补充或拒绝时，请先填写审核备注，方便投稿人修改。");
+      return;
+    }
+    const result = await reviewSubmission(item.type, item.id, action, note || "信息已核验，允许进入展示队列。");
     setMessage(result.message);
     if (!result.ok) return;
     const nextStatus = (result.status || "pending") as SubmissionStatus;
     setItems((current) => ({
       ...current,
-      [item.type]: current[item.type].map((entry) => entry.id === item.id ? { ...entry, status: nextStatus, reviewNote } : entry),
+      [item.type]: current[item.type].map((entry) => entry.id === item.id ? { ...entry, status: nextStatus, reviewNote: note || "信息已核验，允许进入展示队列。" } : entry),
     }));
   }
 

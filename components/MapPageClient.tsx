@@ -11,6 +11,7 @@ import type { Route } from "@/types/route";
 import SpotCard from "@/components/MapSpotCard";
 import { TopNav } from "@/components/guangying-ui";
 import { getSpotNavigationUrl } from "@/lib/navigation";
+import { listApprovedMapSpots } from "@/lib/supabase/backend";
 
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
@@ -25,8 +26,18 @@ export default function MapPageClient() {
   const spotParam = searchParams.get("spot");
   const generatedSpotIds = searchParams.get("spots");
   const generatedStyle = searchParams.get("style");
+  const [approvedSpots, setApprovedSpots] = useState<Spot[]>([]);
+  const [approvedSpotMessage, setApprovedSpotMessage] = useState("");
+  const allSpots = useMemo(() => {
+    const seen = new Set(spots.map((spot) => spot.id));
+    return [...spots, ...approvedSpots.filter((spot) => {
+      if (seen.has(spot.id)) return false;
+      seen.add(spot.id);
+      return true;
+    })];
+  }, [approvedSpots]);
   const route = useMemo<Route>(() => {
-    const validIds = (generatedSpotIds || "").split(",").filter((id) => spots.some((spot) => spot.id === id));
+    const validIds = (generatedSpotIds || "").split(",").filter((id) => allSpots.some((spot) => spot.id === id));
     if (validIds.length >= 2) return {
       id: "generated-plan",
       slug: "generated-plan",
@@ -37,11 +48,17 @@ export default function MapPageClient() {
       recommendedTime: "以企划选择时间为准",
       spots: validIds,
     };
-    return routes.find((item) => item.slug === routeSlug) || routes[0];
-  }, [generatedSpotIds, generatedStyle, routeSlug]);
+    const baseRoute = routes.find((item) => item.slug === routeSlug) || routes[0];
+    if (baseRoute.id !== "campus-highlights" || approvedSpots.length === 0) return baseRoute;
+    return {
+      ...baseRoute,
+      subtitle: `${baseRoute.subtitle}，并展示管理员审核通过的共建点位`,
+      spots: [...baseRoute.spots, ...approvedSpots.map((spot) => spot.id)],
+    };
+  }, [allSpots, approvedSpots, generatedSpotIds, generatedStyle, routeSlug]);
   const isGeneratedRoute = route.id === "generated-plan";
   const isExploreMode = route.id === "campus-highlights";
-  const routeSpots = useMemo(() => route.spots.map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [route]);
+  const routeSpots = useMemo(() => route.spots.map((id) => allSpots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [allSpots, route]);
   const initialId = spotParam && routeSpots.some((spot) => spot.id === spotParam) ? spotParam : routeSpots[0]?.id || null;
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(initialId);
   const [sheetExpanded, setSheetExpanded] = useState(false);
@@ -51,6 +68,12 @@ export default function MapPageClient() {
   const selectedIndex = Math.max(0, routeSpots.findIndex((spot) => spot.id === selectedSpotId));
   const selectedNavigationUrl = selectedSpot ? getSpotNavigationUrl(selectedSpot) : "";
 
+  useEffect(() => {
+    listApprovedMapSpots().then((result) => {
+      setApprovedSpots(result.spots);
+      setApprovedSpotMessage(result.message || "");
+    });
+  }, []);
   useEffect(() => { setSelectedSpotId(initialId); setIsPlaying(false); setSheetExpanded(false); }, [initialId]);
   useEffect(() => { if (selectedSpotId) cardRefs.current[selectedSpotId]?.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, [selectedSpotId]);
   useEffect(() => {
@@ -111,11 +134,11 @@ export default function MapPageClient() {
               <Link href="/map-editor" className="gy-map-editor-link">编辑点位</Link>
             </div>
 
-            <MapView spots={spots} route={route} selectedSpotId={selectedSpotId} sheetExpanded={sheetExpanded} onSelect={(id) => { setSelectedSpotId(id); setSheetExpanded(true); }} />
+            <MapView spots={allSpots} route={route} selectedSpotId={selectedSpotId} sheetExpanded={sheetExpanded} onSelect={(id) => { setSelectedSpotId(id); setSheetExpanded(true); }} />
 
             <div className="gy-map-note">
               <p>{isExploreMode ? "校园地标" : "路线顺序"}</p>
-              <span>{isExploreMode ? "点击点位查看样片与拍摄提示。" : "虚线路线为摄影顺序示意，具体步行请打开导航。"}</span>
+              <span>{approvedSpotMessage || (isExploreMode ? "点击点位查看样片与拍摄提示。" : "虚线路线为摄影顺序示意，具体步行请打开导航。")}</span>
             </div>
 
             {selectedSpot && (

@@ -12,6 +12,8 @@ export type CameraSpot = {
 };
 
 export type MapSpot = {
+  sourceId?: string;
+  source?: "local" | "supabase";
   id: string;
   slug: string;
   name: string;
@@ -37,6 +39,7 @@ export type MapSpot = {
   /** 交给手机地图应用的精确导航入口。 */
   navigationUrl?: string;
   seasonNote?: string;
+  coordinatesPending?: boolean;
   verified: boolean;
   /** 预留给摄影师维护的多个具体机位，当前 Demo 为空。 */
   cameraSpots: CameraSpot[];

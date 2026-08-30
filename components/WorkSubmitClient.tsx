@@ -13,7 +13,7 @@ import type { Route } from "@/types/route";
 import type { Season, Spot } from "@/types/spot";
 import type { StyleReference } from "@/types/planner";
 import type { SubmittedWork } from "@/types/work";
-import { getBackendUserState, submitWorkSubmission, type BackendUserState } from "@/lib/supabase/backend";
+import { getBackendUserState, listApprovedPhotographers, submitWorkSubmission, type BackendUserState } from "@/lib/supabase/backend";
 
 const photographers = photographersData as Photographer[];
 const routes = routesData as Route[];
@@ -24,7 +24,8 @@ const styleOptions: StyleReference[] = ["清透自然", "学院纪实", "复古�
 
 export default function WorkSubmitClient() {
   const searchParams = useSearchParams();
-  const initialPhotographer = photographers.find((item) => item.slug === searchParams.get("photographer"));
+  const requestedPhotographerSlug = searchParams.get("photographer");
+  const initialPhotographer = photographers.find((item) => item.slug === requestedPhotographerSlug);
   const initialSpot = spots.find((item) => item.slug === searchParams.get("spot")) || spots[0];
   const initialRoute = routes.find((item) => item.slug === searchParams.get("route")) || routes[0];
 
@@ -41,14 +42,15 @@ export default function WorkSubmitClient() {
   const [files, setFiles] = useState<File[]>([]);
   const [submittedWork, setSubmittedWork] = useState<SubmittedWork | null>(null);
   const [reviews, setReviews] = useState<SubmittedWork[]>(seededWorks);
+  const [directory, setDirectory] = useState<Photographer[]>(photographers);
   const [backendState, setBackendState] = useState<BackendUserState | null>(null);
   const [submitMessage, setSubmitMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [rightsConfirmed, setRightsConfirmed] = useState(false);
 
   const selectedPhotographer = useMemo(
-    () => photographers.find((item) => item.slug === form.photographerSlug),
-    [form.photographerSlug],
+    () => directory.find((item) => item.slug === form.photographerSlug),
+    [directory, form.photographerSlug],
   );
   const selectedSpot = useMemo(() => spots.find((item) => item.slug === form.spotSlug) || spots[0], [form.spotSlug]);
   const selectedRoute = useMemo(() => routes.find((item) => item.slug === form.routeSlug) || routes[0], [form.routeSlug]);
@@ -58,6 +60,23 @@ export default function WorkSubmitClient() {
   useEffect(() => {
     getBackendUserState().then(setBackendState);
   }, []);
+
+  useEffect(() => {
+    listApprovedPhotographers().then((result) => {
+      const merged = result.photographers.length > 0 && result.mode === "supabase"
+        ? [...result.photographers, ...photographers.filter((item) => !result.photographers.some((live) => live.slug === item.slug))]
+        : photographers;
+      setDirectory(merged);
+      const requested = requestedPhotographerSlug ? merged.find((item) => item.slug === requestedPhotographerSlug) : null;
+      if (requested) {
+        setForm((current) => ({
+          ...current,
+          photographerSlug: requested.slug,
+          photographerName: requested.name,
+        }));
+      }
+    });
+  }, [requestedPhotographerSlug]);
 
   function toggleStyle(style: StyleReference) {
     setStyleTags((current) => {
@@ -103,7 +122,7 @@ export default function WorkSubmitClient() {
     const result = await submitWorkSubmission({
       title: form.title.trim() || `${selectedSpot.shortName}毕业作品`,
       photographerName,
-      photographerProfileId: null,
+      photographerProfileId: selectedPhotographer?.sourceId || null,
       spotSlug: selectedSpot.slug,
       routeSlug: selectedRoute.slug,
       season: form.season,
@@ -187,7 +206,7 @@ export default function WorkSubmitClient() {
                 <label>选择已有摄影者</label>
                 <select value={form.photographerSlug} onChange={(event) => setForm({ ...form, photographerSlug: event.target.value, photographerName: "" })}>
                   <option value="">手动填写</option>
-                  {photographers.map((photographer) => <option key={photographer.slug} value={photographer.slug}>{photographer.name}</option>)}
+                  {directory.map((photographer) => <option key={photographer.slug} value={photographer.slug}>{photographer.name}</option>)}
                 </select>
               </div>
               <div className="gy-input-card">

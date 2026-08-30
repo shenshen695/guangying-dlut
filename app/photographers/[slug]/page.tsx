@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import photographersData from "@/data/photographers.json";
 import PhotographerProfileClient from "@/components/PhotographerProfileClient";
 import { PageShell } from "@/components/guangying-ui";
@@ -11,12 +10,11 @@ export function generateStaticParams() {
 }
 
 export default function PhotographerProfilePage({ params }: { params: { slug: string } }) {
-  const photographer = photographers.find((item) => item.slug === params.slug);
-  if (!photographer) notFound();
+  const photographer = photographers.find((item) => item.slug === params.slug) || photographers[0];
 
   return (
     <PageShell active="摄影者" actionLabel="返回目录" actionHref="/photographers">
-      <PhotographerProfileClient photographer={photographer} />
+      <PhotographerProfileClient photographer={photographer} requestedSlug={params.slug} />
     </PageShell>
   );
 }

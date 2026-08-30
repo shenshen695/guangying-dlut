@@ -27,6 +27,7 @@ const emptyProfile: PhotographerProfileDraft = {
   contact_email: "",
   contact_qq: "",
   status: "pending",
+  review_note: "",
 };
 
 export default function PhotographerDashboardClient() {
@@ -107,10 +108,17 @@ export default function PhotographerDashboardClient() {
                 ? "审核通过前不能进入正式摄影师后台，也不会公开展示摄影者主页。你可以回到认证页查看或补充资料。"
                 : "请先登录并提交摄影师认证，审核通过后再进入正式摄影师后台。"}
             </p>
+            {profile.review_note ? <p className="gy-admin-note">管理员备注：{profile.review_note}</p> : null}
             <div className="gy-work-submit-actions">
               <Link href="/photographer/apply" className="gy-primary-button">查看摄影师认证</Link>
               <Link href="/login" className="gy-secondary-button">返回登录</Link>
             </div>
+            {(workSubmissions.length > 0 || spotSubmissions.length > 0) ? (
+              <div className="gy-dashboard-pending-list">
+                {renderSubmissionList("我的作品投稿", workSubmissions)}
+                {renderSubmissionList("我的机位投稿", spotSubmissions)}
+              </div>
+            ) : null}
           </section>
         ) : (
           <section className="gy-dashboard-layout">

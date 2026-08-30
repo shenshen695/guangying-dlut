@@ -2,8 +2,12 @@
 
 import photographersData from "@/data/photographers.json";
 import worksData from "@/data/works.json";
-import type { Photographer } from "@/types/photographer";
+import spotsData from "@/data/spots.json";
+import mapSpotsData from "@/data/map-spots.json";
+import type { Photographer, PhotographerIdentity, PhotographerStatus, PhotographerWork, PhotographerWorkCategory } from "@/types/photographer";
 import type { SubmittedWork } from "@/types/work";
+import type { MapSpot } from "@/types/map-spot";
+import type { Season } from "@/types/spot";
 import { demoModeMessage, getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export type BackendMode = "supabase" | "demo";
@@ -103,6 +107,7 @@ export type PhotographerProfileDraft = {
   contact_email: string;
   contact_qq: string;
   status?: SubmissionStatus;
+  review_note?: string;
   representative_image_urls?: string[];
   portfolio_note?: string;
   rights_confirmed?: boolean;
@@ -110,6 +115,19 @@ export type PhotographerProfileDraft = {
 
 const photographers = photographersData as Photographer[];
 const seededWorks = worksData as SubmittedWork[];
+const localSpots = spotsData as Array<{ slug: string; name: string; shortName?: string }>;
+const localMapSpots = mapSpotsData as MapSpot[];
+const seasons: Season[] = ["春", "夏", "秋", "冬"];
+const identities: PhotographerIdentity[] = ["摄影社成员", "校友摄影者", "在校学生", "摄影爱好者"];
+const mutualStatuses: PhotographerStatus[] = ["可互勉", "可约拍", "暂不互勉"];
+const workCategories: PhotographerWorkCategory[] = ["毕业照", "湖畔", "人像", "建筑", "夜景", "室内", "胶片感"];
+const publicImageFallbacks = [
+  "/assets/ui/season-spring.png",
+  "/assets/ui/season-summer.png",
+  "/assets/ui/season-autumn.png",
+  "/assets/ui/season-winter.png",
+  "/assets/ui/route-cover-spring.png",
+];
 
 export const statusLabel: Record<SubmissionStatus, string> = {
   pending: "待审核",
@@ -200,6 +218,58 @@ function normalizeList(value: string | string[]) {
   return value.split(/[、,/，\s]+/).map((item) => item.trim()).filter(Boolean);
 }
 
+function arrayValue(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean);
+  if (typeof value === "string") return normalizeList(value);
+  return [];
+}
+
+function validSeasons(value: unknown): Season[] {
+  const list = arrayValue(value).filter((item): item is Season => seasons.includes(item as Season));
+  return list.length ? list : ["春", "夏"];
+}
+
+function validIdentity(value: unknown): PhotographerIdentity {
+  const next = String(value || "");
+  return identities.includes(next as PhotographerIdentity) ? next as PhotographerIdentity : "摄影爱好者";
+}
+
+function validMutualStatus(value: unknown): PhotographerStatus {
+  const next = String(value || "");
+  return mutualStatuses.includes(next as PhotographerStatus) ? next as PhotographerStatus : "可互勉";
+}
+
+function pickImages(value: unknown, fallbackIndex = 0) {
+  const images = arrayValue(value);
+  return images.length ? images : [publicImageFallbacks[fallbackIndex % publicImageFallbacks.length]];
+}
+
+function slugify(value: string, fallback: string) {
+  const slug = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return slug || fallback;
+}
+
+function findSpotName(slug?: string | null) {
+  if (!slug) return "未关联点位";
+  return localSpots.find((spot) => spot.slug === slug)?.name || localMapSpots.find((spot) => spot.slug === slug)?.name || slug;
+}
+
+function deriveCategories(styleTags: string[], spotName: string, description?: string | null): PhotographerWorkCategory[] {
+  const text = `${styleTags.join(" ")} ${spotName} ${description || ""}`;
+  const categories = new Set<PhotographerWorkCategory>(["毕业照"]);
+  if (text.includes("湖")) categories.add("湖畔");
+  if (text.includes("人像") || text.includes("肖像")) categories.add("人像");
+  if (text.includes("建筑") || text.includes("主楼") || text.includes("伯川") || text.includes("一馆")) categories.add("建筑");
+  if (text.includes("夜") || text.includes("蓝调")) categories.add("夜景");
+  if (text.includes("室内")) categories.add("室内");
+  if (text.includes("胶片")) categories.add("胶片感");
+  return Array.from(categories).filter((item) => workCategories.includes(item)).slice(0, 4);
+}
+
 function sanitizeFileName(name: string) {
   return name.replace(/[^\w.\-\u4e00-\u9fa5]/g, "-").replace(/-+/g, "-");
 }
@@ -244,6 +314,98 @@ export async function getBackendUserState(): Promise<BackendUserState> {
     configured: true,
     user: { id: userData.user.id, email: userData.user.email },
     profile: profile as BackendProfile | null,
+  };
+}
+
+export async function listApprovedPhotographers() {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) {
+    return { mode: "demo" as const, photographers, message: demoModeMessage };
+  }
+
+  const { data, error } = await supabase
+    .from("photographer_profiles")
+    .select("*")
+    .eq("status", "approved")
+    .order("reviewed_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { mode: "demo" as const, photographers, message: `读取已审核摄影师失败，已使用演示数据：${error.message}` };
+  }
+
+  return {
+    mode: "supabase" as const,
+    photographers: (data || []).map(mapPublicPhotographer),
+    message: (data || []).length ? "已显示 Supabase 已审核摄影师。" : "Supabase 暂无已审核摄影师，页面保留演示数据。",
+  };
+}
+
+export async function getApprovedPhotographerBySlug(slug: string) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) {
+    return { mode: "demo" as const, photographer: photographers.find((item) => item.slug === slug) || null, message: demoModeMessage };
+  }
+
+  const { data, error } = await supabase
+    .from("photographer_profiles")
+    .select("*")
+    .eq("status", "approved")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    return { mode: "demo" as const, photographer: photographers.find((item) => item.slug === slug) || null, message: `读取摄影师主页失败：${error.message}` };
+  }
+
+  return {
+    mode: "supabase" as const,
+    photographer: data ? mapPublicPhotographer(data) : null,
+    message: data ? "已读取 Supabase 已审核摄影师主页。" : "未找到已审核摄影师，使用本地占位内容。",
+  };
+}
+
+export async function listApprovedWorksForPhotographer(photographer: Pick<Photographer, "sourceId" | "slug" | "name">) {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return { mode: "demo" as const, works: [] as PhotographerWork[], message: demoModeMessage };
+
+  const { data, error } = await supabase
+    .from("work_submissions")
+    .select("*")
+    .eq("status", "approved")
+    .order("reviewed_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  if (error) return { mode: "demo" as const, works: [] as PhotographerWork[], message: `读取已审核作品失败：${error.message}` };
+
+  const name = photographer.name.trim().toLowerCase();
+  const works = (data || [])
+    .filter((row) => {
+      if (photographer.sourceId && row.photographer_profile_id === photographer.sourceId) return true;
+      return String(row.photographer_name || "").trim().toLowerCase() === name;
+    })
+    .map(mapPublicWork);
+
+  return { mode: "supabase" as const, works, message: works.length ? "已读取 Supabase 已审核作品。" : "暂无 Supabase 已审核作品。" };
+}
+
+export async function listApprovedMapSpots() {
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return { mode: "demo" as const, spots: [] as MapSpot[], message: demoModeMessage };
+
+  const { data, error } = await supabase
+    .from("spot_submissions")
+    .select("*")
+    .eq("status", "approved")
+    .order("reviewed_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  if (error) return { mode: "demo" as const, spots: [] as MapSpot[], message: `读取已审核共建点位失败：${error.message}` };
+
+  return {
+    mode: "supabase" as const,
+    spots: (data || []).map(mapPublicMapSpot),
+    message: (data || []).length ? "已合并 Supabase 已审核共建点位。" : "暂无 Supabase 已审核共建点位。",
   };
 }
 
@@ -645,6 +807,7 @@ function photographerToDraft(photographer: Photographer): PhotographerProfileDra
     contact_email: photographer.contact.email || "",
     contact_qq: photographer.contact.qq || "",
     status: "approved",
+    review_note: "",
   };
 }
 
@@ -734,9 +897,104 @@ function mapPhotographerProfileDraft(row: Record<string, any>): PhotographerProf
     contact_email: row.contact_email || "",
     contact_qq: row.contact_qq || "",
     status: row.status || "pending",
+    review_note: row.review_note || "",
     representative_image_urls: row.representative_image_urls || [],
     portfolio_note: row.portfolio_note || "",
     rights_confirmed: Boolean(row.rights_confirmed),
+  };
+}
+
+function mapPublicPhotographer(row: Record<string, any>, index = 0): Photographer {
+  const representativeImages = pickImages(row.representative_image_urls, index);
+  const styles = arrayValue(row.styles);
+  const familiarSpots = arrayValue(row.familiar_spots);
+  const familiarRoutes = arrayValue(row.familiar_routes);
+  const profileName = row.name || "已认证摄影者";
+
+  return {
+    source: "supabase",
+    sourceId: row.id,
+    slug: row.slug || slugify(profileName, `photographer-${String(row.id || "").slice(0, 8)}`),
+    name: profileName,
+    identity: validIdentity(row.identity),
+    intro: row.bio || "已通过光影大工管理员审核，熟悉校园毕业照点位与拍摄流程。",
+    familiarRoutes: familiarRoutes.length ? familiarRoutes : ["春日花阶线"],
+    familiarSpots: familiarSpots.length ? familiarSpots : ["南门", "主楼"],
+    styles: styles.length ? styles : ["清透自然"],
+    seasons: validSeasons(row.seasons),
+    mutualStatus: validMutualStatus(row.mutual_status),
+    authorized: Boolean(row.contact_authorized),
+    contact: Boolean(row.contact_authorized)
+      ? {
+          wechat: row.contact_wechat || undefined,
+          email: row.contact_email || undefined,
+          qq: row.contact_qq || undefined,
+        }
+      : {},
+    avatar: representativeImages[0],
+    portfolio: representativeImages.slice(0, 3).map((image, imageIndex) => ({
+      id: `${row.id || row.slug}-portfolio-${imageIndex + 1}`,
+      title: imageIndex === 0 ? "代表作品" : `代表作品 ${imageIndex + 1}`,
+      image,
+      spot: familiarSpots[imageIndex % Math.max(familiarSpots.length, 1)] || "大工校园",
+      season: validSeasons(row.seasons)[imageIndex % validSeasons(row.seasons).length],
+      style: styles[imageIndex % Math.max(styles.length, 1)] || "清透自然",
+      categories: deriveCategories(styles, familiarSpots.join(" "), row.portfolio_note),
+      description: row.portfolio_note || "摄影师认证时提交的代表作品，已通过管理员审核。",
+    })),
+  };
+}
+
+function mapPublicWork(row: Record<string, any>): PhotographerWork {
+  const spotName = findSpotName(row.spot_slug);
+  const styleTags = arrayValue(row.style_tags);
+  const images = pickImages(row.image_urls);
+  const season = seasons.includes(row.season as Season) ? row.season as Season : "春";
+
+  return {
+    id: row.id,
+    title: row.title || `${spotName}毕业作品`,
+    image: images[0],
+    spot: spotName,
+    season,
+    style: styleTags[0] || "清透自然",
+    categories: deriveCategories(styleTags, spotName, row.description),
+    description: row.description || `${spotName} 已审核作品。`,
+  };
+}
+
+function mapPublicMapSpot(row: Record<string, any>, index: number): MapSpot {
+  const latitude = Number(row.latitude);
+  const longitude = Number(row.longitude);
+  const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude);
+  const spotName = row.spot_name || "共建机位";
+  const slug = `community-${slugify(spotName, String(row.id || index).slice(0, 8))}`;
+  const images = pickImages(row.image_urls, index);
+
+  return {
+    source: "supabase",
+    sourceId: row.id,
+    id: `community-${row.id || slug}`,
+    slug,
+    name: spotName,
+    shortName: spotName.slice(0, 4),
+    area: row.location_description || "共建点位",
+    latitude: hasCoordinates ? latitude : 38.881,
+    longitude: hasCoordinates ? longitude : 121.526,
+    description: row.location_description || "管理员审核通过的共建机位，位置描述待补充。",
+    bestTime: row.recommended_time || "待补充",
+    crowdLevel: row.crowd_level === "低" || row.crowd_level === "高" ? row.crowd_level : "中",
+    shootingTips: row.shooting_tips || "拍摄建议待补充。",
+    tags: [...validSeasons(row.seasons), "共建机位"],
+    recommendedTimeSlots: ["morning", "afternoon"],
+    hasIndoorBackup: false,
+    walkingRank: 2,
+    images: images.map((src, imageIndex) => ({ src, alt: `${spotName}共建样片 ${imageIndex + 1}` })),
+    photoPlaceholder: `${spotName}共建样片`,
+    seasonNote: hasCoordinates ? "共建审核通过" : "共建审核通过 · 坐标待补充",
+    coordinatesPending: !hasCoordinates,
+    verified: true,
+    cameraSpots: [],
   };
 }
 

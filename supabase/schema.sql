@@ -188,6 +188,38 @@ $$;
 
 grant execute on function public.request_photographer_role() to authenticated;
 
+create or replace function public.lock_review_fields_for_non_admin()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if public.current_user_role() <> 'admin' then
+    new.status = old.status;
+    new.review_note = old.review_note;
+    new.reviewed_by = old.reviewed_by;
+    new.reviewed_at = old.reviewed_at;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists photographer_profiles_lock_review_fields on public.photographer_profiles;
+create trigger photographer_profiles_lock_review_fields
+before update on public.photographer_profiles
+for each row execute function public.lock_review_fields_for_non_admin();
+
+drop trigger if exists spot_submissions_lock_review_fields on public.spot_submissions;
+create trigger spot_submissions_lock_review_fields
+before update on public.spot_submissions
+for each row execute function public.lock_review_fields_for_non_admin();
+
+drop trigger if exists work_submissions_lock_review_fields on public.work_submissions;
+create trigger work_submissions_lock_review_fields
+before update on public.work_submissions
+for each row execute function public.lock_review_fields_for_non_admin();
+
 alter table public.profiles enable row level security;
 alter table public.photographer_profiles enable row level security;
 alter table public.spot_submissions enable row level security;
