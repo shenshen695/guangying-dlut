@@ -2075,6 +2075,45 @@ img {
   font-weight: 500;
 }
 
+.gy-admin-head-tools {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+}
+
+.gy-admin-head-tools .gy-secondary-button {
+  min-height: 36px;
+  padding: 0 16px;
+}
+
+.gy-admin-dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(92px, 1fr));
+  gap: 10px;
+  min-width: 470px;
+}
+
+.gy-admin-dashboard-stats article {
+  display: grid;
+  gap: 6px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.64);
+}
+
+.gy-admin-dashboard-stats span {
+  color: var(--quiet);
+  font-size: 12px;
+}
+
+.gy-admin-dashboard-stats strong {
+  color: var(--teal);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
 .gy-admin-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -2314,6 +2353,122 @@ img {
   min-height: 36px;
   padding: 0 16px;
   font-size: 13px;
+}
+
+.gy-admin-dashboard-workbench {
+  grid-template-columns: minmax(520px, 0.9fr) minmax(520px, 1.1fr);
+}
+
+.gy-admin-dashboard-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.gy-admin-dashboard-filters select {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--muted);
+}
+
+.gy-admin-quality-mark {
+  display: grid !important;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(22, 123, 117, 0.42);
+  border-radius: 50%;
+  background: rgba(225, 238, 233, 0.58);
+  color: var(--teal);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 20px;
+  font-style: normal;
+}
+
+.gy-admin-quality-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 14px 15px;
+  border: 1px solid rgba(22, 123, 117, 0.3);
+  border-radius: 6px;
+  background: rgba(225, 238, 233, 0.36);
+}
+
+.gy-admin-quality-box span {
+  color: var(--teal);
+  font-size: 12px;
+}
+
+.gy-admin-quality-box p,
+.gy-admin-quality-box a {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.gy-admin-quality-box a {
+  color: var(--teal);
+}
+
+.gy-admin-coordinate-editor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.gy-admin-coordinate-editor .gy-input-card {
+  min-height: 68px;
+  padding: 12px;
+}
+
+.gy-admin-coordinate-editor .gy-secondary-button {
+  min-height: 42px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.gy-admin-log-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.gy-admin-log-list h3 {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.gy-admin-log-list article {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.56);
+}
+
+.gy-admin-log-list strong {
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.gy-admin-log-list span,
+.gy-admin-log-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .gy-dashboard-layout {
@@ -3628,6 +3783,12 @@ img {
   .gy-map-side-list {
     max-height: none;
   }
+
+  .gy-admin-dashboard-stats,
+  .gy-admin-stats {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 @media (max-width: 760px) {
@@ -3646,7 +3807,9 @@ img {
   .gy-auth-form-grid,
   .gy-apply-form .gy-form-grid,
   .gy-admin-stats,
+  .gy-admin-dashboard-stats,
   .gy-admin-detail-grid,
+  .gy-admin-coordinate-editor,
   .gy-dashboard-form .gy-form-grid,
   .gy-dashboard-contact .gy-form-grid,
   .gy-photographer-grid,
@@ -3666,8 +3829,10 @@ img {
 
   .gy-nav-actions,
   .gy-apply-status,
-  .gy-work-submit-source {
+  .gy-work-submit-source,
+  .gy-admin-head-tools {
     justify-content: flex-start;
+    justify-items: start;
   }
 
   .gy-admin-queue-item {

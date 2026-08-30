@@ -65,6 +65,7 @@ export default function LoginClient() {
   const selectedRegister = registerOptions.find((option) => option.value === registerChoice) || registerOptions[0];
   const roleActions = role === "admin"
     ? [
+        { href: "/admin/dashboard", label: "管理员工作台" },
         { href: "/admin/submissions", label: "进入审核后台" },
         { href: "/contribute", label: "查看投稿入口" },
       ]
@@ -171,6 +172,7 @@ export default function LoginClient() {
             <div className="gy-auth-links">
               <Link href="/photographer/apply">摄影师认证</Link>
               <Link href="/photographer/dashboard">摄影师后台</Link>
+              <Link href="/admin/dashboard">管理员工作台</Link>
               <Link href="/admin/submissions">审核后台</Link>
             </div>
           </form>

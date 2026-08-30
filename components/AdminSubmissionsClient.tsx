@@ -82,10 +82,13 @@ export default function AdminSubmissionsClient() {
             <p className="gy-body-copy">管理员集中审核摄影师申请、点位投稿和作品投稿，通过后再进入公开展示流程。</p>
             <p className="gy-backend-note">{message} {!allowed ? <Link href="/login">去登录</Link> : null}</p>
           </div>
-          <div className="gy-admin-stats" aria-label="审核统计">
-            <article><span>待审核</span><strong>{stats.pending}</strong></article>
-            <article><span>需补充</span><strong>{stats.needs_revision}</strong></article>
-            <article><span>已通过</span><strong>{stats.approved}</strong></article>
+          <div className="gy-admin-head-tools">
+            <div className="gy-admin-stats" aria-label="审核统计">
+              <article><span>待审核</span><strong>{stats.pending}</strong></article>
+              <article><span>需补充</span><strong>{stats.needs_revision}</strong></article>
+              <article><span>已通过</span><strong>{stats.approved}</strong></article>
+            </div>
+            <Link href="/admin/dashboard" className="gy-secondary-button">进入管理员工作台</Link>
           </div>
         </section>
 

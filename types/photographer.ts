@@ -21,6 +21,8 @@ export type PhotographerWork = {
   style: string;
   categories: PhotographerWorkCategory[];
   description?: string;
+  featured?: boolean;
+  isPublic?: boolean;
 };
 
 export type Photographer = {
@@ -39,4 +41,6 @@ export type Photographer = {
   contact: PhotographerContact;
   avatar: string;
   portfolio: PhotographerWork[];
+  featured?: boolean;
+  isPublic?: boolean;
 };

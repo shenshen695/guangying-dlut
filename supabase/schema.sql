@@ -29,6 +29,8 @@ create table if not exists public.photographer_profiles (
   representative_image_urls text[] not null default '{}',
   portfolio_note text,
   rights_confirmed boolean not null default false,
+  featured boolean not null default false,
+  is_public boolean not null default true,
   status text not null default 'pending' check (status in ('pending', 'approved', 'needs_revision', 'rejected')),
   review_note text,
   reviewed_by uuid references public.profiles(id),
@@ -52,6 +54,8 @@ create table if not exists public.spot_submissions (
   crowd_level text,
   shooting_tips text,
   image_urls text[] not null default '{}',
+  featured boolean not null default false,
+  is_public boolean not null default true,
   status text not null default 'pending' check (status in ('pending', 'approved', 'needs_revision', 'rejected')),
   review_note text,
   reviewed_by uuid references public.profiles(id),
@@ -73,6 +77,8 @@ create table if not exists public.work_submissions (
   image_urls text[] not null default '{}',
   description text,
   rights_confirmed boolean not null default false,
+  featured boolean not null default false,
+  is_public boolean not null default true,
   status text not null default 'pending' check (status in ('pending', 'approved', 'needs_revision', 'rejected')),
   review_note text,
   reviewed_by uuid references public.profiles(id),
@@ -84,10 +90,18 @@ create table if not exists public.work_submissions (
 alter table public.photographer_profiles
   add column if not exists representative_image_urls text[] not null default '{}',
   add column if not exists portfolio_note text,
-  add column if not exists rights_confirmed boolean not null default false;
+  add column if not exists rights_confirmed boolean not null default false,
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_public boolean not null default true;
+
+alter table public.spot_submissions
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_public boolean not null default true;
 
 alter table public.work_submissions
-  add column if not exists rights_confirmed boolean not null default false;
+  add column if not exists rights_confirmed boolean not null default false,
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_public boolean not null default true;
 
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles
@@ -200,6 +214,8 @@ begin
     new.review_note = old.review_note;
     new.reviewed_by = old.reviewed_by;
     new.reviewed_at = old.reviewed_at;
+    new.featured = old.featured;
+    new.is_public = old.is_public;
   end if;
   return new;
 end;
@@ -257,7 +273,7 @@ with check (
 drop policy if exists "photographer profiles public approved" on public.photographer_profiles;
 create policy "photographer profiles public approved" on public.photographer_profiles
 for select
-using (status = 'approved' or user_id = auth.uid() or public.current_user_role() = 'admin');
+using ((status = 'approved' and is_public = true) or user_id = auth.uid() or public.current_user_role() = 'admin');
 
 drop policy if exists "photographer profiles owner insert" on public.photographer_profiles;
 create policy "photographer profiles owner insert" on public.photographer_profiles
@@ -273,7 +289,7 @@ with check ((user_id = auth.uid() and public.current_user_role() in ('photograph
 drop policy if exists "spot submissions read approved own admin" on public.spot_submissions;
 create policy "spot submissions read approved own admin" on public.spot_submissions
 for select
-using (status = 'approved' or submitted_by = auth.uid() or public.current_user_role() = 'admin');
+using ((status = 'approved' and is_public = true) or submitted_by = auth.uid() or public.current_user_role() = 'admin');
 
 drop policy if exists "spot submissions insert own" on public.spot_submissions;
 create policy "spot submissions insert own" on public.spot_submissions
@@ -289,7 +305,7 @@ with check ((submitted_by = auth.uid() and status in ('pending', 'needs_revision
 drop policy if exists "work submissions read approved own admin" on public.work_submissions;
 create policy "work submissions read approved own admin" on public.work_submissions
 for select
-using (status = 'approved' or submitted_by = auth.uid() or public.current_user_role() = 'admin');
+using ((status = 'approved' and is_public = true) or submitted_by = auth.uid() or public.current_user_role() = 'admin');
 
 drop policy if exists "work submissions insert own" on public.work_submissions;
 create policy "work submissions insert own" on public.work_submissions
