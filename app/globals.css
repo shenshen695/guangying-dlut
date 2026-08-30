@@ -106,7 +106,7 @@ img {
 
 .gy-nav {
   display: grid;
-  grid-template-columns: 280px 1fr auto;
+  grid-template-columns: 280px minmax(0, 1fr) max-content;
   align-items: center;
   gap: 24px;
   min-height: 48px;
@@ -166,11 +166,19 @@ img {
 }
 
 .gy-nav-actions {
-  display: inline-flex;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+  min-width: max-content;
   white-space: nowrap;
+  justify-self: end;
+}
+
+.gy-nav-actions .gy-outline-button {
+  flex: 0 0 auto;
 }
 
 .gy-login-button {
@@ -1876,12 +1884,13 @@ img {
 }
 
 .gy-auth-layout {
-  grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1fr);
+  grid-template-columns: minmax(360px, 0.72fr) minmax(430px, 560px);
   align-items: start;
 }
 
 .gy-auth-copy {
   padding-top: 24px;
+  max-width: 560px;
 }
 
 .gy-identity-list {
@@ -1917,7 +1926,7 @@ img {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 28px;
+  margin-top: 18px;
 }
 
 .gy-auth-links a,
@@ -1942,6 +1951,9 @@ img {
 
 .gy-auth-card {
   padding: 26px;
+  width: 100%;
+  max-width: 560px;
+  justify-self: end;
 }
 
 .gy-auth-tabs {
@@ -1956,9 +1968,9 @@ img {
 
 .gy-auth-state {
   display: grid;
-  gap: 7px;
-  margin-top: 18px;
-  padding: 14px 16px;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 12px 14px;
   border: 1px solid rgba(22, 123, 117, 0.26);
   border-radius: 6px;
   background: rgba(225, 238, 233, 0.5);
@@ -1991,14 +2003,14 @@ img {
 }
 
 .gy-auth-register-note {
-  margin: 14px 0 0;
-  padding: 12px 14px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: rgba(255, 253, 249, 0.58);
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .gy-auth-entry-list {
@@ -2392,7 +2404,7 @@ img {
 }
 
 .gy-nav {
-  grid-template-columns: 220px 1fr auto;
+  grid-template-columns: 220px minmax(0, 1fr) max-content;
 }
 
 .gy-brand {
@@ -3513,6 +3525,15 @@ img {
 
   .gy-nav {
     grid-template-columns: 1fr;
+  }
+
+  .gy-nav-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    justify-content: flex-start;
+    justify-self: start;
+    overflow-x: auto;
   }
 
   .gy-nav-links {

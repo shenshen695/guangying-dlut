@@ -85,12 +85,6 @@ export default function LoginClient() {
           { href: "/photographer/apply", label: "申请成为摄影师" },
         ];
 
-  const identities = [
-    { title: "普通用户", text: "查看毕业路线、校园影像地图和摄影者档案。" },
-    { title: "摄影师", text: "提交机位、上传作品，并维护自己的摄影者主页。" },
-    { title: "管理员", text: "审核点位与作品投稿，保持内容真实可用。" },
-  ];
-
   return (
     <main className="gy-page">
       <div className="gy-container">
@@ -101,15 +95,7 @@ export default function LoginClient() {
             <Eyebrow muted>ACCOUNT</Eyebrow>
             <h1 className="gy-page-title">登录光影大工</h1>
             <CoralRule />
-            <p className="gy-body-copy">摄影师可提交点位与作品，管理员可审核共建内容。未登录也可以继续浏览路线、地图和摄影者目录。</p>
-            <div className="gy-identity-list" aria-label="账号身份说明">
-              {identities.map((item) => (
-                <article key={item.title} className="gy-identity-card">
-                  <strong>{item.title}</strong>
-                  <span>{item.text}</span>
-                </article>
-              ))}
-            </div>
+            <p className="gy-body-copy">用邮箱进入投稿、摄影师认证和审核后台；未登录也可以继续浏览路线与地图。</p>
           </div>
 
           <form className="gy-panel gy-auth-card" onSubmit={submit}>
@@ -119,12 +105,11 @@ export default function LoginClient() {
             </div>
 
             <p className="gy-backend-note">
-              {isDemoMode ? "当前为演示模式，后端未连接；登录动作只展示本地状态。" : state?.configured ? "Supabase 已连接，请使用项目中已创建的账号登录。" : "正在检查后端状态..."}
+              {isDemoMode ? "后端未连接，当前为演示状态。" : state?.configured ? "Supabase 已连接。" : "正在连接后端..."}
             </p>
 
             {currentEmail ? (
               <div className="gy-auth-state">
-                <span>当前登录状态</span>
                 <strong>{currentEmail}</strong>
                 <span>身份：{roleLabel[role]}</span>
                 <div className="gy-auth-entry-list">
@@ -138,9 +123,8 @@ export default function LoginClient() {
               </div>
             ) : (
               <div className="gy-auth-state is-quiet">
-                <span>当前登录状态</span>
                 <strong>未登录</strong>
-                <span>登录后可进入投稿、摄影师认证或审核后台。</span>
+                <span>登录后进入对应身份入口。</span>
               </div>
             )}
 
@@ -172,8 +156,8 @@ export default function LoginClient() {
             {message ? <p className="gy-submit-note">{message}</p> : null}
             {mode === "register" ? (
               <p className="gy-auth-register-note">
-                当前选择：{selectedRegister.label}。{selectedRegister.description}
-                {registerChoice !== "user" ? " 注册后还需要进入摄影师认证页补充作品与联系方式。" : ""}
+                {selectedRegister.label}：{selectedRegister.description}
+                {registerChoice !== "user" ? " 还需要补充认证资料。" : ""}
               </p>
             ) : null}
 
@@ -185,7 +169,6 @@ export default function LoginClient() {
             </div>
 
             <div className="gy-auth-links">
-              <Link href="/">返回首页</Link>
               <Link href="/photographer/apply">摄影师认证</Link>
               <Link href="/photographer/dashboard">摄影师后台</Link>
               <Link href="/admin/submissions">审核后台</Link>
