@@ -57,7 +57,7 @@ export function buildShootingPlan(input: PlannerInput, spots: Spot[]): ShootingP
 
   return {
     style,
-    styleReason: input.styleReference ? guide.reason : `你没有指定风格，系统根据人数和时间推断为“${style}”。${guide.reason}`,
+    styleReason: input.styleReference ? guide.reason : `没指定风格，根据人数和时间段选了"${style}"。${guide.reason}`,
     selectedSpotIds: candidates.map((spot) => spot.id),
     colorPalette: guide.colorPalette,
     outfit: {

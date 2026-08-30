@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/bin/ls -la /Users/chevalier/Documents)",
+      "Bash(/bin/ls -la /Users/chevalier)",
+      "Bash(/bin/ls /tmp)"
+    ]
+  }
+}

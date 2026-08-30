@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CoralRule, Eyebrow, Pill, TopNav } from "@/components/guangying-ui";
+import StyleAdvisor from "@/components/StyleAdvisor";
 import type { SeasonPreference, StyleReference } from "@/types/planner";
 
 type StyleCategory = "全部" | Exclude<StyleReference, "海风清透">;
@@ -45,14 +46,14 @@ export default function StylesClient() {
 
   return (
     <main className="gy-page">
-      <div className="gy-container gy-styles-container">
+      <div className="gy-container gy-styles-container" style={{ position: "relative" }}>
         <TopNav active="风格" actionLabel="生成路线" actionHref="/planner" />
         <section className="gy-styles-head">
           <div>
             <Eyebrow muted>STYLE REFERENCES</Eyebrow>
             <h1 className="gy-page-title">毕业影像风格参考</h1>
             <CoralRule />
-            <p className="gy-body-copy">从参考成片理解风格，再让光影大工生成适合的校园路线。</p>
+            <p className="gy-body-copy">看看各种风格的成片，选一个你喜欢的，直接生成路线。</p>
           </div>
           <div className="gy-style-tabs" role="tablist" aria-label="风格分类筛选">
             {categories.map((category) => (
@@ -102,6 +103,7 @@ export default function StylesClient() {
             </div>
           </aside>
         </section>
+        <StyleAdvisor />
       </div>
     </main>
   );

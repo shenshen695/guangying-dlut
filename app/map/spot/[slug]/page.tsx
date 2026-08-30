@@ -5,7 +5,7 @@ import spotsData from "@/data/map-spots.json";
 import type { Route } from "@/types/route";
 import type { MapSpot as Spot } from "@/types/map-spot";
 
-const routes = routesData as Route[];
+const routes = routesData as unknown as Route[];
 const spots = spotsData as Spot[];
 
 export function generateStaticParams() {

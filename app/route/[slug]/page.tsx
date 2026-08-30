@@ -31,13 +31,13 @@ export default function RouteDetailPage({ params }: { params: { slug: string } }
     .slice(0, 4);
 
   return (
-    <PageShell active="企划" actionLabel="加入路线" actionHref={plannerHref}>
+    <PageShell active="企划" actionLabel="路线规划" actionHref={plannerHref}>
       <section className="gy-route-hero">
         <div>
           <Eyebrow muted>ROUTE DETAIL</Eyebrow>
           <h1 className="gy-page-title">{route.name}</h1>
           <CoralRule />
-          <p className="gy-body-copy">{route.subtitle}。路线点位全部来自真实点位库，可直接进入地图查看。</p>
+          <p className="gy-body-copy">{route.subtitle}。所有点位都是校园实地整理的，可以直接进地图查看。</p>
           <div className="gy-pill-row">
             <Pill active>春</Pill>
             <Pill>清透</Pill>

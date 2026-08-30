@@ -1,15 +1,238 @@
 [
-  {"id":"south-gate","x":32.5,"y":89.5,"name":"南门","imageSrc":"","description":"从南门走进校园，也走进毕业照的第一幕。开阔的入口和校名标识适合作为路线开场。","bestTime":"08:00–09:30","seasonNote":""},
-  {"id":"bochuan","x":31,"y":71.5,"name":"伯川","imageSrc":"/images/spots/伯川图书馆正门流云.jpg","imageFileName":"伯川图书馆正门流云.jpg","description":"伯川周边有清晰的建筑线条和安静的步行空间，适合拍摄同学之间自然交流的片段。","bestTime":"09:00–10:30","seasonNote":""},
-  {"id":"main-building","x":38.9,"y":62.6,"name":"一馆","imageSrc":"","description":"主楼是毕业路线里的校园记忆核心。宽阔广场适合个人肖像、班级合影和带建筑轮廓的纪念照。","bestTime":"14:00–16:00","seasonNote":""},
-  {"id":"first-building","x":39.1,"y":49.4,"name":"令希","imageSrc":"","description":"一馆保留着熟悉的教学楼尺度，适合拍摄同学并肩走过、回望校园的轻松画面。","bestTime":"10:30–12:00","seasonNote":""},
-  {"id":"ling-shui-lake","x":23.5,"y":30.5,"name":"凌水湖","imageSrc":"/images/spots/倒影.jpg","imageFileName":"倒影.jpg","description":"湖面把校园的天空和树影都收进画面，适合在路线后半段放慢节奏，拍一组自然的侧影。","bestTime":"16:30–18:30","seasonNote":""},
-  {"id":"flower-wall","x":44,"y":45.5,"name":"花墙","imageSrc":"","description":"花墙适合作为路线收尾，用一组颜色明亮、情绪轻快的照片，为毕业影像留下最后一帧。","bestTime":"17:00–18:30","seasonNote":""},
-  {"id":"lover-road","x":30.1,"y":76.5,"name":"情人路","imageSrc":"","description":"一条被高大树木包围的校园林荫路，光斑、纵深和熟悉的校园气息都很适合毕业照。","bestTime":"09:00–11:00","seasonNote":"春夏树影最好看"},
-  {"id":"lover-slope","x":45.6,"y":76.4,"name":"情人坡","imageSrc":"","description":"情人坡四季气质差异很大，冬季积雪后尤其适合拍清透的人像。","bestTime":"雪后 09:00–15:00","seasonNote":"冬季雪后最出片"},
-  {"id":"chairman-statue","x":34.8,"y":67.6,"name":"主席像","imageSrc":"/images/spots/主席像.jpg","imageFileName":"主席像.jpg","description":"主席像与主楼共同构成校园里辨识度很高的纪念性场景。","bestTime":"日落后或蓝调时刻","seasonNote":"蓝调与晴朗夜空更有氛围"},
-  {"id":"student-center","x":55.6,"y":63.9,"name":"大学生活动中心","imageSrc":"/images/spots/大学生活动中心又名大活楼.jpg","imageFileName":"大学生活动中心又名大活楼.jpg","description":"","bestTime":"","seasonNote":""},
-  {"id":"second-building","x":38,"y":57.6,"name":"二馆","imageSrc":"","description":"","bestTime":"","seasonNote":""},
-  {"id":"comprehensive-one","x":46.3,"y":52,"name":"综一","imageSrc":"","description":"","bestTime":"","seasonNote":""},
-  {"id":"landmark-mtbglalg","x":46.1,"y":71.4,"name":"校史馆","imageSrc":"/images/spots/校史馆.jpg","imageFileName":"校史馆.jpg","description":"","bestTime":"","seasonNote":""}
+  {
+    "id": "south-gate",
+    "x": 33.3,
+    "y": 88.4,
+    "name": "南门",
+    "imageSrc": "",
+    "description": "从南门走进校园，也走进毕业照的第一幕。开阔的入口和校名标识适合作为路线开场，人物队伍向前的动势很适合抓拍。",
+    "bestTime": "08:00–09:30",
+    "featured": true
+  },
+  {
+    "id": "bochuan",
+    "x": 31,
+    "y": 71.3,
+    "name": "伯川图书馆",
+    "imageSrc": "/images/spots/伯川图书馆正门流云.jpg",
+    "description": "伯川周边有清晰的建筑线条和安静的步行空间，适合拍摄同学之间自然交流的片段。四月玉兰与二月兰同期盛开，是全年最值得拍摄的时段之一。",
+    "bestTime": "09:00–10:30",
+    "featured": true,
+    "hasIndoorBackup": true,
+    "seasons": [
+      {
+        "season": "春",
+        "months": [3, 4, 5],
+        "highlight": "玉兰四月开放，花期约一周；二月兰四月开放，花期约三周。台阶与长廊前景丰富，色彩饱满。",
+        "bloomPeriod": "四月"
+      },
+      {
+        "season": "夏",
+        "months": [6, 7, 8],
+        "highlight": "树木郁葱，长廊光斑柔和，适合清晨轻松拍摄。"
+      }
+    ]
+  },
+  {
+    "id": "main-building",
+    "x": 38.9,
+    "y": 62.6,
+    "name": "一馆",
+    "imageSrc": "/images/spots/第一教学馆.jpg",
+    "description": "一馆保留着熟悉的教学楼尺度，是校园记忆的核心建筑。银杏林道秋季最为出片，楼道和台阶也适合全年拍摄。",
+    "bestTime": "10:00–16:00",
+    "featured": true,
+    "seasons": [
+      {
+        "season": "秋",
+        "months": [9, 10, 11],
+        "highlight": "银杏林道进入金黄期（约十月下旬至十一月），大工秋季最具代表性的机位之一。",
+        "bloomPeriod": "十月下旬–十一月"
+      }
+    ]
+  },
+  {
+    "id": "first-building",
+    "x": 22,
+    "y": 30.9,
+    "name": "令希图书馆",
+    "imageSrc": "/images/spots/令希图书馆.jpg",
+    "description": "令希图书馆是西区的地标建筑，外形简洁有序，适合拍摄建筑感较强的人像与学院纪实。",
+    "bestTime": "10:30–12:00",
+    "featured": false,
+    "hasIndoorBackup": true
+  },
+  {
+    "id": "ling-shui-lake",
+    "x": 35,
+    "y": 50.6,
+    "name": "凌水湖",
+    "imageSrc": "/images/spots/倒影.jpg",
+    "description": "湖面把校园的天空和树影都收进画面，适合在路线后半段放慢节奏，拍一组自然的侧影。傍晚逆光效果尤佳。",
+    "bestTime": "16:30–18:30",
+    "featured": true,
+    "seasons": [
+      {
+        "season": "春",
+        "months": [3, 4, 5],
+        "highlight": "湖面倒影清晰，周边草木初绿，适合轻松侧影与背影。"
+      },
+      {
+        "season": "夏",
+        "months": [6, 7, 8],
+        "highlight": "傍晚湖面宽阔，逆光人像效果好，水面反光层次丰富。"
+      },
+      {
+        "season": "秋",
+        "months": [9, 10, 11],
+        "highlight": "湖边树影渐黄，湖面倒影饱满，是秋季收尾的绝佳选择。"
+      }
+    ]
+  },
+  {
+    "id": "flower-wall",
+    "x": 44,
+    "y": 45.5,
+    "name": "花墙",
+    "imageSrc": "",
+    "description": "花墙适合作为路线收尾，用一组颜色明亮、情绪轻快的照片，为毕业影像留下最后一帧。",
+    "bestTime": "17:00–18:30",
+    "featured": false,
+    "seasons": [
+      {
+        "season": "春",
+        "months": [3, 4, 5],
+        "highlight": "花期集中，色彩最为饱满，人物靠近花墙但不遮住层次效果最好。",
+        "bloomPeriod": "四月–五月"
+      }
+    ]
+  },
+  {
+    "id": "lover-road",
+    "x": 30.1,
+    "y": 76.5,
+    "name": "情人路",
+    "imageSrc": "",
+    "description": "一条被高大树木包围的校园林荫路，光斑、纵深和熟悉的校园气息都很适合毕业照。夏季和秋季都好看，树木郁郁葱葱。",
+    "bestTime": "09:00–11:00",
+    "featured": true,
+    "seasons": [
+      {
+        "season": "春",
+        "months": [3, 4, 5],
+        "highlight": "树叶嫩绿，光斑细腻，是一年中最柔和的光线时段。"
+      },
+      {
+        "season": "夏",
+        "months": [6, 7, 8],
+        "highlight": "树木郁郁葱葱，林荫遮挡强光，全天均可拍摄，绿色层次丰富。"
+      },
+      {
+        "season": "秋",
+        "months": [9, 10, 11],
+        "highlight": "树叶转黄，纵深感强烈，暖色调是秋季的标志。"
+      }
+    ]
+  },
+  {
+    "id": "lover-slope",
+    "x": 45.1,
+    "y": 77.4,
+    "name": "情人坡",
+    "imageSrc": "",
+    "description": "情人坡四季气质差异很大。夏季绿树绿草，层次丰富；冬季积雪后白雪皑皑，尤其适合拍清透人像。",
+    "bestTime": "视季节而定",
+    "featured": true,
+    "seasons": [
+      {
+        "season": "夏",
+        "months": [6, 7, 8],
+        "highlight": "绿树绿草，坡地层次丰富，适合站姿与坐姿人像，光线均匀。"
+      },
+      {
+        "season": "冬",
+        "months": [12, 1, 2],
+        "highlight": "降雪后白雪皑皑，松枝积雪做前景，清透感最强，是大工冬季最出片的地标。",
+        "bloomPeriod": "雪后最佳"
+      }
+    ]
+  },
+  {
+    "id": "chairman-statue",
+    "x": 34.8,
+    "y": 67.6,
+    "name": "主席像",
+    "imageSrc": "/images/spots/主席像.jpg",
+    "description": "主席像与主楼共同构成校园里辨识度很高的纪念性场景，适合日落后或蓝调时刻的夜景拍摄。",
+    "bestTime": "日落后蓝调时刻",
+    "featured": true,
+    "navigationUrl": "https://uri.amap.com/search?keyword=大连理工大学毛泽东塑像&city=大连&view=map&src=guangying-dlut"
+  },
+  {
+    "id": "student-center",
+    "x": 55.6,
+    "y": 63.9,
+    "name": "大学生活动中心",
+    "imageSrc": "/images/spots/大学生活动中心又名大活楼.jpg",
+    "description": "大学生活动中心（大活）是校内重要的公共建筑，周边空间开阔，适合多人合影和动态抓拍。",
+    "bestTime": "上午–下午",
+    "featured": false,
+    "hasIndoorBackup": true
+  },
+  {
+    "id": "second-building",
+    "x": 38,
+    "y": 57.6,
+    "name": "二馆",
+    "imageSrc": "/images/spots/WechatIMG495.jpg",
+    "description": "二馆前玉兰与建艺附近银杏是两大季节亮点。春季花枝与建筑线条构成丰富前景，秋季银杏金黄铺满视野。",
+    "bestTime": "视季节而定",
+    "featured": true,
+    "seasons": [
+      {
+        "season": "春",
+        "months": [3, 4, 5],
+        "highlight": "二馆前玉兰四月开放，建筑线条与花枝形成好的前景。",
+        "bloomPeriod": "四月"
+      },
+      {
+        "season": "秋",
+        "months": [9, 10, 11],
+        "highlight": "二馆与建艺附近银杏金黄，是大工秋季必拍地标之一。",
+        "bloomPeriod": "十月下旬–十一月"
+      }
+    ]
+  },
+  {
+    "id": "comprehensive-one",
+    "x": 46.3,
+    "y": 52,
+    "name": "综一",
+    "imageSrc": "/images/spots/综一.jpg",
+    "description": "综合一号楼周边是西部建筑群的收尾点，建筑秩序感强，适合线条构图和室内半室内拍摄。",
+    "bestTime": "上午",
+    "featured": false,
+    "hasIndoorBackup": true
+  },
+  {
+    "id": "landmark-mtbglalg",
+    "x": 46.1,
+    "y": 71.4,
+    "name": "校史馆",
+    "imageSrc": "/images/spots/校史馆.jpg",
+    "description": "校史馆记录了大工的发展历史，建筑庄重大气，适合拍摄有纪念感的毕业照。",
+    "bestTime": "上午–下午",
+    "featured": false,
+    "hasIndoorBackup": true
+  },
+  {
+    "id": "music-fountain",
+    "x": 41,
+    "y": 74,
+    "name": "音乐喷泉",
+    "imageSrc": "",
+    "description": "音乐喷泉广场空间开阔，是校内人气较高的集会场所，适合大组合影或走向相机的动态抓拍。",
+    "bestTime": "傍晚喷泉启动后",
+    "featured": false
+  }
 ]

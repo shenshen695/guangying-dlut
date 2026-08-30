@@ -19,7 +19,7 @@ export const routeStops = [
     crowd: "中",
     description: "从南门走进校园，也走进毕业照的第一幕。开阔入口适合作为路线开场。",
     tips: "先拍正面合影，再沿入口道路向内走，保留队伍向前的动势。",
-    photo: "/assets/ui/season-spring.png",
+    photo: "/images/spot-library/南大门连理.jpg",
     position: { left: "9%", top: "78%" },
   },
   {
@@ -37,7 +37,7 @@ export const routeStops = [
     crowd: "低",
     description: "伯川周边有清晰建筑线条和安静步行空间，适合拍自然交流与回望镜头。",
     tips: "利用台阶和长廊形成纵深，人物从台阶中段回头看镜头。",
-    photo: "/assets/ui/season-summer.png",
+    photo: "/images/spot-library/伯川图书馆内.jpg",
     position: { left: "42%", top: "50%" },
   },
   {
@@ -55,7 +55,7 @@ export const routeStops = [
     crowd: "高",
     description: "主楼是毕业路线中的校园记忆核心，适合个人肖像、班级合影和建筑纪念照。",
     tips: "建议穿学士服，先拍建筑全景，再靠近台阶补拍半身和学位帽动作。",
-    photo: "/assets/ui/season-autumn.png",
+    photo: "/images/spot-library/建馆草坪.jpg",
     position: { left: "62%", top: "24%" },
   },
   {
@@ -73,16 +73,16 @@ export const routeStops = [
     crowd: "中",
     description: "湖面把校园天空和树影收进画面，适合在路线后半段放慢节奏拍自然侧影。",
     tips: "利用湖面反光和树影层次，人物动作保持松弛，适合拍背影与侧脸。",
-    photo: "/assets/ui/season-winter.png",
+    photo: "/images/spot-library/凌水湖.jpg",
     position: { left: "88%", top: "58%" },
   },
 ];
 
 export const seasons = [
-  { name: "春", badge: "推荐", time: "08:00", light: "柔光", lens: "35mm", image: "/assets/ui/season-spring.png" },
-  { name: "夏", badge: "", time: "12:30", light: "自然光", lens: "35mm", image: "/assets/ui/season-summer.png" },
-  { name: "秋", badge: "", time: "16:30", light: "斜光", lens: "50mm", image: "/assets/ui/season-autumn.png" },
-  { name: "冬", badge: "", time: "18:30", light: "逆光", lens: "85mm", image: "/assets/ui/season-winter.png" },
+  { name: "春", badge: "推荐", time: "08:00", light: "柔光", lens: "35mm", image: "/images/spot-library/伯川前二月兰.jpg" },
+  { name: "夏", badge: "", time: "12:30", light: "自然光", lens: "35mm", image: "/images/spot-library/情人路.jpg" },
+  { name: "秋", badge: "", time: "16:30", light: "斜光", lens: "50mm", image: "/images/spot-library/建艺（银杏季）.jpg" },
+  { name: "冬", badge: "", time: "18:30", light: "逆光", lens: "85mm", image: "/images/spot-library/情人坡（冬）.jpg" },
 ];
 
 export const photographers = [
@@ -118,10 +118,10 @@ export function PageShell({
 }
 
 export function TopNav({ active, actionLabel, actionHref }: { active: NavKey; actionLabel: string; actionHref: string }) {
-  const nav: Array<{ label: NavKey; href: string }> = [
+  const nav: Array<{ label: string; href: string }> = [
     { label: "主页", href: "/" },
     { label: "风格", href: "/styles" },
-    { label: "企划", href: "/planner" },
+    { label: "路线", href: "/planner" },
     { label: "地图", href: "/map" },
     { label: "摄影者", href: "/photographers" },
     { label: "共建", href: "/contribute" },
@@ -134,7 +134,7 @@ export function TopNav({ active, actionLabel, actionHref }: { active: NavKey; ac
       </Link>
       <nav className="gy-nav-links" aria-label="主导航">
         {nav.map((item) => (
-          <Link key={item.label} className={item.label === active ? "is-active" : ""} href={item.href}>
+          <Link key={item.label} className={item.label === active || (item.label === "路线" && active === "企划") ? "is-active" : ""} href={item.href}>
             {item.label}
           </Link>
         ))}
@@ -265,8 +265,8 @@ export function RouteSummaryStrip({ title = "春日花阶企划" }: { title?: st
         <p>04 凌水湖侧影剪影</p>
       </div>
       <div className="gy-plan-column">
-        <h3>AI 建议</h3>
-        <p>清晨光线柔和，顺光为主，利用湖面与建筑的对称构图。</p>
+        <h3>拍摄建议</h3>
+        <p>清晨顺光，湖面和建筑形成自然层次，人物动作放松就行。</p>
         <Link href="/route/classic-graduation">查看完整路线 →</Link>
       </div>
     </section>

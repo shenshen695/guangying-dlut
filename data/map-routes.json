@@ -1,4 +1,38 @@
 [
-  {"id":"campus-highlights","slug":"campus-highlights","name":"校园必拍地标","subtitle":"先认识工大最有故事的地方","duration":"自由探索","walkingDistance":"按兴趣选择","recommendedTime":"点击地标查看介绍与导航","spots":["lover-road","lover-slope","chairman-statue","landmark-mtbglalg","student-center","second-building","comprehensive-one","ling-shui-lake","flower-wall","south-gate"]},
-  {"id":"classic-graduation","slug":"classic-graduation","name":"工大经典毕业线","subtitle":"从南门走进青春记忆","duration":"约 120 分钟","walkingDistance":"Demo估算 · 约 2.4 km","recommendedTime":"上午 08:00 出发，下午在凌水湖与花墙收尾","spots":["south-gate","bochuan","main-building","first-building","ling-shui-lake","flower-wall"]}
+  {
+    "id": "classic-graduation",
+    "slug": "classic-graduation",
+    "name": "经典毕业路线",
+    "subtitle": "从南门走进青春记忆，途经大工最具代表性的机位",
+    "duration": "约 120 分钟",
+    "walkingDistance": "约 2.8 km",
+    "recommendedTime": "上午 08:00 出发，下午在凌水湖与花墙收尾",
+    "spots": ["south-gate", "lover-road", "music-fountain", "chairman-statue", "main-building", "ling-shui-lake", "flower-wall"],
+    "stopIntros": {
+      "south-gate": "南门开场，走进毕业的第一幕",
+      "lover-road": "林荫道光斑，校园记忆的起点",
+      "music-fountain": "音乐喷泉广场，开阔的集体合影机位",
+      "chairman-statue": "主席像与主楼，经典纪念场景",
+      "main-building": "一馆银杏林道，秋季最出片",
+      "ling-shui-lake": "凌水湖畔，路线后段的放松收尾",
+      "flower-wall": "花墙收尾，轻快明亮的最后一帧"
+    }
+  },
+  {
+    "id": "west-campus",
+    "slug": "west-campus",
+    "name": "西部校园路线",
+    "subtitle": "探索伯川、令希图书馆与西部建筑群",
+    "duration": "约 90 分钟",
+    "walkingDistance": "约 2.4 km",
+    "recommendedTime": "上午 09:00 出发",
+    "spots": ["lover-road", "bochuan", "first-building", "second-building", "comprehensive-one"],
+    "stopIntros": {
+      "lover-road": "从情人路出发，向西延伸探索",
+      "bochuan": "伯川图书馆前玉兰与二月兰，四月最美",
+      "first-building": "令希图书馆，西区地标建筑",
+      "second-building": "二馆银杏与玉兰，春秋各有亮点",
+      "comprehensive-one": "综一建筑群，西部校园收尾"
+    }
+  }
 ]
