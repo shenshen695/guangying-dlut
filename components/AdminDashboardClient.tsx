@@ -131,7 +131,7 @@ export default function AdminDashboardClient() {
   const selectedItem = currentItems.find((item) => item.id === selectedId) || currentItems[0] || null;
   const selectedIssue = currentIssues.find((issue) => issue.id === selectedId) || currentIssues[0] || null;
   const relatedLogs = selectedItem
-    ? data.reviewLogs.filter((log) => log.targetId === selectedItem.id).slice(0, 5)
+    ? data.reviewLogs.filter((log) => log.targetId === selectedItem.id || log.targetId === selectedItem.sourceId).slice(0, 5)
     : [];
 
   useEffect(() => {

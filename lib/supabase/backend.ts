@@ -4,10 +4,12 @@ import photographersData from "@/data/photographers.json";
 import worksData from "@/data/works.json";
 import spotsData from "@/data/spots.json";
 import mapSpotsData from "@/data/map-spots.json";
+import routesData from "@/data/routes.json";
 import type { Photographer, PhotographerIdentity, PhotographerStatus, PhotographerWork, PhotographerWorkCategory } from "@/types/photographer";
 import type { SubmittedWork } from "@/types/work";
 import type { MapSpot } from "@/types/map-spot";
 import type { Season } from "@/types/spot";
+import type { Route } from "@/types/route";
 import { demoModeMessage, getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export type BackendMode = "supabase" | "demo";
@@ -87,6 +89,7 @@ export type AdminSubmission = {
 
 export type AdminContentItem = {
   id: string;
+  sourceId?: string | null;
   type: ReviewTargetType;
   title: string;
   summary: string;
@@ -144,8 +147,17 @@ export type PublishedContentPatch = {
   longitude?: number | null;
 };
 
+export type PublicProfileState = {
+  slug: string;
+  isPublic: boolean;
+  featured: boolean;
+  href: string;
+  publishedAt?: string;
+};
+
 export type DashboardSummary = {
   photographerProfile: PhotographerProfileDraft | null;
+  publicProfile: PublicProfileState | null;
   spotSubmissions: AdminSubmission[];
   workSubmissions: AdminSubmission[];
 };
@@ -176,6 +188,7 @@ const photographers = photographersData as Photographer[];
 const seededWorks = worksData as SubmittedWork[];
 const localSpots = spotsData as Array<{ slug: string; name: string; shortName?: string }>;
 const localMapSpots = mapSpotsData as MapSpot[];
+const localRoutes = routesData as Route[];
 const seasons: Season[] = ["春", "夏", "秋", "冬"];
 const identities: PhotographerIdentity[] = ["摄影社成员", "校友摄影者", "在校学生", "摄影爱好者"];
 const mutualStatuses: PhotographerStatus[] = ["可互勉", "可约拍", "暂不互勉"];
@@ -325,6 +338,11 @@ function findSpotName(slug?: string | null) {
   return localSpots.find((spot) => spot.slug === slug)?.name || localMapSpots.find((spot) => spot.slug === slug)?.name || slug;
 }
 
+function findRouteName(slug?: string | null) {
+  if (!slug) return "未关联路线";
+  return localRoutes.find((route) => route.slug === slug || route.id === slug)?.name || slug;
+}
+
 function deriveCategories(styleTags: string[], spotName: string, description?: string | null): PhotographerWorkCategory[] {
   const text = `${styleTags.join(" ")} ${spotName} ${description || ""}`;
   const categories = new Set<PhotographerWorkCategory>(["毕业照"]);
@@ -350,6 +368,17 @@ function isMissingColumnError(error: { code?: string; message?: string } | null 
   if (!error) return false;
   const message = error.message || "";
   return error.code === "42703" || error.code === "PGRST204" || message.includes("Could not find") || message.includes("column");
+}
+
+function isMissingSchemaError(error: { code?: string; message?: string } | null | undefined) {
+  if (!error) return false;
+  const message = error.message || "";
+  return isMissingColumnError(error)
+    || error.code === "42P01"
+    || error.code === "PGRST205"
+    || message.includes("schema cache")
+    || message.includes("relation")
+    || message.includes("table");
 }
 
 async function getCurrentUser() {
@@ -390,6 +419,27 @@ export async function listApprovedPhotographers() {
     return { mode: "demo" as const, photographers, message: demoModeMessage };
   }
 
+  const published = await supabase
+    .from("published_photographers")
+    .select("*")
+    .eq("is_public", true)
+    .order("featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (!published.error) {
+    return {
+      mode: "supabase" as const,
+      photographers: (published.data || []).map(mapPublicPhotographer),
+      message: (published.data || []).length
+        ? "已显示 Supabase 正式公开摄影师。"
+        : "Supabase 正式摄影师表暂无公开数据，页面保留演示数据。",
+    };
+  }
+
+  if (!isMissingSchemaError(published.error)) {
+    return { mode: "demo" as const, photographers, message: `读取正式摄影师表失败，已使用演示数据：${published.error.message}` };
+  }
+
   const { data, error } = await supabase
     .from("photographer_profiles")
     .select("*")
@@ -404,7 +454,9 @@ export async function listApprovedPhotographers() {
   return {
     mode: "supabase" as const,
     photographers: (data || []).filter(isRowPublic).map(mapPublicPhotographer),
-    message: (data || []).length ? "已显示 Supabase 已审核摄影师。" : "Supabase 暂无已审核摄影师，页面保留演示数据。",
+    message: (data || []).length
+      ? "正式摄影师表未就绪，暂从已审核申请表读取公开摄影师。"
+      : "Supabase 暂无已审核摄影师，页面保留演示数据。",
   };
 }
 
@@ -412,6 +464,25 @@ export async function getApprovedPhotographerBySlug(slug: string) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) {
     return { mode: "demo" as const, photographer: photographers.find((item) => item.slug === slug) || null, message: demoModeMessage };
+  }
+
+  const published = await supabase
+    .from("published_photographers")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_public", true)
+    .maybeSingle();
+
+  if (!published.error) {
+    return {
+      mode: "supabase" as const,
+      photographer: published.data ? mapPublicPhotographer(published.data) : null,
+      message: published.data ? "已读取 Supabase 正式公开摄影师主页。" : "未找到正式公开摄影师，使用本地占位内容。",
+    };
+  }
+
+  if (!isMissingSchemaError(published.error)) {
+    return { mode: "demo" as const, photographer: photographers.find((item) => item.slug === slug) || null, message: `读取正式摄影师主页失败：${published.error.message}` };
   }
 
   const { data, error } = await supabase
@@ -430,13 +501,34 @@ export async function getApprovedPhotographerBySlug(slug: string) {
     photographer: data && isRowPublic(data) ? mapPublicPhotographer(data) : null,
     message: data && !isRowPublic(data)
       ? "该摄影师主页已由管理员下架，使用本地占位内容。"
-      : data ? "已读取 Supabase 已审核摄影师主页。" : "未找到已审核摄影师，使用本地占位内容。",
+      : data ? "正式摄影师表未就绪，暂从已审核申请表读取主页。" : "未找到已审核摄影师，使用本地占位内容。",
   };
 }
 
 export async function listApprovedWorksForPhotographer(photographer: Pick<Photographer, "sourceId" | "slug" | "name">) {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return { mode: "demo" as const, works: [] as PhotographerWork[], message: demoModeMessage };
+
+  const published = await supabase
+    .from("published_works")
+    .select("*")
+    .eq("is_public", true)
+    .order("featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (!published.error) {
+    const name = photographer.name.trim().toLowerCase();
+    const works = (published.data || [])
+      .filter((row) => {
+        if (photographer.sourceId && (row.photographer_profile_id === photographer.sourceId || row.source_profile_id === photographer.sourceId)) return true;
+        if (photographer.slug && row.photographer_slug === photographer.slug) return true;
+        return String(row.photographer_name || "").trim().toLowerCase() === name;
+      })
+      .map(mapPublicWork);
+    return { mode: "supabase" as const, works, message: works.length ? "已读取 Supabase 正式公开作品。" : "暂无 Supabase 正式公开作品。" };
+  }
+
+  if (!isMissingSchemaError(published.error)) return { mode: "demo" as const, works: [] as PhotographerWork[], message: `读取正式作品失败：${published.error.message}` };
 
   const { data, error } = await supabase
     .from("work_submissions")
@@ -456,12 +548,31 @@ export async function listApprovedWorksForPhotographer(photographer: Pick<Photog
     })
     .map(mapPublicWork);
 
-  return { mode: "supabase" as const, works, message: works.length ? "已读取 Supabase 已审核作品。" : "暂无 Supabase 已审核作品。" };
+  return { mode: "supabase" as const, works, message: works.length ? "正式作品表未就绪，暂从已审核作品投稿读取。" : "暂无 Supabase 已审核作品。" };
 }
 
 export async function listApprovedMapSpots() {
   const supabase = getSupabaseBrowserClient();
   if (!supabase) return { mode: "demo" as const, spots: [] as MapSpot[], message: demoModeMessage };
+
+  const published = await supabase
+    .from("published_spots")
+    .select("*")
+    .eq("is_public", true)
+    .order("featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (!published.error) {
+    return {
+      mode: "supabase" as const,
+      spots: (published.data || []).map(mapPublicMapSpot),
+      message: (published.data || []).length
+        ? "已合并 Supabase 正式公开共建点位。"
+        : "Supabase 正式点位表暂无公开数据。",
+    };
+  }
+
+  if (!isMissingSchemaError(published.error)) return { mode: "demo" as const, spots: [] as MapSpot[], message: `读取正式共建点位失败：${published.error.message}` };
 
   const { data, error } = await supabase
     .from("spot_submissions")
@@ -475,7 +586,7 @@ export async function listApprovedMapSpots() {
   return {
     mode: "supabase" as const,
     spots: (data || []).filter(isRowPublic).map(mapPublicMapSpot),
-    message: (data || []).length ? "已合并 Supabase 已审核共建点位。" : "暂无 Supabase 已审核共建点位。",
+    message: (data || []).length ? "正式点位表未就绪，暂从已审核点位投稿读取。" : "暂无 Supabase 已审核共建点位。",
   };
 }
 
@@ -720,6 +831,133 @@ export async function listAdminSubmissions() {
   };
 }
 
+async function getPublishedPhotographerByProfileId(supabase: any, profileId?: string | null) {
+  if (!profileId) return null;
+  const { data, error } = await supabase
+    .from("published_photographers")
+    .select("slug,name")
+    .eq("source_profile_id", profileId)
+    .maybeSingle();
+  if (error) return null;
+  return data || null;
+}
+
+async function getPhotographerProfileForWork(supabase: any, profileId?: string | null) {
+  if (!profileId) return null;
+  const { data, error } = await supabase
+    .from("photographer_profiles")
+    .select("id,slug,name")
+    .eq("id", profileId)
+    .maybeSingle();
+  if (error) return null;
+  return data || null;
+}
+
+async function syncApprovedContentToPublished(supabase: any, targetType: ReviewTargetType, id: string) {
+  if (targetType === "photographer") {
+    const { data, error } = await supabase.from("photographer_profiles").select("*").eq("id", id).maybeSingle();
+    if (error) return { ok: false, message: error.message };
+    if (!data) return { ok: false, message: "没有找到摄影师申请记录。" };
+
+    const imageUrls = arrayValue(data.representative_image_urls);
+    const payload = {
+      source_profile_id: data.id,
+      user_id: data.user_id,
+      slug: data.slug || makeProfileSlug(data.name || "photographer", data.user_id || data.id),
+      name: data.name || "已认证摄影师",
+      identity: data.identity || "摄影爱好者",
+      bio: data.bio || "",
+      familiar_routes: arrayValue(data.familiar_routes),
+      familiar_spots: arrayValue(data.familiar_spots),
+      styles: arrayValue(data.styles),
+      seasons: arrayValue(data.seasons),
+      mutual_status: data.mutual_status || "可互勉",
+      contact_authorized: Boolean(data.contact_authorized),
+      contact_wechat: data.contact_authorized ? data.contact_wechat || null : null,
+      contact_email: data.contact_authorized ? data.contact_email || null : null,
+      contact_qq: data.contact_authorized ? data.contact_qq || null : null,
+      avatar_url: imageUrls[0] || null,
+      portfolio_note: data.portfolio_note || null,
+      featured: isRowFeatured(data),
+      is_public: isRowPublic(data),
+    };
+    const result = await supabase.from("published_photographers").upsert(payload, { onConflict: "source_profile_id" });
+    if (result.error) return { ok: false, message: result.error.message };
+    return { ok: true, message: "已同步到正式摄影师表。" };
+  }
+
+  if (targetType === "work") {
+    const { data, error } = await supabase.from("work_submissions").select("*").eq("id", id).maybeSingle();
+    if (error) return { ok: false, message: error.message };
+    if (!data) return { ok: false, message: "没有找到作品投稿记录。" };
+
+    const sourcePhotographer = await getPhotographerProfileForWork(supabase, data.photographer_profile_id);
+    const publishedPhotographer = await getPublishedPhotographerByProfileId(supabase, data.photographer_profile_id);
+    const spotName = findSpotName(data.spot_slug);
+    const payload = {
+      source_submission_id: data.id,
+      photographer_profile_id: data.photographer_profile_id || null,
+      photographer_slug: publishedPhotographer?.slug || sourcePhotographer?.slug || null,
+      photographer_name: data.photographer_name || publishedPhotographer?.name || sourcePhotographer?.name || "摄影者待补充",
+      title: data.title || `${spotName}毕业作品`,
+      spot_slug: data.spot_slug || null,
+      spot_name: spotName,
+      route_slug: data.route_slug || null,
+      route_name: findRouteName(data.route_slug),
+      season: data.season || "春",
+      style_tags: arrayValue(data.style_tags),
+      image_urls: arrayValue(data.image_urls),
+      description: data.description || "",
+      featured: isRowFeatured(data),
+      is_public: isRowPublic(data),
+    };
+    const result = await supabase.from("published_works").upsert(payload, { onConflict: "source_submission_id" });
+    if (result.error) return { ok: false, message: result.error.message };
+    return { ok: true, message: "已同步到正式作品表。" };
+  }
+
+  const { data, error } = await supabase.from("spot_submissions").select("*").eq("id", id).maybeSingle();
+  if (error) return { ok: false, message: error.message };
+  if (!data) return { ok: false, message: "没有找到点位投稿记录。" };
+
+  const latitude = Number(data.latitude);
+  const longitude = Number(data.longitude);
+  const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude);
+  const spotName = data.spot_name || "共建点位";
+  const payload = {
+    source_submission_id: data.id,
+    slug: `community-${slugify(spotName, String(data.id || "").slice(0, 8))}`,
+    name: spotName,
+    short_name: data.short_name || spotName.slice(0, 4),
+    area: data.location_description || "共建点位",
+    latitude: hasCoordinates ? latitude : null,
+    longitude: hasCoordinates ? longitude : null,
+    description: data.location_description || "管理员审核通过的共建机位。",
+    best_time: data.recommended_time || "待补充",
+    sun_direction: data.sun_direction || "待补充",
+    focal_length: data.focal_length || "待补充",
+    seasons: arrayValue(data.seasons),
+    crowd_level: data.crowd_level || "中",
+    shooting_tips: data.shooting_tips || "拍摄建议待补充。",
+    image_urls: arrayValue(data.image_urls),
+    featured: isRowFeatured(data),
+    is_public: isRowPublic(data),
+    coordinates_pending: !hasCoordinates,
+  };
+  const result = await supabase.from("published_spots").upsert(payload, { onConflict: "source_submission_id" });
+  if (result.error) return { ok: false, message: result.error.message };
+  return { ok: true, message: "已同步到正式点位表。" };
+}
+
+async function hidePublishedContent(supabase: any, targetType: ReviewTargetType, id: string) {
+  const table = targetType === "spot" ? "published_spots" : targetType === "work" ? "published_works" : "published_photographers";
+  const sourceColumn = targetType === "photographer" ? "source_profile_id" : "source_submission_id";
+  const { error } = await supabase.from(table).update({ is_public: false }).eq(sourceColumn, id);
+  if (isMissingSchemaError(error)) return { ok: true, message: "正式内容表尚未创建，暂不执行下架同步。" };
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, message: "未通过内容不会进入公开展示；如已发布则已下架。" };
+}
+
 export async function reviewSubmission(targetType: ReviewTargetType, id: string, action: ReviewAction, note: string) {
   const state = await getBackendUserState();
   if (!isSupabaseConfigured) return { ok: true, demo: true, status: actionToStatus[action], message: "演示模式下已更新本地审核状态。" };
@@ -762,7 +1000,18 @@ export async function reviewSubmission(targetType: ReviewTargetType, id: string,
     reviewer_id: state.user?.id,
   });
 
-  return { ok: true, status: nextStatus, message: "审核状态已更新。" };
+  const syncResult = nextStatus === "approved"
+    ? await syncApprovedContentToPublished(supabase, targetType, id)
+    : await hidePublishedContent(supabase, targetType, id);
+
+  if (!syncResult.ok && isMissingSchemaError({ message: syncResult.message })) {
+    return { ok: true, status: nextStatus, message: `审核状态已更新；正式内容表尚未创建，请重新执行 supabase/schema.sql 后再审核或同步。${syncResult.message}` };
+  }
+  if (!syncResult.ok) {
+    return { ok: true, status: nextStatus, message: `审核状态已更新，但正式展示同步失败：${syncResult.message}` };
+  }
+
+  return { ok: true, status: nextStatus, message: `审核状态已更新，${syncResult.message}` };
 }
 
 async function getAdminAccess() {
@@ -804,10 +1053,24 @@ export async function listPublishedPhotographersForAdmin() {
   }
 
   const { data, error } = await access.supabase
-    .from("photographer_profiles")
+    .from("published_photographers")
     .select("*")
-    .in("status", ["approved", "pending", "needs_revision", "rejected"])
-    .order("created_at", { ascending: false });
+    .order("featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (isMissingSchemaError(error)) {
+    const legacy = await access.supabase
+      .from("photographer_profiles")
+      .select("*")
+      .in("status", ["approved", "pending", "needs_revision", "rejected"])
+      .order("created_at", { ascending: false });
+    return {
+      mode: "supabase" as const,
+      allowed: true,
+      message: "正式摄影师表尚未创建，暂从申请表读取管理数据。",
+      items: (legacy.data || []).map(mapAdminPhotographerContent),
+    };
+  }
 
   return {
     mode: "supabase" as const,
@@ -827,11 +1090,25 @@ export async function listPublishedWorksForAdmin() {
   }
 
   const { data, error } = await access.supabase
-    .from("work_submissions")
+    .from("published_works")
     .select("*")
-    .eq("status", "approved")
-    .order("reviewed_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
+    .order("featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (isMissingSchemaError(error)) {
+    const legacy = await access.supabase
+      .from("work_submissions")
+      .select("*")
+      .eq("status", "approved")
+      .order("reviewed_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false });
+    return {
+      mode: "supabase" as const,
+      allowed: true,
+      message: "正式作品表尚未创建，暂从作品投稿表读取管理数据。",
+      items: (legacy.data || []).map(mapAdminWorkContent),
+    };
+  }
 
   return {
     mode: "supabase" as const,
@@ -851,11 +1128,25 @@ export async function listPublishedSpotsForAdmin() {
   }
 
   const { data, error } = await access.supabase
-    .from("spot_submissions")
+    .from("published_spots")
     .select("*")
-    .eq("status", "approved")
-    .order("reviewed_at", { ascending: false, nullsFirst: false })
-    .order("created_at", { ascending: false });
+    .order("featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (isMissingSchemaError(error)) {
+    const legacy = await access.supabase
+      .from("spot_submissions")
+      .select("*")
+      .eq("status", "approved")
+      .order("reviewed_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false });
+    return {
+      mode: "supabase" as const,
+      allowed: true,
+      message: "正式点位表尚未创建，暂从点位投稿表读取管理数据。",
+      items: (legacy.data || []).map(mapAdminSpotContent),
+    };
+  }
 
   return {
     mode: "supabase" as const,
@@ -884,37 +1175,52 @@ export async function getAdminDashboard(): Promise<{ mode: BackendMode; allowed:
     pendingWorksResult,
     pendingSpotsResult,
   ] = await Promise.all([
-    supabase.from("photographer_profiles").select("*").in("status", ["approved", "pending", "needs_revision", "rejected"]).order("created_at", { ascending: false }),
-    supabase.from("work_submissions").select("*").eq("status", "approved").order("created_at", { ascending: false }),
-    supabase.from("spot_submissions").select("*").eq("status", "approved").order("created_at", { ascending: false }),
+    supabase.from("published_photographers").select("*").order("featured", { ascending: false }).order("updated_at", { ascending: false }),
+    supabase.from("published_works").select("*").order("featured", { ascending: false }).order("updated_at", { ascending: false }),
+    supabase.from("published_spots").select("*").order("featured", { ascending: false }).order("updated_at", { ascending: false }),
     supabase.from("review_logs").select("*").order("created_at", { ascending: false }).limit(20),
     supabase.from("photographer_profiles").select("id,status").in("status", ["pending", "needs_revision"]),
     supabase.from("work_submissions").select("id,status").in("status", ["pending", "needs_revision"]),
     supabase.from("spot_submissions").select("id,status").in("status", ["pending", "needs_revision"]),
   ]);
 
+  const [legacyPhotographers, legacyWorks, legacySpots] = await Promise.all([
+    isMissingSchemaError(photographersResult.error)
+      ? supabase.from("photographer_profiles").select("*").in("status", ["approved", "pending", "needs_revision", "rejected"]).order("created_at", { ascending: false })
+      : Promise.resolve({ data: photographersResult.data, error: photographersResult.error }),
+    isMissingSchemaError(worksResult.error)
+      ? supabase.from("work_submissions").select("*").eq("status", "approved").order("created_at", { ascending: false })
+      : Promise.resolve({ data: worksResult.data, error: worksResult.error }),
+    isMissingSchemaError(spotsResult.error)
+      ? supabase.from("spot_submissions").select("*").eq("status", "approved").order("created_at", { ascending: false })
+      : Promise.resolve({ data: spotsResult.data, error: spotsResult.error }),
+  ]);
+
   const dashboard: AdminDashboardData = {
-    photographers: (photographersResult.data || []).map(mapAdminPhotographerContent),
-    works: (worksResult.data || []).map(mapAdminWorkContent),
-    spots: (spotsResult.data || []).map(mapAdminSpotContent),
+    photographers: (legacyPhotographers.data || []).map(mapAdminPhotographerContent),
+    works: (legacyWorks.data || []).map(mapAdminWorkContent),
+    spots: (legacySpots.data || []).map(mapAdminSpotContent),
     reviewLogs: (reviewLogsResult.data || []).map(mapReviewLog),
     qualityIssues: [],
     stats: {
-      photographers: (photographersResult.data || []).filter((row) => row.status === "approved" && isRowPublic(row)).length,
-      works: (worksResult.data || []).filter(isRowPublic).length,
-      spots: (spotsResult.data || []).filter(isRowPublic).length,
+      photographers: (legacyPhotographers.data || []).filter((row) => safeSubmissionStatus(row.status, "approved") === "approved" && isRowPublic(row)).length,
+      works: (legacyWorks.data || []).filter((row) => safeSubmissionStatus(row.status, "approved") === "approved" && isRowPublic(row)).length,
+      spots: (legacySpots.data || []).filter((row) => safeSubmissionStatus(row.status, "approved") === "approved" && isRowPublic(row)).length,
       pending: (pendingPhotographersResult.data || []).length + (pendingWorksResult.data || []).length + (pendingSpotsResult.data || []).length,
     },
   };
   dashboard.qualityIssues = buildQualityIssues(dashboard);
 
-  const message = photographersResult.error?.message
-    || worksResult.error?.message
-    || spotsResult.error?.message
+  const message = legacyPhotographers.error?.message
+    || legacyWorks.error?.message
+    || legacySpots.error?.message
     || reviewLogsResult.error?.message
     || pendingPhotographersResult.error?.message
     || pendingWorksResult.error?.message
     || pendingSpotsResult.error?.message
+    || (isMissingSchemaError(photographersResult.error) || isMissingSchemaError(worksResult.error) || isMissingSchemaError(spotsResult.error)
+      ? "正式内容表尚未完全创建，管理员工作台暂使用旧审核表兜底。"
+      : "")
     || access.message;
 
   return { mode: "supabase", allowed: true, message, data: dashboard };
@@ -925,19 +1231,21 @@ export async function updatePublishedContentStatus(targetType: ReviewTargetType,
   if (access.mode === "demo") return { ok: true, demo: true, message: "演示模式下已更新前端状态。" };
   if (!access.allowed || !access.supabase) return { ok: false, message: access.message };
 
-  const table = targetType === "spot" ? "spot_submissions" : targetType === "work" ? "work_submissions" : "photographer_profiles";
+  const table = targetType === "spot" ? "published_spots" : targetType === "work" ? "published_works" : "published_photographers";
   const payload: Record<string, boolean | number | null> = {};
   if (typeof patch.featured === "boolean") payload.featured = patch.featured;
   if (typeof patch.isPublic === "boolean") payload.is_public = patch.isPublic;
   if (targetType === "spot") {
     if (typeof patch.latitude === "number" || patch.latitude === null) payload.latitude = patch.latitude;
     if (typeof patch.longitude === "number" || patch.longitude === null) payload.longitude = patch.longitude;
+    if (typeof patch.latitude === "number" && typeof patch.longitude === "number") payload.coordinates_pending = false;
+    if (patch.latitude === null || patch.longitude === null) payload.coordinates_pending = true;
   }
   if (Object.keys(payload).length === 0) return { ok: false, message: "没有可保存的管理字段。" };
 
   const { error } = await access.supabase.from(table).update(payload).eq("id", id);
-  if (isMissingColumnError(error)) {
-    return { ok: false, message: "数据库还缺少 featured / is_public 等管理字段，请重新执行 supabase/schema.sql。" };
+  if (isMissingSchemaError(error)) {
+    return { ok: false, message: "数据库还缺少 published_* 正式内容表或管理字段，请重新执行 supabase/schema.sql。" };
   }
   if (error) return { ok: false, message: error.message };
 
@@ -953,6 +1261,13 @@ export async function getPhotographerDashboard(): Promise<{ mode: BackendMode; a
       message: `${demoModeMessage}，当前展示摄影师管理演示数据。`,
       data: {
         photographerProfile: photographerToDraft(photographers[0]),
+        publicProfile: {
+          slug: photographers[0].slug,
+          isPublic: true,
+          featured: true,
+          href: `/photographers/${photographers[0].slug}`,
+          publishedAt: "演示数据",
+        },
         spotSubmissions: fallbackSpotSubmissions.slice(0, 2),
         workSubmissions: fallbackWorkSubmissions.slice(0, 2),
       },
@@ -961,7 +1276,7 @@ export async function getPhotographerDashboard(): Promise<{ mode: BackendMode; a
   if (!state.user || (state.profile?.role !== "photographer" && state.profile?.role !== "admin")) {
     const pendingData = state.user && state.profile?.role === "photographer_pending"
       ? await getOwnPhotographerDashboardData(state.user.id)
-      : { photographerProfile: null, spotSubmissions: [], workSubmissions: [] };
+      : { photographerProfile: null, publicProfile: null, spotSubmissions: [], workSubmissions: [] };
     return {
       mode: "supabase",
       allowed: false,
@@ -992,14 +1307,23 @@ export async function getPhotographerDashboard(): Promise<{ mode: BackendMode; a
 
 async function getOwnPhotographerDashboardData(userId: string): Promise<DashboardSummary> {
   const supabase = getSupabaseBrowserClient()!;
-  const [profileResult, spotsResult, worksResult] = await Promise.all([
+  const [profileResult, publicProfileResult, spotsResult, worksResult] = await Promise.all([
     supabase.from("photographer_profiles").select("*").eq("user_id", userId).maybeSingle(),
+    supabase.from("published_photographers").select("*").eq("user_id", userId).maybeSingle(),
     supabase.from("spot_submissions").select("*").eq("submitted_by", userId).order("created_at", { ascending: false }),
     supabase.from("work_submissions").select("*").eq("submitted_by", userId).order("created_at", { ascending: false }),
   ]);
+  const publicRow = isMissingSchemaError(publicProfileResult.error) ? null : publicProfileResult.data;
 
   return {
     photographerProfile: profileResult.data ? mapPhotographerProfileDraft(profileResult.data) : null,
+    publicProfile: publicRow ? {
+      slug: publicRow.slug || "",
+      isPublic: isRowPublic(publicRow),
+      featured: isRowFeatured(publicRow),
+      href: publicRow.slug ? `/photographers/${publicRow.slug}` : "/photographers",
+      publishedAt: formatDate(publicRow.updated_at || publicRow.created_at),
+    } : null,
     spotSubmissions: (spotsResult.data || []).map(mapSpotSubmission),
     workSubmissions: (worksResult.data || []).map(mapWorkSubmission),
   };
@@ -1013,6 +1337,9 @@ export async function savePhotographerProfile(input: PhotographerProfileDraft) {
   }
 
   const supabase = getSupabaseBrowserClient()!;
+  const nextStatus: SubmissionStatus = state.profile.role === "admin"
+    ? input.status || "pending"
+    : input.status === "approved" ? "needs_revision" : input.status || "pending";
   const payload = {
     user_id: state.user.id,
     slug: input.slug,
@@ -1028,11 +1355,26 @@ export async function savePhotographerProfile(input: PhotographerProfileDraft) {
     contact_wechat: input.contact_wechat,
     contact_email: input.contact_email,
     contact_qq: input.contact_qq,
-    status: input.status || "pending",
+    status: nextStatus,
   };
 
-  const { error } = await supabase.from("photographer_profiles").upsert(payload, { onConflict: "user_id" });
+  const { data, error } = await supabase
+    .from("photographer_profiles")
+    .upsert(payload, { onConflict: "user_id" })
+    .select("id")
+    .single();
   if (error) return { ok: false, message: error.message };
+
+  if (state.profile.role === "admin" && nextStatus === "approved" && data?.id) {
+    const syncResult = await syncApprovedContentToPublished(supabase, "photographer", data.id);
+    if (!syncResult.ok) return { ok: true, message: `主页已保存，但正式展示同步失败：${syncResult.message}` };
+  }
+
+  if (state.profile.role !== "admin" && nextStatus === "needs_revision") {
+    await supabase.rpc("hide_own_published_photographer");
+    return { ok: true, message: "主页修改已保存，并进入需重新审核状态；重新通过前不会公开展示。" };
+  }
+
   return { ok: true, message: "摄影师主页已保存，等待审核或展示。" };
 }
 
@@ -1040,9 +1382,9 @@ export function parseList(value: string) {
   return normalizeList(value);
 }
 
-function safeSubmissionStatus(value: unknown): SubmissionStatus {
+function safeSubmissionStatus(value: unknown, fallback: SubmissionStatus = "pending"): SubmissionStatus {
   if (value === "approved" || value === "needs_revision" || value === "rejected" || value === "pending") return value;
-  return "pending";
+  return fallback;
 }
 
 function makeEmptyAdminDashboardData(): AdminDashboardData {
@@ -1359,8 +1701,9 @@ function mapAdminPhotographerContent(row: Record<string, any>): AdminContentItem
   const styles = arrayValue(row.styles);
   const familiarSpots = arrayValue(row.familiar_spots);
   const seasonsList = arrayValue(row.seasons);
-  const images = arrayValue(row.representative_image_urls);
-  const status = safeSubmissionStatus(row.status);
+  const representativeImages = arrayValue(row.representative_image_urls);
+  const images = representativeImages.length ? representativeImages : row.avatar_url ? [row.avatar_url] : [];
+  const status = safeSubmissionStatus(row.status, "approved");
   const profileName = row.name || "摄影师主页";
   const slug = row.slug || slugify(profileName, `photographer-${String(row.id || "").slice(0, 8)}`);
   const issues = [
@@ -1370,6 +1713,7 @@ function mapAdminPhotographerContent(row: Record<string, any>): AdminContentItem
 
   return {
     id: row.id,
+    sourceId: row.source_profile_id || row.id,
     type: "photographer",
     title: profileName,
     summary: `${row.identity || "身份待补充"} / ${styles.join("、") || "风格待补充"} / ${familiarSpots.join("、") || "点位待补充"}`,
@@ -1397,8 +1741,9 @@ function mapAdminPhotographerContent(row: Record<string, any>): AdminContentItem
 function mapAdminWorkContent(row: Record<string, any>): AdminContentItem {
   const styleTags = arrayValue(row.style_tags);
   const images = arrayValue(row.image_urls);
-  const spotName = findSpotName(row.spot_slug);
-  const status = safeSubmissionStatus(row.status);
+  const spotName = row.spot_name || findSpotName(row.spot_slug);
+  const routeName = row.route_name || findRouteName(row.route_slug);
+  const status = safeSubmissionStatus(row.status, "approved");
   const issues = [
     images.length ? "" : "缺少图片",
     row.description ? "" : "缺少拍摄说明",
@@ -1406,21 +1751,22 @@ function mapAdminWorkContent(row: Record<string, any>): AdminContentItem {
 
   return {
     id: row.id,
+    sourceId: row.source_submission_id || row.id,
     type: "work",
     title: row.title || `${spotName}毕业作品`,
     summary: `${row.photographer_name || "摄影者待补充"} / ${spotName} / ${row.season || "季节待补充"} / ${styleTags.join("、") || "风格待补充"}`,
     status,
     createdAt: formatDate(row.created_at),
     imageUrls: images,
-    submittedBy: row.submitted_by,
+    submittedBy: row.submitted_by || row.photographer_profile_id,
     isPublic: isRowPublic(row),
     featured: isRowFeatured(row),
-    href: "/photographers",
+    href: row.photographer_slug ? `/photographers/${row.photographer_slug}` : "/photographers",
     qualityIssues: issues,
     details: [
       { label: "摄影者", value: row.photographer_name || "待补充" },
       { label: "关联点位", value: spotName },
-      { label: "关联路线", value: row.route_slug || "待补充" },
+      { label: "关联路线", value: routeName },
       { label: "季节", value: row.season || "待补充" },
       { label: "风格标签", value: styleTags.join(" / ") || "待补充" },
       { label: "拍摄说明", value: row.description || "待补充" },
@@ -1436,21 +1782,26 @@ function mapAdminSpotContent(row: Record<string, any>): AdminContentItem {
   const latitude = Number(row.latitude);
   const longitude = Number(row.longitude);
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude);
-  const status = safeSubmissionStatus(row.status);
+  const status = safeSubmissionStatus(row.status, "approved");
+  const spotName = row.name || row.spot_name || "未命名点位";
+  const area = row.area || row.location_description || "位置待补充";
+  const bestTime = row.best_time || row.recommended_time || "时间待补充";
+  const description = row.description || row.location_description || "待补充";
   const issues = [
-    hasCoordinates ? "" : "坐标待补充",
+    hasCoordinates && !row.coordinates_pending ? "" : "坐标待补充",
     images.length ? "" : "缺少图片",
   ].filter(Boolean);
 
   return {
     id: row.id,
+    sourceId: row.source_submission_id || row.id,
     type: "spot",
-    title: row.spot_name || "未命名点位",
-    summary: `${row.location_description || "位置待补充"} / ${row.recommended_time || "时间待补充"} / ${row.focal_length || "焦段待补充"}`,
+    title: spotName,
+    summary: `${area} / ${bestTime} / ${row.focal_length || "焦段待补充"}`,
     status,
     createdAt: formatDate(row.created_at),
     imageUrls: images,
-    submittedBy: row.submitted_by,
+    submittedBy: row.submitted_by || row.source_submission_id,
     isPublic: isRowPublic(row),
     featured: isRowFeatured(row),
     href: "/map",
@@ -1458,13 +1809,13 @@ function mapAdminSpotContent(row: Record<string, any>): AdminContentItem {
     longitude: hasCoordinates ? longitude : null,
     qualityIssues: issues,
     details: [
-      { label: "位置描述", value: row.location_description || "待补充" },
-      { label: "推荐时间", value: row.recommended_time || "待补充" },
+      { label: "位置描述", value: area },
+      { label: "推荐时间", value: bestTime },
       { label: "太阳方向", value: row.sun_direction || "待补充" },
       { label: "推荐焦段", value: row.focal_length || "待补充" },
       { label: "适合季节", value: seasonsList.join(" / ") || "待补充" },
-      { label: "技巧说明", value: row.shooting_tips || "待补充" },
-      { label: "坐标", value: hasCoordinates ? `${latitude}, ${longitude}` : "坐标待补充" },
+      { label: "技巧说明", value: row.shooting_tips || description },
+      { label: "坐标", value: hasCoordinates && !row.coordinates_pending ? `${latitude}, ${longitude}` : "坐标待补充" },
       { label: "公开状态", value: isRowPublic(row) ? "公开展示" : "已下架" },
       { label: "推荐状态", value: isRowFeatured(row) ? "地图推荐" : "未推荐" },
     ],
@@ -1486,7 +1837,8 @@ function mapReviewLog(row: Record<string, any>): AdminReviewLog {
 }
 
 function mapPublicPhotographer(row: Record<string, any>, index = 0): Photographer {
-  const representativeImages = pickImages(row.representative_image_urls, index);
+  const rawImages = arrayValue(row.representative_image_urls);
+  const representativeImages = pickImages(rawImages.length ? rawImages : row.avatar_url ? [row.avatar_url] : [], index);
   const styles = arrayValue(row.styles);
   const familiarSpots = arrayValue(row.familiar_spots);
   const familiarRoutes = arrayValue(row.familiar_routes);
@@ -1494,7 +1846,7 @@ function mapPublicPhotographer(row: Record<string, any>, index = 0): Photographe
 
   return {
     source: "supabase",
-    sourceId: row.id,
+    sourceId: row.source_profile_id || row.id,
     featured: isRowFeatured(row),
     isPublic: isRowPublic(row),
     slug: row.slug || slugify(profileName, `photographer-${String(row.id || "").slice(0, 8)}`),
@@ -1531,7 +1883,7 @@ function mapPublicPhotographer(row: Record<string, any>, index = 0): Photographe
 }
 
 function mapPublicWork(row: Record<string, any>): PhotographerWork {
-  const spotName = findSpotName(row.spot_slug);
+  const spotName = row.spot_name || findSpotName(row.spot_slug);
   const styleTags = arrayValue(row.style_tags);
   const images = pickImages(row.image_urls);
   const season = seasons.includes(row.season as Season) ? row.season as Season : "春";
@@ -1554,22 +1906,25 @@ function mapPublicMapSpot(row: Record<string, any>, index: number): MapSpot {
   const latitude = Number(row.latitude);
   const longitude = Number(row.longitude);
   const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude);
-  const spotName = row.spot_name || "共建机位";
-  const slug = `community-${slugify(spotName, String(row.id || index).slice(0, 8))}`;
+  const spotName = row.name || row.spot_name || "共建机位";
+  const slug = row.slug || `community-${slugify(spotName, String(row.id || index).slice(0, 8))}`;
   const images = pickImages(row.image_urls, index);
+  const area = row.area || row.location_description || "共建点位";
+  const bestTime = row.best_time || row.recommended_time || "待补充";
+  const coordinatesPending = Boolean(row.coordinates_pending) || !hasCoordinates;
 
   return {
     source: "supabase",
-    sourceId: row.id,
-    id: `community-${row.id || slug}`,
+    sourceId: row.source_submission_id || row.id,
+    id: slug || `community-${row.id}`,
     slug,
     name: spotName,
-    shortName: spotName.slice(0, 4),
-    area: row.location_description || "共建点位",
+    shortName: row.short_name || spotName.slice(0, 4),
+    area,
     latitude: hasCoordinates ? latitude : 38.881,
     longitude: hasCoordinates ? longitude : 121.526,
-    description: row.location_description || "管理员审核通过的共建机位，位置描述待补充。",
-    bestTime: row.recommended_time || "待补充",
+    description: row.description || area || "管理员审核通过的共建机位，位置描述待补充。",
+    bestTime,
     crowdLevel: row.crowd_level === "低" || row.crowd_level === "高" ? row.crowd_level : "中",
     shootingTips: row.shooting_tips || "拍摄建议待补充。",
     tags: [...validSeasons(row.seasons), "共建机位"],
@@ -1578,8 +1933,8 @@ function mapPublicMapSpot(row: Record<string, any>, index: number): MapSpot {
     walkingRank: 2,
     images: images.map((src, imageIndex) => ({ src, alt: `${spotName}共建样片 ${imageIndex + 1}` })),
     photoPlaceholder: `${spotName}共建样片`,
-    seasonNote: hasCoordinates ? "共建审核通过" : "共建审核通过 · 坐标待补充",
-    coordinatesPending: !hasCoordinates,
+    seasonNote: coordinatesPending ? "共建审核通过 · 坐标待补充" : "共建审核通过",
+    coordinatesPending,
     featured: isRowFeatured(row),
     isPublic: isRowPublic(row),
     verified: true,

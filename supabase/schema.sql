@@ -87,6 +87,76 @@ create table if not exists public.work_submissions (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.published_photographers (
+  id uuid primary key default gen_random_uuid(),
+  source_profile_id uuid unique references public.photographer_profiles(id) on delete set null,
+  user_id uuid references public.profiles(id) on delete set null,
+  slug text not null unique,
+  name text not null,
+  identity text not null,
+  bio text not null default '',
+  familiar_routes text[] not null default '{}',
+  familiar_spots text[] not null default '{}',
+  styles text[] not null default '{}',
+  seasons text[] not null default '{}',
+  mutual_status text not null default '可互勉',
+  contact_authorized boolean not null default false,
+  contact_wechat text,
+  contact_email text,
+  contact_qq text,
+  avatar_url text,
+  portfolio_note text,
+  featured boolean not null default false,
+  is_public boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.published_works (
+  id uuid primary key default gen_random_uuid(),
+  source_submission_id uuid unique references public.work_submissions(id) on delete set null,
+  photographer_profile_id uuid references public.photographer_profiles(id) on delete set null,
+  photographer_slug text,
+  photographer_name text,
+  title text,
+  spot_slug text,
+  spot_name text,
+  route_slug text,
+  route_name text,
+  season text,
+  style_tags text[] not null default '{}',
+  image_urls text[] not null default '{}',
+  description text,
+  featured boolean not null default false,
+  is_public boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.published_spots (
+  id uuid primary key default gen_random_uuid(),
+  source_submission_id uuid unique references public.spot_submissions(id) on delete set null,
+  slug text not null unique,
+  name text not null,
+  short_name text,
+  area text,
+  latitude numeric,
+  longitude numeric,
+  description text,
+  best_time text,
+  sun_direction text,
+  focal_length text,
+  seasons text[] not null default '{}',
+  crowd_level text,
+  shooting_tips text,
+  image_urls text[] not null default '{}',
+  featured boolean not null default false,
+  is_public boolean not null default true,
+  coordinates_pending boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 alter table public.photographer_profiles
   add column if not exists representative_image_urls text[] not null default '{}',
   add column if not exists portfolio_note text,
@@ -106,6 +176,37 @@ alter table public.work_submissions
 alter table public.profiles drop constraint if exists profiles_role_check;
 alter table public.profiles
   add constraint profiles_role_check check (role in ('user', 'photographer_pending', 'photographer', 'admin'));
+
+alter table public.published_photographers
+  add column if not exists source_profile_id uuid unique references public.photographer_profiles(id) on delete set null,
+  add column if not exists user_id uuid references public.profiles(id) on delete set null,
+  add column if not exists avatar_url text,
+  add column if not exists portfolio_note text,
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_public boolean not null default true;
+
+alter table public.published_works
+  add column if not exists source_submission_id uuid unique references public.work_submissions(id) on delete set null,
+  add column if not exists photographer_profile_id uuid references public.photographer_profiles(id) on delete set null,
+  add column if not exists photographer_slug text,
+  add column if not exists photographer_name text,
+  add column if not exists spot_name text,
+  add column if not exists route_name text,
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_public boolean not null default true;
+
+alter table public.published_spots
+  add column if not exists source_submission_id uuid unique references public.spot_submissions(id) on delete set null,
+  add column if not exists short_name text,
+  add column if not exists area text,
+  add column if not exists best_time text,
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_public boolean not null default true,
+  add column if not exists coordinates_pending boolean not null default false;
+
+create index if not exists published_photographers_public_idx on public.published_photographers (is_public, featured, updated_at);
+create index if not exists published_works_public_idx on public.published_works (is_public, photographer_slug, featured, updated_at);
+create index if not exists published_spots_public_idx on public.published_spots (is_public, featured, updated_at);
 
 create table if not exists public.review_logs (
   id uuid primary key default gen_random_uuid(),
@@ -145,6 +246,21 @@ for each row execute function public.set_updated_at();
 drop trigger if exists work_submissions_set_updated_at on public.work_submissions;
 create trigger work_submissions_set_updated_at
 before update on public.work_submissions
+for each row execute function public.set_updated_at();
+
+drop trigger if exists published_photographers_set_updated_at on public.published_photographers;
+create trigger published_photographers_set_updated_at
+before update on public.published_photographers
+for each row execute function public.set_updated_at();
+
+drop trigger if exists published_works_set_updated_at on public.published_works;
+create trigger published_works_set_updated_at
+before update on public.published_works
+for each row execute function public.set_updated_at();
+
+drop trigger if exists published_spots_set_updated_at on public.published_spots;
+create trigger published_spots_set_updated_at
+before update on public.published_spots
 for each row execute function public.set_updated_at();
 
 create or replace function public.handle_new_user()
@@ -202,6 +318,40 @@ $$;
 
 grant execute on function public.request_photographer_role() to authenticated;
 
+create or replace function public.hide_own_published_photographer()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.published_photographers
+  set is_public = false
+  where user_id = auth.uid();
+end;
+$$;
+
+grant execute on function public.hide_own_published_photographer() to authenticated;
+
+create or replace function public.mask_unauthorized_photographer_contact()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.contact_authorized = false then
+    new.contact_wechat = null;
+    new.contact_email = null;
+    new.contact_qq = null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists published_photographers_mask_contact on public.published_photographers;
+create trigger published_photographers_mask_contact
+before insert or update on public.published_photographers
+for each row execute function public.mask_unauthorized_photographer_contact();
+
 create or replace function public.lock_review_fields_for_non_admin()
 returns trigger
 language plpgsql
@@ -210,7 +360,9 @@ set search_path = public
 as $$
 begin
   if public.current_user_role() <> 'admin' then
-    new.status = old.status;
+    if not (old.status = 'approved' and new.status = 'needs_revision') then
+      new.status = old.status;
+    end if;
     new.review_note = old.review_note;
     new.reviewed_by = old.reviewed_by;
     new.reviewed_at = old.reviewed_at;
@@ -240,11 +392,16 @@ alter table public.profiles enable row level security;
 alter table public.photographer_profiles enable row level security;
 alter table public.spot_submissions enable row level security;
 alter table public.work_submissions enable row level security;
+alter table public.published_photographers enable row level security;
+alter table public.published_works enable row level security;
+alter table public.published_spots enable row level security;
 alter table public.review_logs enable row level security;
 
 grant usage on schema public to anon, authenticated;
 grant select on public.photographer_profiles, public.spot_submissions, public.work_submissions to anon, authenticated;
 grant select, insert, update on public.profiles, public.photographer_profiles, public.spot_submissions, public.work_submissions to authenticated;
+grant select on public.published_photographers, public.published_works, public.published_spots to anon, authenticated;
+grant insert, update on public.published_photographers, public.published_works, public.published_spots to authenticated;
 grant select, insert on public.review_logs to authenticated;
 
 drop policy if exists "profiles read own or admin" on public.profiles;
@@ -317,6 +474,54 @@ create policy "work submissions update own pending or admin" on public.work_subm
 for update
 using ((submitted_by = auth.uid() and status in ('pending', 'needs_revision')) or public.current_user_role() = 'admin')
 with check ((submitted_by = auth.uid() and status in ('pending', 'needs_revision')) or public.current_user_role() = 'admin');
+
+drop policy if exists "published photographers public read" on public.published_photographers;
+create policy "published photographers public read" on public.published_photographers
+for select
+using (is_public = true or user_id = auth.uid() or public.current_user_role() = 'admin');
+
+drop policy if exists "published photographers admin insert" on public.published_photographers;
+create policy "published photographers admin insert" on public.published_photographers
+for insert
+with check (public.current_user_role() = 'admin');
+
+drop policy if exists "published photographers admin update" on public.published_photographers;
+create policy "published photographers admin update" on public.published_photographers
+for update
+using (public.current_user_role() = 'admin')
+with check (public.current_user_role() = 'admin');
+
+drop policy if exists "published works public read" on public.published_works;
+create policy "published works public read" on public.published_works
+for select
+using (is_public = true or public.current_user_role() = 'admin');
+
+drop policy if exists "published works admin insert" on public.published_works;
+create policy "published works admin insert" on public.published_works
+for insert
+with check (public.current_user_role() = 'admin');
+
+drop policy if exists "published works admin update" on public.published_works;
+create policy "published works admin update" on public.published_works
+for update
+using (public.current_user_role() = 'admin')
+with check (public.current_user_role() = 'admin');
+
+drop policy if exists "published spots public read" on public.published_spots;
+create policy "published spots public read" on public.published_spots
+for select
+using (is_public = true or public.current_user_role() = 'admin');
+
+drop policy if exists "published spots admin insert" on public.published_spots;
+create policy "published spots admin insert" on public.published_spots
+for insert
+with check (public.current_user_role() = 'admin');
+
+drop policy if exists "published spots admin update" on public.published_spots;
+create policy "published spots admin update" on public.published_spots
+for update
+using (public.current_user_role() = 'admin')
+with check (public.current_user_role() = 'admin');
 
 drop policy if exists "review logs admin read" on public.review_logs;
 create policy "review logs admin read" on public.review_logs

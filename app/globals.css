@@ -2205,6 +2205,7 @@ img {
 .gy-admin-note-panel h2,
 .gy-dashboard-form h2,
 .gy-dashboard-submissions h3,
+.gy-dashboard-public-state h3,
 .gy-admin-empty h2,
 .gy-admin-detail-panel h2,
 .gy-apply-side h2 {
@@ -2501,6 +2502,13 @@ img {
   gap: 24px;
   max-height: 680px;
   overflow: auto;
+}
+
+.gy-dashboard-public-state {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
 }
 
 .gy-dashboard-pending-list {

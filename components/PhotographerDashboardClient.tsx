@@ -10,6 +10,7 @@ import {
   statusLabel,
   type AdminSubmission,
   type PhotographerProfileDraft,
+  type PublicProfileState,
 } from "@/lib/supabase/backend";
 
 const emptyProfile: PhotographerProfileDraft = {
@@ -34,6 +35,7 @@ export default function PhotographerDashboardClient() {
   const [allowed, setAllowed] = useState(true);
   const [message, setMessage] = useState("正在读取摄影师管理数据...");
   const [profile, setProfile] = useState<PhotographerProfileDraft>(emptyProfile);
+  const [publicProfile, setPublicProfile] = useState<PublicProfileState | null>(null);
   const [spotSubmissions, setSpotSubmissions] = useState<AdminSubmission[]>([]);
   const [workSubmissions, setWorkSubmissions] = useState<AdminSubmission[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -43,6 +45,7 @@ export default function PhotographerDashboardClient() {
       setAllowed(result.allowed);
       setMessage(result.message || (result.mode === "demo" ? "当前为演示模式，后端未连接。" : "已连接 Supabase 摄影师管理后台。"));
       setProfile(result.data.photographerProfile || emptyProfile);
+      setPublicProfile(result.data.publicProfile);
       setSpotSubmissions(result.data.spotSubmissions);
       setWorkSubmissions(result.data.workSubmissions);
     });
@@ -154,6 +157,23 @@ export default function PhotographerDashboardClient() {
             </form>
 
             <aside className="gy-panel gy-dashboard-side">
+              <div className="gy-dashboard-public-state">
+                <h3>公开主页状态</h3>
+                {publicProfile ? (
+                  <>
+                    <p className="gy-body-copy" style={{ fontSize: 13 }}>
+                      {publicProfile.isPublic ? "主页正在前台公开展示。" : "主页已下架或等待重新公开。"}
+                      {publicProfile.featured ? " 当前为推荐摄影师。" : " 当前未设为推荐。"}
+                    </p>
+                    <div className="gy-profile-row"><span>更新时间</span><p>{publicProfile.publishedAt || "刚刚"}</p></div>
+                    <div className="gy-work-submit-actions">
+                      <Link href={publicProfile.href} className="gy-secondary-button">查看公开主页</Link>
+                    </div>
+                  </>
+                ) : (
+                  <p className="gy-body-copy" style={{ fontSize: 13 }}>认证通过后，管理员会把主页同步到正式展示区。</p>
+                )}
+              </div>
               {renderSubmissionList("我的作品投稿", workSubmissions)}
               {renderSubmissionList("我的机位投稿", spotSubmissions)}
             </aside>
