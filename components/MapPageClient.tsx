@@ -24,6 +24,18 @@ const MapView = dynamic(() => import("@/components/MapView"), {
 const ALL_POINTS = pointsData as MapPoint[];
 const ROUTES = routesData as unknown as Route[];
 
+const WEATHER_POINT_ALIASES: Record<string, string> = {
+  "综合一号楼门厅": "comprehensive-one",
+  "大活前廊": "student-center",
+  "令希图书馆": "first-building",
+};
+
+function pointIdForWeatherName(name: string): string | undefined {
+  const alias = WEATHER_POINT_ALIASES[name];
+  if (alias) return alias;
+  return ALL_POINTS.find((point) => name.includes(point.name) || point.name.includes(name))?.id;
+}
+
 type Mode = "explore" | "classic-graduation" | "west-campus" | "custom";
 
 function buildRouteWaypoints(spotIds: string[]): string {
@@ -318,8 +330,12 @@ export default function MapPageClient() {
         <p className="map-sidebar-desc">点击地图上的图标了解各机位介绍、季节亮点和实景图片。</p>
         <div className="map-sidebar-divider" />
         <WeatherRecommend
-          allPoints={ALL_POINTS}
-          onSelect={(id) => { setSelectedId(id); setSheetOpen(true); }}
+          onAddSpot={(name) => {
+            const id = pointIdForWeatherName(name);
+            if (!id) return;
+            setSelectedId(id);
+            setSheetOpen(true);
+          }}
         />
       </div>
     );

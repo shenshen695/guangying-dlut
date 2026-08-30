@@ -68,16 +68,22 @@ const SEASON_SPOTS: Record<SeasonKey, SpotEntry[]> = {
 
 // ── 天气代码分类 ──────────────────────────────────────────────────────────────
 
-function isRain(code: number) {
-  return [176, 185, 263, 266, 281, 284, 293, 296, 299, 302, 305, 308, 311, 314, 317, 320, 353, 356, 359, 362, 365, 374, 377].includes(code);
-}
-function isSnow(code: number) {
-  return [179, 182, 227, 230, 323, 326, 329, 332, 335, 338, 350, 368, 371, 392, 395, 398].includes(code);
-}
-function isSunny(code: number) { return code === 113 || code === 116; }
-function isCloudy(code: number) { return code === 119 || code === 122; }
-function isThunder(code: number) { return [200, 386, 389, 392].includes(code); }
-function isFoggy(code: number) { return [143, 248, 260].includes(code); }
+function isRain(code: number) { return [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code); }
+function isSnow(code: number) { return [71, 73, 75, 77, 85, 86].includes(code); }
+function isSunny(code: number) { return code === 0 || code === 1; }
+function isCloudy(code: number) { return [2, 3].includes(code); }
+function isThunder(code: number) { return [95, 96, 99].includes(code); }
+function isFoggy(code: number) { return [45, 48].includes(code); }
+
+const WMO_ZH: Record<number, string> = {
+  0: "晴", 1: "晴间多云", 2: "多云", 3: "阴",
+  45: "有雾", 48: "雾凇",
+  51: "小毛毛雨", 53: "毛毛雨", 55: "较强毛毛雨", 56: "轻微冻雨", 57: "冻雨",
+  61: "小雨", 63: "中雨", 65: "大雨", 66: "轻微冻雨", 67: "较强冻雨",
+  71: "小雪", 73: "中雪", 75: "大雪", 77: "米雪",
+  80: "小阵雨", 81: "阵雨", 82: "强阵雨", 85: "小阵雪", 86: "强阵雪",
+  95: "雷雨", 96: "雷雨伴冰雹", 99: "强雷雨伴冰雹",
+};
 
 // ── 推荐机位与时段 ────────────────────────────────────────────────────────────
 
@@ -240,11 +246,50 @@ export default function WeatherRecommend({ onAddSpot }: Props) {
   const month = new Date().getMonth() + 1;
 
   useEffect(() => {
-    fetch("/api/weather")
-      .then((r) => r.json())
-      .then((json: WeatherResponse) => setData(json))
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 7000);
+    const url = new URL("https://api.open-meteo.com/v1/forecast");
+    url.searchParams.set("latitude", "38.914");
+    url.searchParams.set("longitude", "121.614");
+    url.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,snowfall_sum,wind_speed_10m_max");
+    url.searchParams.set("timezone", "Asia/Shanghai");
+    url.searchParams.set("forecast_days", "4");
+
+    fetch(url, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("weather unavailable");
+        return response.json();
+      })
+      .then((json) => {
+        const daily = json?.daily;
+        if (!daily?.time?.length) throw new Error("weather unavailable");
+        const labels = ["今天", "明天", "后天", "大后天"];
+        const days: DayWeather[] = daily.time.slice(0, 4).map((date: string, index: number) => {
+          const code = Number(daily.weather_code?.[index] ?? 0);
+          return {
+            date,
+            label: labels[index] ?? date,
+            descZh: WMO_ZH[code] ?? "天气变化",
+            weatherCode: code,
+            maxTempC: Math.round(Number(daily.temperature_2m_max?.[index] ?? 0)),
+            minTempC: Math.round(Number(daily.temperature_2m_min?.[index] ?? 0)),
+            precipMM: Number(daily.precipitation_sum?.[index] ?? 0),
+            snowCM: Number(daily.snowfall_sum?.[index] ?? 0),
+            windKmph: Math.round(Number(daily.wind_speed_10m_max?.[index] ?? 0)),
+          };
+        });
+        setData({ error: false, days });
+      })
       .catch(() => setData({ error: true }))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        window.clearTimeout(timer);
+        setLoading(false);
+      });
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
   }, []);
 
   if (loading) {
@@ -280,53 +325,68 @@ export default function WeatherRecommend({ onAddSpot }: Props) {
   }
 
   const days = data.days.slice(0, 4);
+  const today = days[0];
+  const todayRec = today ? buildDayRec(today, month) : null;
 
   return (
     <div className="gy-weather-section">
       <div className="gy-weather-header">
         <h3 className="gy-weather-title">天气与拍摄推荐</h3>
-        <span className="gy-weather-source-tag">数据来源：wttr.in · 大连</span>
+        <span className="gy-weather-source-tag">未来四日 · 大连 · Open-Meteo</span>
       </div>
 
-      <div className="gy-weather-days">
-        {days.map((day) => {
+      {today && todayRec && (
+        <div className="gy-weather-today">
+          <div className="gy-weather-day-head">
+            <span className="gy-weather-day-icon">{weatherIcon(today.weatherCode, today.snowCM)}</span>
+            <div>
+              <p className="gy-weather-day-label">今天 · {today.descZh}</p>
+              <p className="gy-weather-day-desc">{today.minTempC}°–{today.maxTempC}°C · 风力 {today.windKmph}km/h</p>
+            </div>
+            {(today.precipMM > 0 || today.snowCM > 0) && (
+              <div className="gy-weather-day-meta">
+                {today.precipMM > 0 && <span>降水 {today.precipMM.toFixed(1)}mm</span>}
+                {today.snowCM > 0 && <span>降雪 {today.snowCM.toFixed(1)}cm</span>}
+              </div>
+            )}
+          </div>
+          <div className="gy-weather-day-rec">
+            <p className="gy-weather-rec-label">今日推荐机位</p>
+            <div className="gy-weather-spots-row">
+              {todayRec.spots.map((spotName) => (
+                <button
+                  key={spotName}
+                  type="button"
+                  className={`gy-weather-spot-tag is-button${added.has(spotName) ? " is-added" : ""}`}
+                  onClick={() => {
+                    onAddSpot?.(spotName);
+                    setAdded((previous) => new Set(previous).add(spotName));
+                  }}
+                >
+                  {added.has(spotName) ? "✓ 已加入 " : "＋ "}{spotName}
+                </button>
+              ))}
+            </div>
+            <p className="gy-weather-reason">{todayRec.reason}</p>
+            <p className="gy-weather-timeslot">建议拍摄时段：{todayRec.timeSlot}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="gy-weather-forecast" aria-label="未来三天天气">
+        {days.slice(1).map((day) => {
           const rec = buildDayRec(day, month);
           return (
-            <div key={day.date} className="gy-weather-day-card">
-              <div className="gy-weather-day-head">
-                <span className="gy-weather-day-icon">{weatherIcon(day.weatherCode, day.snowCM)}</span>
-                <div>
-                  <p className="gy-weather-day-label">{day.label}</p>
-                  <p className="gy-weather-day-desc">{day.descZh}</p>
-                </div>
-                <div className="gy-weather-day-meta">
-                  <span>{day.minTempC}°–{day.maxTempC}°C</span>
-                  {day.precipMM > 0 && <span>💧 {day.precipMM.toFixed(1)}mm</span>}
-                  {day.snowCM > 0 && <span>❄️ 积雪 {day.snowCM.toFixed(1)}cm</span>}
-                  {day.windKmph > 0 && <span>💨 {day.windKmph}km/h</span>}
-                </div>
+            <article key={day.date} className="gy-weather-forecast-card">
+              <div className="gy-weather-forecast-head">
+                <span>{weatherIcon(day.weatherCode, day.snowCM)}</span>
+                <div><strong>{day.label}</strong><small>{day.descZh}</small></div>
+                <b>{day.minTempC}°–{day.maxTempC}°</b>
               </div>
-              <div className="gy-weather-day-rec">
-                <p className="gy-weather-rec-label">📍 推荐机位</p>
-                <div className="gy-weather-spots-row">
-                  {rec.spots.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      className={`gy-weather-spot-tag is-button${added.has(s) ? " is-added" : ""}`}
-                      onClick={() => {
-                        onAddSpot?.(s);
-                        setAdded((prev) => new Set(prev).add(s));
-                      }}
-                    >
-                      {added.has(s) ? "✓ " : ""}{s}
-                    </button>
-                  ))}
-                </div>
-                <p className="gy-weather-reason">{rec.reason}</p>
-                <p className="gy-weather-timeslot">⏱ 建议拍摄时段：{rec.timeSlot}</p>
-              </div>
-            </div>
+              <p>{day.precipMM > 0 ? `降水 ${day.precipMM.toFixed(1)}mm` : "无明显降水"} · 风力 {day.windKmph}km/h</p>
+              <p className="gy-weather-forecast-rec">推荐：{rec.spots.slice(0, 2).join("、")}</p>
+              <small>{rec.timeSlot}</small>
+            </article>
           );
         })}
       </div>

@@ -124,6 +124,206 @@
   .gy-preset-name { font-size: 15px; }
 }
 
+/* ── Planner: weather, seasonal landmarks and text-only routes ─────────── */
+.gy-planner-discovery {
+  display: grid;
+  gap: 28px;
+  padding: 2px 0 72px;
+}
+
+.gy-weather-section,
+.gy-classic-section,
+.gy-route-text-section {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, 0.86);
+  box-shadow: var(--soft-shadow);
+  padding: 24px;
+}
+
+.gy-weather-header,
+.gy-classic-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.gy-weather-title,
+.gy-classic-heading h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.gy-classic-heading .gy-eyebrow { margin-bottom: 7px; }
+.gy-classic-heading > p {
+  max-width: 360px;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: right;
+}
+
+.gy-weather-source-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #edf5f2;
+  color: var(--teal-dark);
+  font-size: 12px;
+}
+
+.gy-weather-unavail { color: var(--quiet); font-size: 12px; }
+.gy-weather-loading { margin: 0; color: var(--muted); font-size: 14px; }
+
+.gy-weather-today,
+.gy-weather-fallback-card {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #edf6f2, #f8f3e8);
+  padding: 20px;
+}
+
+.gy-weather-day-head,
+.gy-weather-forecast-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gy-weather-day-icon { font-size: 32px; line-height: 1; }
+.gy-weather-day-label { margin: 0 0 3px; color: var(--ink); font-size: 17px; font-weight: 650; }
+.gy-weather-day-desc { margin: 0; color: var(--muted); font-size: 13px; }
+.gy-weather-day-meta { display: grid; gap: 3px; margin-left: auto; color: var(--muted); font-size: 12px; text-align: right; }
+.gy-weather-day-rec { margin-top: 16px; }
+.gy-weather-rec-label { margin: 0 0 9px; color: var(--teal-dark); font-size: 13px; font-weight: 650; }
+.gy-weather-spots-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.gy-weather-spot-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid rgba(22, 123, 117, .2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: var(--teal-dark);
+  font-size: 12px;
+}
+.gy-weather-spot-tag.is-button { cursor: pointer; }
+.gy-weather-spot-tag.is-button:hover,
+.gy-weather-spot-tag.is-added { border-color: var(--teal); background: var(--teal); color: #fff; }
+.gy-weather-reason { margin: 13px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.gy-weather-timeslot { margin: 8px 0 0; color: var(--ink); font-size: 12px; }
+
+.gy-weather-forecast {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.gy-weather-forecast-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255,255,255,.54);
+  padding: 13px;
+}
+.gy-weather-forecast-head > span { font-size: 22px; }
+.gy-weather-forecast-head div { display: grid; gap: 2px; }
+.gy-weather-forecast-head strong { color: var(--ink); font-size: 13px; }
+.gy-weather-forecast-head small { color: var(--muted); font-size: 11px; }
+.gy-weather-forecast-head b { margin-left: auto; color: var(--ink); font-size: 12px; white-space: nowrap; }
+.gy-weather-forecast-card > p { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.gy-weather-forecast-card .gy-weather-forecast-rec { color: var(--teal-dark); }
+.gy-weather-forecast-card > small { display: block; margin-top: 7px; color: var(--quiet); font-size: 10px; line-height: 1.45; }
+
+.gy-season-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.gy-season-tabs button {
+  min-height: 34px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+.gy-season-tabs button.is-active { border-color: var(--teal); background: var(--teal); color: #fff; }
+.gy-classic-spot-list { display: grid; gap: 1px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--line); }
+.gy-classic-spot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: var(--panel);
+  padding: 15px 16px;
+}
+.gy-classic-spot-row h3 { margin: 0 0 4px; color: var(--ink); font-size: 15px; font-weight: 650; }
+.gy-classic-spot-row p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.gy-classic-spot-row > button {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--teal-dark);
+  font-size: 12px;
+  cursor: pointer;
+}
+.gy-classic-spot-row > button.is-added { background: var(--teal); color: #fff; }
+.gy-selected-route-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  padding: 13px 15px;
+  font-size: 13px;
+}
+.gy-selected-route-bar > div { display: flex; align-items: center; gap: 10px; }
+.gy-selected-route-bar button { border: 0; background: transparent; color: rgba(255,255,255,.62); cursor: pointer; }
+.gy-selected-route-bar a { border-radius: 999px; background: #fff; color: var(--ink); padding: 8px 12px; font-weight: 650; }
+
+.gy-route-text-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.gy-route-text-card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+.gy-route-label { color: var(--coral); font-size: 11px; letter-spacing: .08em; }
+.gy-route-text-card h3 { margin: 8px 0 7px; color: var(--ink); font-family: "Noto Serif SC", "Songti SC", SimSun, serif; font-size: 19px; font-weight: 500; }
+.gy-route-text-card > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.gy-route-text-meta { display: flex; flex-wrap: wrap; gap: 10px; margin: 13px 0; color: var(--quiet); font-size: 11px; }
+.gy-route-text-card > a { color: var(--teal-dark); font-size: 13px; font-weight: 650; }
+
+@media (max-width: 760px) {
+  .gy-planner-discovery { gap: 16px; padding-bottom: 42px; }
+  .gy-weather-section, .gy-classic-section, .gy-route-text-section { padding: 17px; border-radius: 11px; }
+  .gy-weather-header, .gy-classic-heading { display: grid; gap: 8px; }
+  .gy-weather-title, .gy-classic-heading h2 { font-size: 21px; }
+  .gy-classic-heading > p { max-width: none; margin: 0; text-align: left; }
+  .gy-weather-day-head { align-items: flex-start; }
+  .gy-weather-day-meta { width: 100%; margin-left: 0; text-align: left; }
+  .gy-weather-today { padding: 16px; }
+  .gy-weather-forecast { grid-template-columns: 1fr; }
+  .gy-classic-spot-row { align-items: flex-start; padding: 14px; }
+  .gy-classic-spot-row > button { margin-top: 1px; }
+  .gy-selected-route-bar { align-items: flex-start; }
+  .gy-selected-route-bar > div { align-items: flex-end; flex-direction: column; }
+  .gy-route-text-grid { grid-template-columns: 1fr; }
+}
+
 .gy-welcome-page {
   display: flex;
   flex-direction: column;

@@ -10,3 +10,15 @@ out-public
 .netlify
 .vercel
 coverage
+
+# Local AI agent state (keep on this Mac, never deploy)
+.claude/
+AGENTS.md
+HEARTBEAT.md
+IDENTITY.md
+SOUL.md
+TOOLS.md
+USER.md
+memory/
+openclaw-workspace-state.json
+tsconfig.tsbuildinfo
