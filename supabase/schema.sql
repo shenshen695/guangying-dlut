@@ -388,6 +388,17 @@ create trigger work_submissions_lock_review_fields
 before update on public.work_submissions
 for each row execute function public.lock_review_fields_for_non_admin();
 
+create table if not exists public.user_preferences (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  preferred_style text,
+  preferred_colors text[],
+  preferred_scenes text[],
+  people_preference text,
+  clothing_mentioned text,
+  disliked_styles text[] default '{}',
+  updated_at timestamptz default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.photographer_profiles enable row level security;
 alter table public.spot_submissions enable row level security;
@@ -396,6 +407,7 @@ alter table public.published_photographers enable row level security;
 alter table public.published_works enable row level security;
 alter table public.published_spots enable row level security;
 alter table public.review_logs enable row level security;
+alter table public.user_preferences enable row level security;
 
 grant usage on schema public to anon, authenticated;
 grant select on public.photographer_profiles, public.spot_submissions, public.work_submissions to anon, authenticated;
@@ -403,6 +415,7 @@ grant select, insert, update on public.profiles, public.photographer_profiles, p
 grant select on public.published_photographers, public.published_works, public.published_spots to anon, authenticated;
 grant insert, update on public.published_photographers, public.published_works, public.published_spots to authenticated;
 grant select, insert on public.review_logs to authenticated;
+grant select, insert, update on public.user_preferences to authenticated;
 
 drop policy if exists "profiles read own or admin" on public.profiles;
 create policy "profiles read own or admin" on public.profiles
@@ -532,6 +545,22 @@ drop policy if exists "review logs admin insert" on public.review_logs;
 create policy "review logs admin insert" on public.review_logs
 for insert
 with check (public.current_user_role() = 'admin' and reviewer_id = auth.uid());
+
+drop policy if exists "user preferences owner read" on public.user_preferences;
+create policy "user preferences owner read" on public.user_preferences
+for select
+using (user_id = auth.uid() or public.current_user_role() = 'admin');
+
+drop policy if exists "user preferences owner insert" on public.user_preferences;
+create policy "user preferences owner insert" on public.user_preferences
+for insert
+with check (user_id = auth.uid());
+
+drop policy if exists "user preferences owner update" on public.user_preferences;
+create policy "user preferences owner update" on public.user_preferences
+for update
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
 
 insert into storage.buckets (id, name, public)
 values ('gy-submissions', 'gy-submissions', true)

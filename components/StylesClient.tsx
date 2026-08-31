@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import StyleAdvisor from "@/components/StyleAdvisor";
+import StyleAgentPanel from "@/components/StyleAgentPanel";
 import { CoralRule, Eyebrow, Pill, TopNav } from "@/components/guangying-ui";
 import type { SeasonPreference, StyleReference } from "@/types/planner";
 
@@ -47,6 +49,7 @@ export default function StylesClient() {
     <main className="gy-page">
       <div className="gy-container gy-styles-container">
         <TopNav active="风格" actionLabel="生成路线" actionHref="/planner" />
+        <StyleAdvisor />
         <section className="gy-styles-head">
           <div>
             <Eyebrow muted>STYLE REFERENCES</Eyebrow>
@@ -87,20 +90,23 @@ export default function StylesClient() {
             })}
           </div>
 
-          <aside className="gy-panel gy-style-trend-panel">
-            <Eyebrow>NEW TREND</Eyebrow>
-            <h2>新兴风格推荐</h2>
-            <div className="gy-style-trend-list">
-              {trendItems.map((item) => (
-                <Link key={item.name} href={`/planner?style=${encodeURIComponent(item.name === "清冷低饱和" ? "低饱和" : item.name === "松弛感纪实" ? "Citywalk感" : item.name === "胶片颗粒感" ? "复古胶片" : item.name === "新中式校园感" ? "新中式" : item.name === "电影感逆光" ? "电影氛围" : "多巴胺轻彩")}`}>
-                  <strong>{item.name}</strong>
-                  <span>{item.keywords}</span>
-                  <p>{item.spots} · {item.time}</p>
-                  <em>{item.note}</em>
-                </Link>
-              ))}
-            </div>
-          </aside>
+          <div className="gy-style-aside-stack">
+            <StyleAgentPanel />
+            <aside className="gy-panel gy-style-trend-panel">
+              <Eyebrow>NEW TREND</Eyebrow>
+              <h2>新兴风格推荐</h2>
+              <div className="gy-style-trend-list">
+                {trendItems.map((item) => (
+                  <Link key={item.name} href={`/planner?style=${encodeURIComponent(item.name === "清冷低饱和" ? "低饱和" : item.name === "松弛感纪实" ? "Citywalk感" : item.name === "胶片颗粒感" ? "复古胶片" : item.name === "新中式校园感" ? "新中式" : item.name === "电影感逆光" ? "电影氛围" : "多巴胺轻彩")}`}>
+                    <strong>{item.name}</strong>
+                    <span>{item.keywords}</span>
+                    <p>{item.spots} · {item.time}</p>
+                    <em>{item.note}</em>
+                  </Link>
+                ))}
+              </div>
+            </aside>
+          </div>
         </section>
       </div>
     </main>

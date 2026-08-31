@@ -3683,6 +3683,621 @@ img {
   }
 }
 
+.gy-mobile-home {
+  display: none;
+}
+
+.gy-style-aside-stack {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.gy-style-agent-panel {
+  padding: 18px;
+}
+
+.gy-style-agent-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gy-style-agent-head span {
+  color: var(--teal);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+
+.gy-style-agent-head h2 {
+  margin: 5px 0 0;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.gy-style-agent-head small {
+  color: var(--quiet);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.gy-style-agent-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.gy-style-agent-stream {
+  display: grid;
+  gap: 9px;
+  max-height: 190px;
+  margin-top: 14px;
+  overflow: auto;
+}
+
+.gy-style-agent-stream > div {
+  width: min(92%, 320px);
+  padding: 10px 11px;
+  border: 1px solid rgba(222, 216, 206, 0.86);
+  border-radius: 7px;
+  background: rgba(255, 253, 249, 0.7);
+}
+
+.gy-style-agent-stream > div.is-user {
+  justify-self: end;
+  border-color: rgba(22, 123, 117, 0.32);
+  background: rgba(22, 123, 117, 0.06);
+}
+
+.gy-style-agent-stream span {
+  display: block;
+  color: var(--teal);
+  font-size: 11px;
+}
+
+.gy-style-agent-stream p {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gy-style-agent-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.gy-style-agent-form input {
+  min-width: 0;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--ink);
+  padding: 0 11px;
+  outline: none;
+}
+
+.gy-style-agent-form input:focus {
+  border-color: var(--teal);
+}
+
+.gy-style-agent-form button,
+.gy-style-agent-result a {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--teal);
+  border-radius: 5px;
+  background: var(--teal);
+  color: #fff;
+  padding: 0 13px;
+  font-size: 13px;
+}
+
+.gy-style-agent-result {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(22, 123, 117, 0.24);
+  border-radius: 7px;
+  background: rgba(246, 250, 246, 0.78);
+}
+
+.gy-style-agent-result strong,
+.gy-style-agent-result span {
+  display: block;
+}
+
+.gy-style-agent-result strong {
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.gy-style-agent-result span,
+.gy-style-agent-result p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gy-style-agent-result p {
+  margin: 6px 0 10px;
+}
+
+.gy-advisor-trigger {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 900;
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(22, 123, 117, 0.55);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.9);
+  color: var(--teal);
+  padding: 0 16px;
+  box-shadow: var(--soft-shadow);
+  cursor: pointer;
+}
+
+.gy-advisor-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 901;
+  background: rgba(27, 28, 25, 0.08);
+  backdrop-filter: blur(3px);
+}
+
+.gy-advisor-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 78px;
+  z-index: 902;
+  width: min(340px, calc(100vw - 32px));
+  transform: translateY(12px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.gy-advisor-panel.is-open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gy-advisor-header,
+.gy-advisor-body {
+  padding: 15px;
+}
+
+.gy-advisor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.gy-advisor-title {
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 18px;
+}
+
+.gy-advisor-close,
+.gy-advisor-back {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.gy-advisor-q,
+.gy-advisor-result-reason {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.gy-advisor-breadcrumb,
+.gy-advisor-result-label {
+  margin: 0 0 7px;
+  color: var(--teal);
+  font-size: 12px;
+}
+
+.gy-advisor-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 13px 0 11px;
+}
+
+.gy-advisor-opt {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--muted);
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.gy-advisor-opt:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.gy-advisor-result-name {
+  margin: 0 0 10px;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.gy-advisor-cta {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.gy-weather-section {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(222, 216, 206, 0.88);
+  border-radius: 7px;
+  background: rgba(255, 253, 249, 0.66);
+}
+
+.gy-weather-section.loading {
+  min-height: 58px;
+}
+
+.gy-weather-header,
+.gy-weather-day-head,
+.gy-weather-forecast-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.gy-weather-title {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.gy-weather-source-tag,
+.gy-weather-unavail,
+.gy-weather-loading {
+  color: var(--quiet);
+  font-size: 11px;
+}
+
+.gy-weather-today,
+.gy-weather-fallback-card {
+  margin-top: 11px;
+  padding: 12px;
+  border: 1px solid rgba(222, 216, 206, 0.82);
+  border-radius: 6px;
+  background: rgba(248, 246, 240, 0.76);
+}
+
+.gy-weather-day-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(22, 123, 117, 0.08);
+  color: var(--teal);
+}
+
+.gy-weather-day-label,
+.gy-weather-rec-label {
+  margin: 0;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.gy-weather-day-desc,
+.gy-weather-day-meta span,
+.gy-weather-reason,
+.gy-weather-timeslot,
+.gy-weather-forecast-card p,
+.gy-weather-forecast-card small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.gy-weather-day-rec {
+  margin-top: 10px;
+}
+
+.gy-weather-spots-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 8px 0;
+}
+
+.gy-weather-spot-tag {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border: 1px solid rgba(22, 123, 117, 0.28);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--teal);
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.gy-weather-spot-tag.is-button {
+  cursor: pointer;
+}
+
+.gy-weather-forecast {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.gy-weather-forecast-card {
+  padding: 10px;
+  border: 1px solid rgba(222, 216, 206, 0.72);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.62);
+}
+
+.gy-weather-forecast-card strong,
+.gy-weather-forecast-card small,
+.gy-weather-forecast-card b {
+  display: block;
+}
+
+.gy-weather-forecast-card strong,
+.gy-weather-forecast-card b {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.gy-custom-route-box {
+  flex: 0 0 auto;
+  max-height: 360px;
+  overflow: auto;
+  margin: 14px 0 0;
+  padding: 13px;
+  border: 1px solid rgba(22, 123, 117, 0.18);
+  border-radius: 7px;
+  background: rgba(246, 250, 246, 0.72);
+}
+
+.custom-planner {
+  display: grid;
+  gap: 12px;
+}
+
+.custom-planner-section {
+  display: grid;
+  gap: 9px;
+}
+
+.custom-planner-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  color: var(--teal);
+  font-size: 12px;
+}
+
+.custom-planner-count,
+.custom-planner-hint {
+  color: var(--quiet);
+  font-size: 11px;
+}
+
+.custom-spot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.custom-spot-chip {
+  min-height: 29px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 253, 249, 0.76);
+  color: var(--muted);
+  padding: 0 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.custom-spot-chip.is-selected {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.custom-spot-list,
+.custom-result-stops {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.custom-spot-item,
+.custom-result-stop {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.custom-result-stop {
+  grid-template-columns: 24px minmax(0, 1fr);
+}
+
+.custom-spot-num,
+.custom-result-num {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 10px;
+}
+
+.custom-spot-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.custom-spot-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(255, 253, 249, 0.75);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.custom-spot-btn:disabled {
+  opacity: 0.35;
+}
+
+.custom-endpoint-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.custom-endpoint-field span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--quiet);
+  font-size: 11px;
+}
+
+.custom-endpoint-select {
+  width: 100%;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: rgba(255, 253, 249, 0.76);
+  color: var(--ink);
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.custom-autoplan-btn {
+  min-height: 34px;
+  border: 1px solid var(--teal);
+  border-radius: 5px;
+  background: var(--teal);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.custom-autoplan-btn:disabled {
+  border-color: var(--line);
+  background: rgba(122, 118, 110, 0.18);
+  color: var(--quiet);
+}
+
+.custom-planner-result {
+  display: grid;
+  gap: 10px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(222, 216, 206, 0.82);
+}
+
+.custom-result-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 10px;
+}
+
+.custom-result-summary span,
+.custom-result-dist {
+  color: var(--quiet);
+  font-size: 11px;
+}
+
+.custom-result-summary strong,
+.custom-result-name {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.gy-map-empty-route {
+  display: grid;
+  gap: 8px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255, 253, 249, 0.7);
+}
+
+.gy-map-empty-route strong {
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.gy-map-empty-route span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.submission-camera-marker,
+.submission-spot-marker {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 2px solid rgba(255, 253, 249, 0.95);
+  border-radius: 999px;
+  background: var(--teal);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(42, 36, 28, 0.18);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.submission-spot-marker {
+  background: var(--coral);
+}
+
 @media (max-width: 1180px) {
   .gy-container {
     padding: 28px 22px 40px;
@@ -4009,5 +4624,324 @@ img {
 
   .gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker.is-zoomed .qmap-marker-label {
     display: inline-flex !important;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background-size: 28px 28px;
+  }
+
+  .gy-home-desktop {
+    display: none;
+  }
+
+  .gy-mobile-home {
+    display: block;
+    min-height: 100dvh;
+    padding: max(14px, env(safe-area-inset-top)) 16px calc(92px + env(safe-area-inset-bottom));
+    color: var(--ink);
+  }
+
+  .gy-mobile-hero {
+    position: relative;
+    min-height: 210px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #eef0e9;
+    box-shadow: var(--soft-shadow);
+  }
+
+  .gy-mobile-hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.82) contrast(0.96) brightness(0.92);
+  }
+
+  .gy-mobile-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(27, 28, 25, 0.05), rgba(27, 28, 25, 0.52));
+  }
+
+  .gy-mobile-hero > div {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    z-index: 1;
+    color: #fff;
+  }
+
+  .gy-mobile-hero h1 {
+    margin: 0;
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 32px;
+    font-weight: 500;
+  }
+
+  .gy-mobile-hero p {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 12px;
+  }
+
+  .gy-mobile-hero svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .gy-mobile-search-card,
+  .gy-mobile-section,
+  .gy-mobile-plan-entry {
+    margin-top: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 253, 249, 0.84);
+    box-shadow: var(--soft-shadow);
+  }
+
+  .gy-mobile-search-card {
+    padding: 12px;
+  }
+
+  .gy-mobile-search-card form {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 8px;
+    border: 1px solid rgba(222, 216, 206, 0.8);
+    border-radius: 10px;
+    background: rgba(248, 246, 240, 0.72);
+  }
+
+  .gy-mobile-search-card svg {
+    width: 19px;
+    height: 19px;
+    color: var(--teal);
+  }
+
+  .gy-mobile-search-card input {
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+    font-size: 13px;
+  }
+
+  .gy-mobile-search-card button {
+    border: 0;
+    background: transparent;
+    color: var(--teal);
+    font-size: 12px;
+  }
+
+  .gy-mobile-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .gy-mobile-shortcuts a {
+    display: grid;
+    gap: 5px;
+    justify-items: center;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .gy-mobile-shortcuts a svg {
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+    border: 1px solid rgba(22, 123, 117, 0.18);
+    border-radius: 999px;
+    background: rgba(22, 123, 117, 0.06);
+  }
+
+  .gy-mobile-section {
+    padding: 14px;
+  }
+
+  .gy-mobile-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .gy-mobile-section-head h2 {
+    margin: 0;
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .gy-mobile-section-head a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--teal);
+    font-size: 12px;
+  }
+
+  .gy-mobile-section-head svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .gy-mobile-weekly-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 9px;
+  }
+
+  .gy-mobile-weekly-grid a {
+    position: relative;
+    min-height: 112px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #eef0e9;
+  }
+
+  .gy-mobile-weekly-grid a.is-featured {
+    grid-row: span 2;
+    min-height: 233px;
+  }
+
+  .gy-mobile-weekly-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.86) contrast(0.96);
+  }
+
+  .gy-mobile-weekly-grid span {
+    position: absolute;
+    right: 9px;
+    bottom: 9px;
+    left: 9px;
+    display: grid;
+    gap: 3px;
+    border-radius: 8px;
+    background: rgba(255, 253, 249, 0.84);
+    padding: 7px 8px;
+  }
+
+  .gy-mobile-weekly-grid strong {
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .gy-mobile-weekly-grid small {
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .gy-mobile-guide-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .gy-mobile-guide-list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    gap: 8px;
+    align-items: center;
+    min-height: 58px;
+    padding: 10px 11px;
+    border: 1px solid rgba(222, 216, 206, 0.75);
+    border-radius: 10px;
+    background: rgba(248, 246, 240, 0.62);
+  }
+
+  .gy-mobile-guide-list strong,
+  .gy-mobile-guide-list small {
+    display: block;
+  }
+
+  .gy-mobile-guide-list strong {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .gy-mobile-guide-list small {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .gy-mobile-guide-list svg {
+    width: 18px;
+    height: 18px;
+    color: var(--teal);
+  }
+
+  .gy-mobile-plan-entry {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 20px;
+    gap: 10px;
+    align-items: center;
+    padding: 13px;
+    color: var(--ink);
+  }
+
+  .gy-mobile-plan-entry > span {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .gy-mobile-plan-entry strong,
+  .gy-mobile-plan-entry small {
+    display: block;
+    grid-column: 2;
+  }
+
+  .gy-mobile-plan-entry strong {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .gy-mobile-plan-entry small {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .gy-mobile-plan-entry svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .gy-advisor-trigger {
+    right: 16px;
+    bottom: calc(86px + env(safe-area-inset-bottom));
+  }
+
+  .gy-advisor-panel {
+    right: 16px;
+    bottom: calc(140px + env(safe-area-inset-bottom));
+  }
+
+  .gy-weather-forecast {
+    grid-template-columns: 1fr;
   }
 }

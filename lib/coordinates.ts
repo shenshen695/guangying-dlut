@@ -97,3 +97,14 @@ export function wgs84ToGcj02(latitude: number, longitude: number): [number, numb
 
   return [latitude + adjustedLatitude, longitude + adjustedLongitude];
 }
+
+/**
+ * Convert a GCJ-02 point selected on a mainland-China map tile back to WGS84
+ * for storage. This is intentionally approximate and only used for submitted
+ * camera-position candidates.
+ */
+export function gcj02ToWgs84(latitude: number, longitude: number): [number, number] {
+  if (isOutsideChina(latitude, longitude)) return [latitude, longitude];
+  const [convertedLatitude, convertedLongitude] = wgs84ToGcj02(latitude, longitude);
+  return [latitude * 2 - convertedLatitude, longitude * 2 - convertedLongitude];
+}

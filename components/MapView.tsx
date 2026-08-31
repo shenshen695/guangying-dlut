@@ -6,7 +6,16 @@ import type { MapSpot as Spot } from "@/types/map-spot";
 import type { Route } from "@/types/route";
 import mapPointsData from "@/data/map-points.json";
 
-type Props = { spots: Spot[]; route: Route; selectedSpotId: string | null; sheetExpanded: boolean; onSelect: (id: string) => void };
+type Props = {
+  spots: Spot[];
+  route: Route;
+  selectedSpotId: string | null;
+  sheetExpanded: boolean;
+  onSelect: (id: string) => void;
+  markerSpots?: Spot[];
+  routeSpotIds?: string[];
+  routePolyline?: string;
+};
 
 const anchors = Object.fromEntries((mapPointsData as Array<{ id: string; x: number; y: number; name: string }>).map(({ id, x, y, name }) => [id, { x, y, name }])) as Record<string, { x: number; y: number; name: string }>;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -37,13 +46,14 @@ function getSpotAnchor(spot: Spot, index: number) {
   };
 }
 
-export default function MapView({ spots, route, selectedSpotId, onSelect }: Props) {
+export default function MapView({ spots, route, selectedSpotId, onSelect, markerSpots, routeSpotIds, routePolyline }: Props) {
   const [zoom, setZoom] = useState(1);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
   const stageRef = useRef<HTMLDivElement | null>(null);
   const showMarkerLabel = zoom >= 1.25;
-  const orderedSpots = useMemo(() => route.spots.map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [route, spots]);
-  const routePoints = orderedSpots.map((spot, index) => getSpotAnchor(spot, index)).map((point) => `${point.x},${point.y}`).join(" ");
+  const orderedSpots = useMemo(() => (routeSpotIds ?? route.spots).map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [route, routeSpotIds, spots]);
+  const displayedMarkers = useMemo(() => markerSpots ?? orderedSpots, [markerSpots, orderedSpots]);
+  const routePoints = routePolyline || orderedSpots.map((spot, index) => getSpotAnchor(spot, index)).map((point) => `${point.x},${point.y}`).join(" ");
   const changeZoom = useCallback((delta: number) => {
     setZoom((value) => clampZoom(value + delta));
   }, []);
@@ -83,11 +93,12 @@ export default function MapView({ spots, route, selectedSpotId, onSelect }: Prop
         style={{ transform: `scale(${zoom})`, transformOrigin: `${origin.x}% ${origin.y}%` }}
       >
         <img className="qmap-art" src="/images/map/campus-screenshot-mosaic.jpg" alt="大工凌水校区完整校园图" draggable={false} />
-        {route.id !== "campus-highlights" && <svg className="qmap-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points={routePoints} /></svg>}
-        {orderedSpots.map((spot, index) => {
+        {route.id !== "campus-highlights" && routePoints && <svg className="qmap-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points={routePoints} /></svg>}
+        {displayedMarkers.map((spot, index) => {
           const anchor = getSpotAnchor(spot, index);
           const selected = selectedSpotId === spot.id;
-          const markerText = showMarkerLabel && !spot.featured ? String(index + 1).padStart(2, "0") : "★";
+          const routeIndex = orderedSpots.findIndex((item) => item.id === spot.id);
+          const markerText = showMarkerLabel && !spot.featured && routeIndex >= 0 ? String(routeIndex + 1).padStart(2, "0") : "★";
           return (
             <button key={spot.id} type="button" className={`qmap-marker ${spot.featured ? "is-featured" : ""} ${selected ? "is-selected" : ""} ${showMarkerLabel ? "is-zoomed" : "is-compact"}`} style={{ left: `${anchor.x}%`, top: `${anchor.y}%` }} onClick={() => onSelect(spot.id)} aria-pressed={selected} aria-label={`${spot.featured ? "推荐地标" : `第 ${index + 1} 站`}：${anchor.name}`}>
               <span className="qmap-marker-number">{markerText}</span>

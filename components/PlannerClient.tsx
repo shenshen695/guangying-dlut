@@ -5,7 +5,9 @@ import { FormEvent, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import spotsData from "@/data/spots.json";
 import routesData from "@/data/routes.json";
+import WeatherRecommend from "@/components/WeatherRecommend";
 import { buildShootingPlan } from "@/lib/planner/buildPlan";
+import { parsePeopleCount } from "@/lib/planner/people";
 import type { PlannerInput, SeasonPreference, ShootingPlan, StyleReference, TimeSlot, WalkingTolerance } from "@/types/planner";
 import type { Route } from "@/types/route";
 import type { Spot } from "@/types/spot";
@@ -47,6 +49,7 @@ export default function PlannerClient() {
     indoorBackupNeeded: false,
     walkingTolerance: "medium",
   });
+  const [peopleDraft, setPeopleDraft] = useState("1");
   const [plan, setPlan] = useState<ShootingPlan | null>(null);
   const [usedFallback, setUsedFallback] = useState(false);
 
@@ -67,6 +70,16 @@ export default function PlannerClient() {
     } catch {
       setPlan(fallbackPlan);
       setUsedFallback(true);
+    }
+  }
+
+  function updatePeopleCount(value: string) {
+    setPeopleDraft(value);
+    const parsed = parsePeopleCount(value);
+    const numeric = Number(value);
+    const nextCount = parsed ?? (Number.isFinite(numeric) && numeric > 0 ? numeric : null);
+    if (nextCount) {
+      setInput((current) => ({ ...current, peopleCount: Math.max(1, Math.min(20, Math.round(nextCount))) }));
     }
   }
 
@@ -112,7 +125,7 @@ export default function PlannerClient() {
               <div className="gy-form-grid">
                 <div className="gy-input-card">
                   <label>拍摄人数</label>
-                  <input type="number" min={1} max={20} value={input.peopleCount} onChange={(event) => setInput({ ...input, peopleCount: Number(event.target.value) })} />
+                  <input type="text" inputMode="text" value={peopleDraft} onChange={(event) => updatePeopleCount(event.target.value)} placeholder="例如：3 / 三个人 / 我和两个朋友" />
                 </div>
                 <div className="gy-input-card">
                   <label>拍摄日期</label>
@@ -180,6 +193,7 @@ export default function PlannerClient() {
                 <ul>{resultPlan.actions.map((action) => <li key={action}>{action}</li>)}</ul>
               </div>
             </section>
+            <WeatherRecommend />
             <div className="gy-map-detail-actions">
               <Link href={mapHref} className="gy-primary-button">在地图中查看路线</Link>
               <Link href="/route/classic-graduation" className="gy-secondary-button">查看路线详情</Link>
