@@ -30,6 +30,10 @@ export type Spot = {
   /** 1=步行负担低，2=中等，3=较高。 */
   walkingRank: 1 | 2 | 3;
   photoPlaceholder: string;
+  images?: Array<{ src: string; alt: string; caption?: string }>;
+  featured?: boolean;
+  navigationUrl?: string;
+  seasonNote?: string;
   verified: boolean;
   /** 预留给摄影师维护的多个具体机位，当前 Demo 为空。 */
   cameraSpots: CameraSpot[];

@@ -1,13 +1,14 @@
 import type { SVGProps } from "react";
 
 // 光影大工 Product V2：统一使用同一套 24px 线性 SVG 图标，替代字符模拟图标。
-export type AppIconName = "home" | "map" | "planner" | "user" | "search" | "camera" | "upload" | "arrow" | "clock" | "route" | "close" | "send" | "bookmark" | "plus" | "sparkles" | "chevronDown" | "heart" | "location" | "rotate" | "sun" | "graduation" | "building" | "moon" | "check";
+export type AppIconName = "home" | "map" | "planner" | "user" | "users" | "search" | "camera" | "upload" | "arrow" | "clock" | "route" | "close" | "send" | "bookmark" | "plus" | "sparkles" | "chevronDown" | "heart" | "location" | "rotate" | "sun" | "graduation" | "building" | "moon" | "check" | "star";
 
 const paths: Record<AppIconName, React.ReactNode> = {
   home: <><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.7V21h13V9.7"/><path d="M9.5 21v-6h5v6"/></>,
   map: <><path d="m3.5 6 5-2.5 7 2.5 5-2.5v14l-5 2.5-7-2.5-5 2.5z"/><path d="M8.5 3.5v14M15.5 6v14"/></>,
-  planner: <><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 2v4M16 2v4M8 10h8M8 14h5"/></>,
+  planner: <><circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.2 5.4-5.4 2.2 2.2-5.4z"/></>,
   user: <><circle cx="12" cy="8" r="3.5"/><path d="M5 21c.8-4 3.1-6 7-6s6.2 2 7 6"/></>,
+  users: <><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.7-3.7 2.6-5.5 5.5-5.5s4.8 1.8 5.5 5.5"/><path d="M15 5.5a3 3 0 0 1 0 5.7M16 14.5c2.4.4 3.9 2.2 4.5 5.5"/></>,
   search: <><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></>,
   camera: <><path d="M4 7.5h3l1.5-2h7l1.5 2h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></>,
   upload: <><path d="M12 15V3M7.5 7.5 12 3l4.5 4.5"/><path d="M5 13v7h14v-7"/></>,
@@ -28,6 +29,7 @@ const paths: Record<AppIconName, React.ReactNode> = {
   building: <><path d="M4 21V8l7-3v16M11 21V3l9 4v14M2 21h20"/><path d="M7 11h1M7 15h1M14 8h2M14 12h2M14 16h2"/></>,
   moon: <path d="M20 15.2A8.5 8.5 0 0 1 8.8 4a8.5 8.5 0 1 0 11.2 11.2z"/>,
   check: <path d="m5 12 4 4L19 6"/>,
+  star: <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>,
 };
 
 export default function AppIcon({ name, ...props }: { name: AppIconName } & SVGProps<SVGSVGElement>) {

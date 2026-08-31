@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import AppIcon from "@/components/AppIcon";
 import BottomNav from "@/components/BottomNav";
 import { getCampusMedia } from "@/data/media";
+import { getPhotographerApplication } from "@/lib/photographerApplication";
+import type { PhotographerApplicationStatus } from "@/types/photographer-application";
 
 type SavedPlan = { title: string; summary: string; spotIds: string[]; stops: { spot: { name: string } }[]; peopleCount?: number; shootType?: string; timeOfDay?: string; duration?: string };
 const samplePlan: SavedPlan = { title: "毕业照 · 4人", summary: "周六 16:00 · 2 小时", spotIds: ["main-building", "ling-shui-lake", "bochuan"], stops: [{ spot: { name: "主楼" } }, { spot: { name: "凌水湖" } }, { spot: { name: "伯川图书馆" } }] };
@@ -21,11 +23,12 @@ const works = [
 
 export default function MePage() {
   const [plans, setPlans] = useState<SavedPlan[]>([]);
-  useEffect(() => { setPlans(JSON.parse(window.localStorage.getItem("guangying-plans") || "[]") as SavedPlan[]); }, []);
+  const [photographerStatus, setPhotographerStatus] = useState<PhotographerApplicationStatus | null>(null);
+  useEffect(() => { setPlans(JSON.parse(window.localStorage.getItem("guangying-plans") || "[]") as SavedPlan[]); setPhotographerStatus(getPhotographerApplication()?.status || null); }, []);
   const visiblePlans = plans.length ? plans : [samplePlan];
   const portrait = getCampusMedia("lake-portrait");
 
-  return <main className="min-h-screen overflow-x-clip bg-mist pb-24 text-ink lg:pb-12">
+  return <main className="min-h-screen overflow-x-clip bg-mist pb-24 text-ink">
     <div className="mx-auto max-w-3xl px-4 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8">
       <section className="flex items-center gap-3.5 py-3">
         <img src={portrait.src} alt="校园摄影用户头像" className="h-[62px] w-[62px] rounded-full object-cover object-[50%_74%] ring-2 ring-white shadow-sm" />
@@ -38,6 +41,8 @@ export default function MePage() {
         { label: "作品", value: "1", href: "#works" },
         { label: "投稿", value: "3", href: "/submit/" },
       ].map((item, index) => <Link key={item.label} href={item.href} className={`${index ? "border-l border-slate-200" : ""} text-center`}><strong className="block text-[19px] font-semibold">{item.value}</strong><span className="mt-1 block text-[11px] font-medium text-slate-500">{item.label}</span></Link>)}</section>
+
+      <Link href="/photographers/apply/" className="mt-3 flex items-center gap-3 rounded-[13px] border border-slate-200 bg-white px-3 py-2.5"><span className="grid h-8 w-8 place-items-center rounded-full bg-[#e8f3f3] text-sea"><AppIcon name="camera" className="h-4 w-4" /></span><span className="min-w-0 flex-1"><strong className="block text-[12px]">摄影师身份</strong><small className="mt-0.5 block text-[10px] text-slate-500">{photographerStatus === "reviewing" || photographerStatus === "submitted" ? "摄影师申请 · 审核中" : photographerStatus === "approved" ? "我的摄影师主页" : "成为摄影师"}</small></span><AppIcon name="arrow" className="h-4 w-4 text-sea" /></Link>
 
       <section id="favorites" className="scroll-mt-3 pt-7">
         <SectionHeader title="我的收藏" action="查看全部" href="/map/" />

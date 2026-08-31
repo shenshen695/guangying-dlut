@@ -15,13 +15,13 @@ import type { Route } from "@/types/route";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false, loading: () => <div className="grid h-full min-h-[390px] place-items-center bg-[#e7ece9] text-sm text-slate-500">地图加载中…</div> });
 const spots = spotsData as Spot[];
-const baseRoute = (routesData as Route[])[0];
+const baseRoute = (routesData as Route[]).find((route) => route.id === "classic-graduation")!;
 
 // 光影大工 Product V2：地图默认纯探索；路线必须由用户选择，规划链接除外。
 const routePresets: { id: string; label: string; route: Route }[] = [
   { id: "classic", label: "经典路线", route: baseRoute },
-  { id: "west", label: "西部路线", route: { ...baseRoute, id: "west-route", slug: "west-route", name: "校园西部慢拍", subtitle: "图书馆与教学楼", duration: "约 70 分钟", spots: ["bochuan", "main-building", "first-building"] } },
-  { id: "architecture", label: "建筑路线", route: { ...baseRoute, id: "architecture-route", slug: "architecture-route", name: "大工建筑线", subtitle: "从入口到主楼", duration: "约 90 分钟", spots: ["south-gate", "bochuan", "main-building", "first-building"] } },
+  { id: "west", label: "西部路线", route: { ...baseRoute, id: "west-route", slug: "west-route", name: "校园西部慢拍", subtitle: "图书馆与教学楼", duration: "约 70 分钟", spots: ["bochuan", "main-building"] } },
+  { id: "architecture", label: "建筑路线", route: { ...baseRoute, id: "architecture-route", slug: "architecture-route", name: "大工建筑线", subtitle: "从入口到主楼", duration: "约 90 分钟", spots: ["south-gate", "bochuan", "main-building"] } },
   { id: "sunset", label: "日落路线", route: { ...baseRoute, id: "sunset-route", slug: "sunset-route", name: "日落收尾线", subtitle: "把最好的光留给湖边", duration: "约 80 分钟", spots: ["main-building", "ling-shui-lake", "flower-wall"] } },
 ];
 
@@ -56,7 +56,8 @@ export default function MapPageClient() {
   const activeRoute = activeRouteId === "custom" ? customRoute : routePresets.find((item) => item.id === activeRouteId)?.route || null;
   const visibleSpots = activeRoute ? spots : searchTerm ? (searchResults.length ? searchResults : spots) : spots;
   const selectedSpot = selectedSpotId ? spots.find((spot) => spot.id === selectedSpotId) || null : null;
-  const selectedMedia = selectedSpot ? getCampusMedia(spotMedia[selectedSpot.id]) : null;
+  const fallbackMediaId = selectedSpot ? spotMedia[selectedSpot.id] : undefined;
+  const selectedMedia = selectedSpot?.images?.[0] || (fallbackMediaId ? getCampusMedia(fallbackMediaId) : selectedSpot ? { src: "/images/map/campus-screenshot-mosaic.jpg", alt: `${selectedSpot.name}所在校园鸟瞰图` } : null);
 
   function selectRoute(id: string) {
     setActiveRouteId((current) => current === id ? null : id);

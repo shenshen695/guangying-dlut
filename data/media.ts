@@ -34,6 +34,5 @@ export const spotMedia: Record<string, string> = {
   "main-building": "main-building",
   "south-gate": "shuyang-road",
   bochuan: "autumn-light",
-  "first-building": "campus-life",
   "flower-wall": "lake-golden",
 };

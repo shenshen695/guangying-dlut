@@ -33,7 +33,6 @@ const stopAdvice: Record<string, Pick<PlanStop, "position" | "direction" | "ligh
   "main-building": { position: "主楼广场中轴偏东，利用台阶形成层次", direction: "24mm 拍建筑与全员，再移到台阶用 50mm 拍半身互动。", light: "正面反差较大，人物脸部朝向开阔天空。" },
   "south-gate": { position: "校名标识外侧，留出入口纵深", direction: "完成标准合影后，拍一组走进校园的连续动作。", light: "上午光线均匀；傍晚避免人物直面低角度强光。" },
   bochuan: { position: "图书馆台阶侧面与长廊交界", direction: "借栏杆做引导线，安排并肩走、回望和自然交谈。", light: "廊下比室外暗一档，优先保证面部曝光。" },
-  "first-building": { position: "一馆前台阶下方，镜头略微仰拍", direction: "利用楼梯错落站位，补拍不看镜头的校园日常。", light: "硬光时移入廊下，用门洞框住人物。" },
   "flower-wall": { position: "花墙前约 2 米，避开杂乱枝叶", direction: "用 50mm 拍半身与侧脸，最后抓拍整理衣服的瞬间。", light: "黄金时刻暖色明显，白色服装注意不过曝。" },
 };
 
@@ -79,7 +78,7 @@ export default function PlannerPage() {
 
   function generatePlan() {
     if (!draft || draft.peopleCount === null) return;
-    const fallback = draft.mood === "日落感" || draft.mood === "湖边" ? ["main-building", "ling-shui-lake", "flower-wall"] : draft.mood === "建筑感" ? ["south-gate", "main-building", "first-building"] : ["bochuan", "main-building", "ling-shui-lake"];
+    const fallback = draft.mood === "日落感" || draft.mood === "湖边" ? ["main-building", "ling-shui-lake", "flower-wall"] : draft.mood === "建筑感" ? ["south-gate", "main-building"] : ["bochuan", "main-building", "ling-shui-lake"];
     const maxStops = draft.duration === "30 分钟" ? 1 : draft.duration === "1 小时" ? 2 : draft.duration === "2 小时" ? 3 : 5;
     const ids = (draft.selectedSpotIds.length ? draft.selectedSpotIds : fallback).slice(0, maxStops);
     const chosen = ids.map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[];
@@ -104,7 +103,7 @@ export default function PlannerPage() {
   const mapHref = plan ? `/map/?spots=${encodeURIComponent(plan.spotIds.join(","))}&style=${encodeURIComponent(plan.title)}` : "/map/";
   const visiblePreviews = filter === "全部" ? previewPlans : filter === "收藏夹" ? previewPlans.slice(0, 1) : previewPlans.filter((item) => item.status === filter);
 
-  return <main className="min-h-screen overflow-x-clip bg-mist pb-24 text-ink lg:pb-12"><div className="mx-auto max-w-3xl px-4 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8">
+  return <main className="min-h-screen overflow-x-clip bg-mist pb-24 text-ink"><div className="mx-auto max-w-3xl px-4 pb-10 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-8">
     <section id="assistant" className="scroll-mt-3"><div className="mb-3 flex items-center gap-2"><span className="grid h-8 w-8 place-items-center rounded-full bg-[#e7f1f1] text-sea"><AppIcon name="sparkles" className="h-[17px] w-[17px]" /></span><div><h1 className="text-[19px] font-semibold">AI 摄影助手</h1><p className="text-[10px] font-medium text-slate-400">描述需求，生成一份可执行路线</p></div></div>
       {cameraSelection && <div className="mb-2.5 flex items-center gap-2 rounded-[12px] bg-[#e7f1f1] px-3 py-2 text-[11px] font-semibold text-sea"><AppIcon name="camera" className="h-4 w-4" />已带入：凌水湖 · {cameraSelection}</div>}
       <form onSubmit={analyze} className="rounded-[16px] border border-slate-200 bg-white p-3 shadow-[0_5px_18px_rgba(15,23,42,.06)]"><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} placeholder="我想和 3 个人周六下午拍毕业照，想去主楼和凌水湖……" aria-label="拍摄需求" className="w-full resize-none bg-transparent px-1 text-[14px] leading-6 outline-none placeholder:text-slate-400" /><div className="mt-1.5 flex items-center justify-between border-t border-slate-100 pt-2.5"><span className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400"><AppIcon name="location" className="h-3.5 w-3.5" />地点 · 时间 · 人数 · 风格</span><button type="submit" disabled={!prompt.trim() || analyzing} aria-label="理解拍摄需求" className="grid h-9 w-9 place-items-center rounded-full bg-sea text-white disabled:bg-slate-200"><AppIcon name={analyzing ? "sparkles" : "send"} className="h-[18px] w-[18px]" /></button></div></form>
