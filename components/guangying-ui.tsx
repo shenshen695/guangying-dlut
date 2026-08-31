@@ -19,8 +19,8 @@ export const routeStops = [
     crowd: "中",
     description: "从南门走进校园，也走进毕业照的第一幕。开阔入口适合作为路线开场。",
     tips: "先拍正面合影，再沿入口道路向内走，保留队伍向前的动势。",
-    photo: "/assets/ui/season-spring.png",
-    position: { left: "9%", top: "78%" },
+    photo: "/images/spot-library/南大门连理.jpg",
+    position: { left: "32.5%", top: "89.5%" },
   },
   {
     id: "bochuan",
@@ -37,8 +37,8 @@ export const routeStops = [
     crowd: "低",
     description: "伯川周边有清晰建筑线条和安静步行空间，适合拍自然交流与回望镜头。",
     tips: "利用台阶和长廊形成纵深，人物从台阶中段回头看镜头。",
-    photo: "/assets/ui/season-summer.png",
-    position: { left: "42%", top: "50%" },
+    photo: "/images/spots/伯川图书馆正门流云.jpg",
+    position: { left: "31%", top: "71.5%" },
   },
   {
     id: "main-building",
@@ -55,8 +55,8 @@ export const routeStops = [
     crowd: "高",
     description: "主楼是毕业路线中的校园记忆核心，适合个人肖像、班级合影和建筑纪念照。",
     tips: "建议穿学士服，先拍建筑全景，再靠近台阶补拍半身和学位帽动作。",
-    photo: "/assets/ui/season-autumn.png",
-    position: { left: "62%", top: "24%" },
+    photo: "/campus-v2/main-building.jpg",
+    position: { left: "35.4%", top: "66.2%" },
   },
   {
     id: "ling-shui-lake",
@@ -73,16 +73,16 @@ export const routeStops = [
     crowd: "中",
     description: "湖面把校园天空和树影收进画面，适合在路线后半段放慢节奏拍自然侧影。",
     tips: "利用湖面反光和树影层次，人物动作保持松弛，适合拍背影与侧脸。",
-    photo: "/assets/ui/season-winter.png",
-    position: { left: "88%", top: "58%" },
+    photo: "/images/spot-library/凌水湖.jpg",
+    position: { left: "33.6%", top: "53.6%" },
   },
 ];
 
 export const seasons = [
-  { name: "春", badge: "推荐", time: "08:00", light: "柔光", lens: "35mm", image: "/assets/ui/season-spring.png" },
-  { name: "夏", badge: "", time: "12:30", light: "自然光", lens: "35mm", image: "/assets/ui/season-summer.png" },
-  { name: "秋", badge: "", time: "16:30", light: "斜光", lens: "50mm", image: "/assets/ui/season-autumn.png" },
-  { name: "冬", badge: "", time: "18:30", light: "逆光", lens: "85mm", image: "/assets/ui/season-winter.png" },
+  { name: "春", badge: "推荐", time: "08:00", light: "柔光", lens: "35mm", image: "/images/spot-library/伯川前二月兰.jpg" },
+  { name: "夏", badge: "", time: "12:30", light: "自然光", lens: "35mm", image: "/campus-v2/lingshui-lake-wide.jpg" },
+  { name: "秋", badge: "", time: "16:30", light: "斜光", lens: "50mm", image: "/campus-v2/campus-autumn-walk.jpg" },
+  { name: "冬", badge: "", time: "18:30", light: "逆光", lens: "85mm", image: "/images/spot-library/情人坡（冬）.jpg" },
 ];
 
 export const photographers = [
@@ -130,7 +130,7 @@ export function TopNav({ active, actionLabel, actionHref }: { active: NavKey; ac
   return (
     <header className="gy-nav">
       <Link href="/" className="gy-brand" aria-label="光影大工首页">
-        光影大工<span className="gy-seal">印</span>
+        光影大工
       </Link>
       <nav className="gy-nav-links" aria-label="主导航">
         {nav.map((item) => (
@@ -139,9 +139,14 @@ export function TopNav({ active, actionLabel, actionHref }: { active: NavKey; ac
           </Link>
         ))}
       </nav>
-      <Link href={actionHref} className="gy-outline-button">
-        {actionLabel} <span aria-hidden>↗</span>
-      </Link>
+      <div className="gy-nav-actions">
+        <Link href={actionHref} className="gy-outline-button">
+          {actionLabel} <span aria-hidden>↗</span>
+        </Link>
+        <Link href="/login" className="gy-outline-button gy-login-button">
+          登录
+        </Link>
+      </div>
     </header>
   );
 }
@@ -184,26 +189,9 @@ export function IllustratedMap({
 }) {
   return (
     <div className={compact ? "gy-map is-compact" : "gy-map"}>
-      <svg viewBox="0 0 760 430" role="img" aria-label="春日花阶毕业线校园地图">
-        <path className="gy-map-road" d="M42 91 C142 54 241 78 337 70 C452 60 573 44 724 76" />
-        <path className="gy-map-road thin" d="M76 344 C164 288 244 252 326 225 C430 190 511 151 600 90" />
-        <ellipse className="gy-map-lake" cx="598" cy="246" rx="134" ry="91" />
-        <ellipse className="gy-map-island" cx="609" cy="253" rx="32" ry="20" />
-        <g className="gy-map-buildings">
-          <rect x="94" y="110" width="142" height="46" rx="5" />
-          <rect x="250" y="88" width="142" height="52" rx="5" />
-          <rect x="405" y="74" width="146" height="47" rx="5" />
-          <rect x="157" y="213" width="147" height="47" rx="5" />
-          <rect x="354" y="305" width="123" height="40" rx="5" />
-        </g>
-        <g className="gy-map-trees">
-          <ellipse cx="594" cy="53" rx="42" ry="16" />
-          <ellipse cx="482" cy="173" rx="26" ry="12" />
-          <ellipse cx="394" cy="216" rx="28" ry="11" />
-          <ellipse cx="666" cy="337" rx="33" ry="13" />
-          <ellipse cx="556" cy="361" rx="25" ry="11" />
-        </g>
-        <path className="gy-map-route" d="M79 342 C154 290 238 252 320 226 C426 190 520 129 599 92 C636 130 679 179 707 243 C681 294 638 327 584 330 C531 331 492 305 471 271" />
+      <img className="gy-map-real-art" src="/images/map/campus-screenshot-mosaic.jpg" alt="大工凌水校区校园地图" />
+      <svg viewBox="0 0 100 100" role="img" aria-label="春日花阶毕业线校园地图">
+        <polyline className="gy-map-route" points="32.5,89.5 31,71.5 35.4,66.2 33.6,53.6" />
       </svg>
       <div className="gy-map-distance">
         <span>路线总长</span>
@@ -230,7 +218,7 @@ export function IllustratedMap({
 export function RouteSummaryStrip({ title = "春日花阶企划" }: { title?: string }) {
   return (
     <section className="gy-plan-strip">
-      <img className="gy-plan-cover" src="/assets/ui/route-cover-spring.png" alt="春日花阶路线参考成片" />
+      <img className="gy-plan-cover" src="/images/spot-library/伯川前二月兰.jpg" alt="春日花阶路线参考成片" />
       <div className="gy-plan-main">
         <div className="gy-plan-title">
           <h2>{title}</h2>

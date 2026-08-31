@@ -5,11 +5,14 @@ import { FormEvent, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import spotsData from "@/data/spots.json";
 import routesData from "@/data/routes.json";
+import WeatherRecommend from "@/components/WeatherRecommend";
+import PlannerMapPreview from "@/components/PlannerMapPreview";
 import { buildShootingPlan } from "@/lib/planner/buildPlan";
+import { parsePeopleCount } from "@/lib/planner/people";
 import type { PlannerInput, SeasonPreference, ShootingPlan, StyleReference, TimeSlot, WalkingTolerance } from "@/types/planner";
 import type { Route } from "@/types/route";
 import type { Spot } from "@/types/spot";
-import { CoralRule, Eyebrow, Field, IllustratedMap, Pill, TopNav } from "@/components/guangying-ui";
+import { CoralRule, Eyebrow, Field, Pill, TopNav } from "@/components/guangying-ui";
 
 const spots = spotsData as Spot[];
 const routes = routesData as Route[];
@@ -19,8 +22,8 @@ const seasons: SeasonPreference[] = ["春", "夏", "秋", "冬"];
 
 const fallbackPlan: ShootingPlan = {
   style: "学院纪实",
-  styleReason: "AI 或生成逻辑暂时不可用，已加载春日花阶缓存企划。路线仍来自真实点位库。",
-  selectedSpotIds: routes[0].spots.slice(0, 4),
+  styleReason: "已加载春日花阶备用企划，路线点位均来自已收录的校园机位。",
+  selectedSpotIds: ["south-gate", "bochuan", "main-building", "ling-shui-lake"],
   colorPalette: ["米白", "浅青", "低饱和蓝"],
   outfit: {
     inner: "白色或浅色内搭",
@@ -29,7 +32,7 @@ const fallbackPlan: ShootingPlan = {
   },
   actions: ["南门开场全景", "伯川台阶回望", "主楼正式毕业照", "凌水湖湖畔收尾"],
   avoid: ["不生成不存在点位", "不使用未经授权图片", "不在高峰期长时间占路"],
-  notice: "缓存结果用于保证演示稳定，后续 AI 恢复后可重新生成。",
+  notice: "备用企划会保留完整路线、拍摄节奏和造型建议。",
 };
 
 export default function PlannerClient() {
@@ -47,6 +50,7 @@ export default function PlannerClient() {
     indoorBackupNeeded: false,
     walkingTolerance: "medium",
   });
+  const [peopleDraft, setPeopleDraft] = useState("1");
   const [plan, setPlan] = useState<ShootingPlan | null>(null);
   const [usedFallback, setUsedFallback] = useState(false);
 
@@ -70,21 +74,34 @@ export default function PlannerClient() {
     }
   }
 
+  function updatePeopleCount(value: string) {
+    setPeopleDraft(value);
+    const parsed = parsePeopleCount(value);
+    const numeric = Number(value);
+    const nextCount = parsed ?? (Number.isFinite(numeric) && numeric > 0 ? numeric : null);
+    if (nextCount) {
+      setInput((current) => ({ ...current, peopleCount: Math.max(1, Math.min(20, Math.round(nextCount))) }));
+    }
+  }
+
   return (
     <main className="gy-page">
       <div className="gy-container">
-        <TopNav active="企划" actionLabel="查看地图" actionHref="/map" />
+        <TopNav active="企划" actionLabel="查看地图" actionHref="/map?route=campus-highlights" />
         <section className="gy-planner-live-layout">
           <div>
             <Eyebrow>SHOOTING PLANNER</Eyebrow>
             <h1 className="gy-page-title">填写拍摄需求，生成毕业路线</h1>
             <CoralRule />
-            <p className="gy-body-copy">表单会传入真实点位库生成路线。生成结果只会使用 `data/spots.json` 中已经录入的点位。</p>
+            <p className="gy-body-copy">填写人数、时间、季节和风格后，系统会从已收录的校园机位中生成一条可执行路线。</p>
             <div className="gy-source-strip">
               <Pill active>当前季节：{input.season}</Pill>
               <Pill>{input.styleReference ? `当前风格：${input.styleReference}` : "当前风格：系统推断"}</Pill>
               <Pill>{initialStyle ? "来源：风格参考库" : "来源：主页 / 手动填写"}</Pill>
             </div>
+            <Link href="/agent" className="gy-agent-inline-link">
+              还没想好风格？先和 Agent 聊一下 ↗
+            </Link>
 
             <form onSubmit={submit} className="gy-panel gy-planner-form">
               <div>
@@ -112,7 +129,7 @@ export default function PlannerClient() {
               <div className="gy-form-grid">
                 <div className="gy-input-card">
                   <label>拍摄人数</label>
-                  <input type="number" min={1} max={20} value={input.peopleCount} onChange={(event) => setInput({ ...input, peopleCount: Number(event.target.value) })} />
+                  <input type="text" inputMode="text" value={peopleDraft} onChange={(event) => updatePeopleCount(event.target.value)} placeholder="例如：3 / 三个人 / 我和两个朋友" />
                 </div>
                 <div className="gy-input-card">
                   <label>拍摄日期</label>
@@ -155,7 +172,7 @@ export default function PlannerClient() {
           </div>
 
           <aside className="gy-panel gy-generated-panel">
-            {usedFallback ? <p className="gy-fallback-note">AI 暂时不可用，已加载春日花阶缓存企划。</p> : null}
+            {usedFallback ? <p className="gy-fallback-note">生成服务暂时不可用，已加载春日花阶备用企划。</p> : null}
             <Eyebrow>{plan ? "ROUTE GENERATED" : "DEFAULT PREVIEW"}</Eyebrow>
             <h2>{plan ? `${resultPlan.style}企划路线` : "等待生成路线"}</h2>
             <p className="gy-body-copy">{resultPlan.styleReason}</p>
@@ -164,7 +181,7 @@ export default function PlannerClient() {
               <Pill>{selectedSpots.length} 个点位</Pill>
               <Pill>{input.walkingTolerance === "short" ? "短距离" : input.walkingTolerance === "medium" ? "中等步行" : "完整路线"}</Pill>
             </div>
-            <IllustratedMap selectedSlug={selectedSpots[0]?.slug || "south-gate"} compact />
+            <PlannerMapPreview spotIds={selectedSpots.map((spot) => spot.id)} title={resultPlan.style} />
             <div className="gy-field-grid gy-field-grid-compact">
               {selectedSpots.slice(0, 4).map((spot) => (
                 <Field key={spot.id} label={spot.name} value={`${spot.bestTime} · ${spot.actionSuggestion}`} />
@@ -180,6 +197,7 @@ export default function PlannerClient() {
                 <ul>{resultPlan.actions.map((action) => <li key={action}>{action}</li>)}</ul>
               </div>
             </section>
+            <WeatherRecommend />
             <div className="gy-map-detail-actions">
               <Link href={mapHref} className="gy-primary-button">在地图中查看路线</Link>
               <Link href="/route/classic-graduation" className="gy-secondary-button">查看路线详情</Link>

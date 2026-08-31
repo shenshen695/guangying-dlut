@@ -20,9 +20,14 @@ export type PhotographerWork = {
   season: Season;
   style: string;
   categories: PhotographerWorkCategory[];
+  description?: string;
+  featured?: boolean;
+  isPublic?: boolean;
 };
 
 export type Photographer = {
+  sourceId?: string;
+  source?: "local" | "supabase";
   slug: string;
   name: string;
   identity: PhotographerIdentity;
@@ -36,4 +41,6 @@ export type Photographer = {
   contact: PhotographerContact;
   avatar: string;
   portfolio: PhotographerWork[];
+  featured?: boolean;
+  isPublic?: boolean;
 };

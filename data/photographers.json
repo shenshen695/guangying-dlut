@@ -11,12 +11,12 @@
     "mutualStatus": "可互勉",
     "authorized": true,
     "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn", "qq": "000000" },
-    "avatar": "/assets/ui/season-spring.png",
+    "avatar": "/images/spot-library/凌水湖.jpg",
     "portfolio": [
-      { "id": "ruoshui-01", "title": "南门清晨开场", "image": "/assets/ui/season-spring.png", "spot": "南门", "season": "春", "style": "海风清透", "categories": ["毕业照", "人像"] },
-      { "id": "ruoshui-02", "title": "伯川台阶回望", "image": "/assets/ui/season-summer.png", "spot": "伯川", "season": "春", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
-      { "id": "ruoshui-03", "title": "主楼学士服合影", "image": "/assets/ui/season-autumn.png", "spot": "主楼", "season": "夏", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
-      { "id": "ruoshui-04", "title": "凌水湖侧影收尾", "image": "/assets/ui/route-cover-spring.png", "spot": "凌水湖", "season": "春", "style": "清透湖畔", "categories": ["湖畔", "人像"] }
+      { "id": "ruoshui-01", "title": "南门清晨开场", "image": "/images/spot-library/南大门连理.jpg", "spot": "南门", "season": "春", "style": "海风清透", "categories": ["毕业照", "人像"] },
+      { "id": "ruoshui-02", "title": "伯川台阶回望", "image": "/images/spot-library/伯川前二月兰.jpg", "spot": "伯川", "season": "春", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
+      { "id": "ruoshui-03", "title": "主楼学士服合影", "image": "/images/spots/主席像.jpg", "spot": "主楼", "season": "夏", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
+      { "id": "ruoshui-04", "title": "凌水湖侧影收尾", "image": "/images/spot-library/凌水湖.jpg", "spot": "凌水湖", "season": "春", "style": "清透湖畔", "categories": ["湖畔", "人像"] }
     ]
   },
   {
@@ -31,12 +31,12 @@
     "mutualStatus": "可约拍",
     "authorized": true,
     "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
-    "avatar": "/assets/ui/season-autumn.png",
+    "avatar": "/campus-v2/main-building.jpg",
     "portfolio": [
-      { "id": "ming-01", "title": "伯川长廊", "image": "/assets/ui/season-autumn.png", "spot": "伯川", "season": "秋", "style": "复古胶片", "categories": ["建筑", "胶片感"] },
-      { "id": "ming-02", "title": "一馆教学楼日常", "image": "/assets/ui/season-summer.png", "spot": "一馆", "season": "秋", "style": "学院纪实", "categories": ["建筑", "毕业照"] },
-      { "id": "ming-03", "title": "主楼低机位", "image": "/assets/ui/route-cover-spring.png", "spot": "主楼", "season": "冬", "style": "建筑纪实", "categories": ["建筑", "毕业照"] },
-      { "id": "ming-04", "title": "冬日室内备选", "image": "/assets/ui/season-winter.png", "spot": "一馆", "season": "冬", "style": "胶片感", "categories": ["室内", "胶片感"] }
+      { "id": "ming-01", "title": "伯川长廊", "image": "/images/spot-library/伯川图书馆内.jpg", "spot": "伯川", "season": "秋", "style": "复古胶片", "categories": ["建筑", "胶片感"] },
+      { "id": "ming-02", "title": "一馆教学楼日常", "image": "/images/spot-library/二馆.jpg", "spot": "一馆", "season": "秋", "style": "学院纪实", "categories": ["建筑", "毕业照"] },
+      { "id": "ming-03", "title": "主楼低机位", "image": "/campus-v2/main-building.jpg", "spot": "主楼", "season": "冬", "style": "建筑纪实", "categories": ["建筑", "毕业照"] },
+      { "id": "ming-04", "title": "冬日室内备选", "image": "/images/spot-library/综一教室.jpg", "spot": "一馆", "season": "冬", "style": "胶片感", "categories": ["室内", "胶片感"] }
     ]
   },
   {
@@ -51,11 +51,11 @@
     "mutualStatus": "可互勉",
     "authorized": false,
     "contact": {},
-    "avatar": "/assets/ui/season-summer.png",
+    "avatar": "/campus-v2/lingshui-portrait.jpg",
     "portfolio": [
-      { "id": "lin-01", "title": "凌水湖侧影", "image": "/assets/ui/season-winter.png", "spot": "凌水湖", "season": "夏", "style": "湖畔人像", "categories": ["湖畔", "人像"] },
-      { "id": "lin-02", "title": "湖边草坪抓拍", "image": "/assets/ui/season-spring.png", "spot": "凌水湖", "season": "秋", "style": "电影氛围", "categories": ["湖畔", "人像"] },
-      { "id": "lin-03", "title": "花墙自然半身", "image": "/assets/ui/season-autumn.png", "spot": "花墙", "season": "夏", "style": "海风清透", "categories": ["人像"] }
+      { "id": "lin-01", "title": "凌水湖侧影", "image": "/campus-v2/lingshui-portrait.jpg", "spot": "凌水湖", "season": "夏", "style": "湖畔人像", "categories": ["湖畔", "人像"] },
+      { "id": "lin-02", "title": "湖边草坪抓拍", "image": "/campus-v2/lingshui-golden.jpg", "spot": "凌水湖", "season": "秋", "style": "电影氛围", "categories": ["湖畔", "人像"] },
+      { "id": "lin-03", "title": "花墙自然半身", "image": "/images/spot-library/花墙.jpg", "spot": "花墙", "season": "夏", "style": "海风清透", "categories": ["人像"] }
     ]
   },
   {
@@ -70,11 +70,11 @@
     "mutualStatus": "暂不互勉",
     "authorized": true,
     "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
-    "avatar": "/assets/ui/season-winter.png",
+    "avatar": "/images/spot-library/综一二楼玻璃窗.jpg",
     "portfolio": [
-      { "id": "yu-01", "title": "主楼冬日合影", "image": "/assets/ui/season-winter.png", "spot": "主楼", "season": "冬", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
-      { "id": "yu-02", "title": "一馆室内窗边", "image": "/assets/ui/season-summer.png", "spot": "一馆", "season": "冬", "style": "室内自然光", "categories": ["室内", "人像"] },
-      { "id": "yu-03", "title": "主楼正式照", "image": "/assets/ui/route-cover-spring.png", "spot": "主楼", "season": "春", "style": "浅色简洁", "categories": ["毕业照", "建筑"] }
+      { "id": "yu-01", "title": "主楼冬日合影", "image": "/campus-v2/main-building.jpg", "spot": "主楼", "season": "冬", "style": "学院纪实", "categories": ["毕业照", "建筑"] },
+      { "id": "yu-02", "title": "一馆室内窗边", "image": "/images/spot-library/综一二楼玻璃窗.jpg", "spot": "一馆", "season": "冬", "style": "室内自然光", "categories": ["室内", "人像"] },
+      { "id": "yu-03", "title": "主楼正式照", "image": "/images/spot-library/二馆玉兰.jpg", "spot": "主楼", "season": "春", "style": "浅色简洁", "categories": ["毕业照", "建筑"] }
     ]
   },
   {
@@ -89,12 +89,12 @@
     "mutualStatus": "可约拍",
     "authorized": true,
     "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
-    "avatar": "/assets/ui/season-spring.png",
+    "avatar": "/images/spot-library/花墙.jpg",
     "portfolio": [
-      { "id": "ache-01", "title": "花墙半身侧脸", "image": "/assets/ui/season-spring.png", "spot": "花墙", "season": "春", "style": "海风清透", "categories": ["人像", "毕业照"] },
-      { "id": "ache-02", "title": "南门并肩入校", "image": "/assets/ui/route-cover-spring.png", "spot": "南门", "season": "夏", "style": "双人互动", "categories": ["毕业照", "人像"] },
-      { "id": "ache-03", "title": "花墙胶片感", "image": "/assets/ui/season-autumn.png", "spot": "花墙", "season": "夏", "style": "复古胶片", "categories": ["胶片感", "人像"] },
-      { "id": "ache-04", "title": "湖边互动收尾", "image": "/assets/ui/season-winter.png", "spot": "凌水湖", "season": "春", "style": "清透湖畔", "categories": ["湖畔", "人像"] }
+      { "id": "ache-01", "title": "花墙半身侧脸", "image": "/images/spot-library/花墙.jpg", "spot": "花墙", "season": "春", "style": "海风清透", "categories": ["人像", "毕业照"] },
+      { "id": "ache-02", "title": "南门并肩入校", "image": "/images/spot-library/南大门连理.jpg", "spot": "南门", "season": "夏", "style": "双人互动", "categories": ["毕业照", "人像"] },
+      { "id": "ache-03", "title": "花墙胶片感", "image": "/images/spot-library/伯川前二月兰.jpg", "spot": "花墙", "season": "夏", "style": "复古胶片", "categories": ["胶片感", "人像"] },
+      { "id": "ache-04", "title": "湖边互动收尾", "image": "/campus-v2/lingshui-golden.jpg", "spot": "凌水湖", "season": "春", "style": "清透湖畔", "categories": ["湖畔", "人像"] }
     ]
   },
   {
@@ -109,11 +109,11 @@
     "mutualStatus": "可约拍",
     "authorized": true,
     "contact": { "wechat": "demo-photo-contact", "email": "demo-contact@dlut.edu.cn" },
-    "avatar": "/assets/ui/season-autumn.png",
+    "avatar": "/campus-v2/campus-autumn-walk.jpg",
     "portfolio": [
-      { "id": "beichen-01", "title": "主楼夜景", "image": "/assets/ui/season-autumn.png", "spot": "主楼", "season": "秋", "style": "电影氛围", "categories": ["夜景", "建筑"] },
-      { "id": "beichen-02", "title": "凌水湖剪影", "image": "/assets/ui/season-winter.png", "spot": "凌水湖", "season": "秋", "style": "复古胶片", "categories": ["夜景", "湖畔", "胶片感"] },
-      { "id": "beichen-03", "title": "一馆晚间人像", "image": "/assets/ui/season-summer.png", "spot": "一馆", "season": "冬", "style": "夜景人像", "categories": ["夜景", "人像"] }
+      { "id": "beichen-01", "title": "主楼夜景", "image": "/campus-v2/main-building.jpg", "spot": "主楼", "season": "秋", "style": "电影氛围", "categories": ["夜景", "建筑"] },
+      { "id": "beichen-02", "title": "凌水湖剪影", "image": "/campus-v2/lingshui-golden.jpg", "spot": "凌水湖", "season": "秋", "style": "复古胶片", "categories": ["夜景", "湖畔", "胶片感"] },
+      { "id": "beichen-03", "title": "一馆晚间人像", "image": "/campus-v2/campus-life.jpg", "spot": "一馆", "season": "冬", "style": "夜景人像", "categories": ["夜景", "人像"] }
     ]
   },
   {
@@ -128,11 +128,11 @@
     "mutualStatus": "可互勉",
     "authorized": false,
     "contact": {},
-    "avatar": "/assets/ui/route-cover-spring.png",
+    "avatar": "/images/spot-library/伯川前二月兰.jpg",
     "portfolio": [
-      { "id": "suyi-01", "title": "南门单人花束", "image": "/assets/ui/route-cover-spring.png", "spot": "南门", "season": "春", "style": "浅色系", "categories": ["毕业照", "人像"] },
-      { "id": "suyi-02", "title": "伯川慢走", "image": "/assets/ui/season-summer.png", "spot": "伯川", "season": "春", "style": "海风清透", "categories": ["人像", "建筑"] },
-      { "id": "suyi-03", "title": "花墙轻肖像", "image": "/assets/ui/season-spring.png", "spot": "花墙", "season": "春", "style": "单人肖像", "categories": ["人像"] }
+      { "id": "suyi-01", "title": "南门单人花束", "image": "/images/spot-library/南大门连理.jpg", "spot": "南门", "season": "春", "style": "浅色系", "categories": ["毕业照", "人像"] },
+      { "id": "suyi-02", "title": "伯川慢走", "image": "/images/spot-library/伯川前二月兰.jpg", "spot": "伯川", "season": "春", "style": "海风清透", "categories": ["人像", "建筑"] },
+      { "id": "suyi-03", "title": "花墙轻肖像", "image": "/images/spot-library/花墙.jpg", "spot": "花墙", "season": "春", "style": "单人肖像", "categories": ["人像"] }
     ]
   }
 ]
