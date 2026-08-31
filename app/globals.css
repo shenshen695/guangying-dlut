@@ -691,6 +691,29 @@ img {
   margin-top: 24px;
 }
 
+.gy-generated-panel .gy-planner-map-preview {
+  display: block;
+  height: clamp(240px, 30vh, 340px);
+  margin-top: 22px;
+  padding-top: 0;
+}
+
+.gy-generated-panel .gy-planner-map-preview .gy-live-map-shell,
+.gy-generated-panel .gy-planner-map-preview .qmap-viewport,
+.gy-generated-panel .gy-planner-map-preview .qmap-stage,
+.gy-generated-panel .gy-planner-map-preview .gy-map-loading {
+  min-height: 0;
+}
+
+.gy-generated-panel .gy-planner-map-preview .gy-live-map-shell {
+  height: 100%;
+  border-radius: 7px;
+}
+
+.gy-generated-panel .gy-planner-map-preview .qmap-reset {
+  display: none;
+}
+
 .gy-fallback-note {
   margin: 0 0 16px;
   padding: 12px 14px;
@@ -2948,6 +2971,11 @@ img {
   margin-top: 18px;
 }
 
+.gy-generated-panel .gy-planner-map-preview {
+  height: clamp(250px, 31vh, 350px);
+  margin-top: 18px;
+}
+
 .gy-field-grid-compact {
   gap: 8px;
   margin-top: 14px;
@@ -3815,6 +3843,36 @@ img {
   opacity: 1;
   transform: scale(1.16);
   box-shadow: 0 0 0 5px rgba(40, 127, 141, 0.2), 0 8px 22px rgba(17, 36, 47, 0.3);
+}
+
+.map-photo-marker-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  pointer-events: none;
+}
+
+.map-photo-marker-wrap .photo-marker {
+  pointer-events: auto;
+}
+
+.map-photo-marker-label {
+  position: absolute;
+  top: 42px;
+  left: 50%;
+  max-width: 116px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  border: 1px solid rgba(22, 32, 42, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3px 8px 4px;
+  color: #1f2933;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 6px 14px rgba(17, 36, 47, 0.16);
 }
 
 .map-shell .leaflet-container {
@@ -4764,6 +4822,44 @@ img {
     transition: bottom 0.25s ease;
   }
 
+  .gy-kelvin-mobile-map .leaflet-container {
+    background: #e9eee5;
+  }
+
+  .gy-kelvin-mobile-map .leaflet-image-layer {
+    filter: saturate(1.02) contrast(1.01);
+  }
+
+  .gy-kelvin-mobile-map .map-photo-marker-wrap {
+    min-height: 62px;
+  }
+
+  .gy-kelvin-mobile-map .photo-marker {
+    width: 44px;
+    height: 44px;
+    border-width: 4px;
+    background: #2f8490;
+    box-shadow: 0 6px 15px rgba(17, 36, 47, 0.2);
+  }
+
+  .gy-kelvin-mobile-map .photo-marker .photo-dot {
+    width: 9px;
+    height: 9px;
+    border-width: 2px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  }
+
+  .gy-kelvin-mobile-map .photo-marker .route-number {
+    font-size: 12px;
+  }
+
+  .gy-kelvin-mobile-map .map-photo-marker-label {
+    top: 38px;
+    padding: 3px 7px 4px;
+    font-size: 10px;
+    color: #111827;
+  }
+
   .gy-kelvin-mobile-map.is-sheet-collapsed {
     --map-sheet-offset: 4.8rem;
   }
@@ -5255,6 +5351,11 @@ img {
   align-items: end;
   margin-top: 30px;
   margin-bottom: 22px;
+}
+
+.gy-agent-page-head.is-simple {
+  grid-template-columns: minmax(0, 760px);
+  align-items: start;
 }
 
 .gy-agent-capability-list {

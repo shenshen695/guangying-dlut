@@ -186,18 +186,18 @@ export default function ChatAgent() {
       </div>
 
       <aside className="gy-chat-agent-side gy-panel">
-        <h2>偏好会用于路线生成</h2>
+        <h2>生成前确认</h2>
         <div>
-          <strong>风格偏好</strong>
-          <p>从你的描述里锁定青春清透、学院风制服、端庄复古或学位纪实。</p>
+          <strong>风格</strong>
+          <p>清透、学院、复古或纪实方向。</p>
         </div>
         <div>
-          <strong>穿搭细节</strong>
-          <p>白裙子、多人、怕冷、学士服等信息都会进入最终推荐。</p>
+          <strong>人物与穿搭</strong>
+          <p>人数、学士服、衣服颜色和道具。</p>
         </div>
         <div>
-          <strong>负反馈</strong>
-          <p>你说不喜欢或换一个后，后续不会再主动推荐那个风格。</p>
+          <strong>避开方向</strong>
+          <p>不喜欢的风格会从本次推荐中排除。</p>
         </div>
       </aside>
     </section>

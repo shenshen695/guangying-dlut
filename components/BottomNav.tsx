@@ -8,7 +8,7 @@ import AppIcon, { type AppIconName } from "@/components/AppIcon";
 const items: { href: string; label: string; icon: AppIconName; primary?: boolean }[] = [
   { href: "/", label: "首页", icon: "home" },
   { href: "/map/", label: "地图", icon: "map" },
-  { href: "/submit/", label: "上传", icon: "plus", primary: true },
+  { href: "/submit/", label: "上传", icon: "plus" },
   { href: "/planner/", label: "规划", icon: "planner" },
   { href: "/photographers/", label: "摄影师", icon: "camera" },
   { href: "/me/", label: "我的", icon: "user" },
@@ -17,7 +17,7 @@ const items: { href: string; label: string; icon: AppIconName; primary?: boolean
 export default function BottomNav() {
   const pathname = usePathname();
 
-  return <nav aria-label="一级导航" className="fixed inset-x-0 bottom-0 z-[800] border-t border-slate-200 bg-white/96 px-3 pb-[max(.4rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur lg:hidden">
+  return <nav aria-label="一级导航" className="fixed inset-x-0 bottom-0 z-[800] border-t border-slate-200 bg-white px-3 pb-[max(.4rem,env(safe-area-inset-bottom))] pt-1 shadow-[0_-3px_12px_rgba(15,23,42,.025)] lg:hidden">
     <div className="mx-auto grid max-w-md grid-cols-6">{items.map((item) => {
       const baseHref = item.href === "/" ? "/" : item.href.slice(0, -1);
       const active = item.href === "/" ? pathname === "/" : pathname === baseHref || pathname.startsWith(item.href);

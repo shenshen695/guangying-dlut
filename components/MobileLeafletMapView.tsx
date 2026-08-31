@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import type { Spot } from "@/types/spot";
+import type { MapSpot as Spot } from "@/types/map-spot";
 import type { Route } from "@/types/route";
-import type { RouteGeoJSON } from "@/types/geojson";
-import { wgs84ToGcj02 } from "@/lib/coordinates";
+import mapPointsData from "@/data/map-points.json";
 
 type Props = {
   spots: Spot[];
@@ -13,6 +12,17 @@ type Props = {
   sheetExpanded: boolean;
   onSelect: (id: string) => void;
 };
+
+type MapPoint = { id: string; x: number; y: number; name: string };
+
+const MAP_WIDTH = 3227;
+const MAP_HEIGHT = 2603;
+const mapBounds: [[number, number], [number, number]] = [[0, 0], [MAP_HEIGHT, MAP_WIDTH]];
+const anchors = Object.fromEntries((mapPointsData as MapPoint[]).map((point) => [point.id, point])) as Record<string, MapPoint>;
+
+function anchorPosition(point: MapPoint): [number, number] {
+  return [MAP_HEIGHT * (1 - point.y / 100), MAP_WIDTH * (point.x / 100)];
+}
 
 export default function MobileLeafletMapView({ spots, route, selectedSpotId, sheetExpanded, onSelect }: Props) {
   const mapRoot = useRef<HTMLDivElement>(null);
@@ -26,18 +36,22 @@ export default function MobileLeafletMapView({ spots, route, selectedSpotId, she
     (async () => {
       const L = await import("leaflet");
       if (disposed || !mapRoot.current || mapRef.current) return;
-      const mapCenter = wgs84ToGcj02(38.8794, 121.5275);
-      const map = L.map(mapRoot.current, { zoomControl: false, attributionControl: true }).setView(mapCenter, 14);
+      const map = L.map(mapRoot.current, {
+        crs: L.CRS.Simple,
+        zoomControl: false,
+        attributionControl: false,
+        minZoom: -3,
+        maxZoom: 2,
+        zoomSnap: 0.25,
+        maxBoundsViscosity: 1,
+      });
       L.control.zoom({ position: "bottomright" }).addTo(map);
-      L.tileLayer("https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=2&style=8&x={x}&y={y}&z={z}", {
-        subdomains: ["1", "2", "3", "4"],
-        attribution: "© 高德地图",
-        detectRetina: true,
-        tileSize: 256,
-        zoomOffset: 0,
-        minZoom: 3,
-        maxZoom: 18,
-      }).addTo(map);
+      L.imageOverlay("/images/map/campus-screenshot-mosaic.jpg", mapBounds, { alt: "大工凌水校区校园鸟瞰图", interactive: false }).addTo(map);
+      const imageBounds = L.latLngBounds(mapBounds);
+      const coverZoom = map.getBoundsZoom(imageBounds, true);
+      map.setMaxBounds(imageBounds);
+      map.setMinZoom(coverZoom);
+      map.setView(imageBounds.getCenter(), coverZoom, { animate: false });
       mapRef.current = map;
       renderLayers(L, map);
     })();
@@ -70,7 +84,14 @@ export default function MobileLeafletMapView({ spots, route, selectedSpotId, she
   useEffect(() => {
     const root = mapRoot.current;
     if (!root) return;
-    const invalidate = () => mapRef.current?.invalidateSize({ pan: false });
+    const invalidate = () => {
+      const map = mapRef.current;
+      if (!map) return;
+      map.invalidateSize({ pan: false });
+      const coverZoom = map.getBoundsZoom(mapBounds, true);
+      map.setMinZoom(coverZoom);
+      if (map.getZoom() < coverZoom) map.setView([MAP_HEIGHT / 2, MAP_WIDTH / 2], coverZoom, { animate: false });
+    };
     const observer = new ResizeObserver(invalidate);
     observer.observe(root);
     window.addEventListener("resize", invalidate);
@@ -85,6 +106,8 @@ export default function MobileLeafletMapView({ spots, route, selectedSpotId, she
     if (layersRef.current.route) layersRef.current.route.remove();
 
     layersRef.current.markers = spots.map((spot) => {
+      const anchor = anchors[spot.id];
+      if (!anchor) return null;
       const routeIndex = route?.spots.indexOf(spot.id) ?? -1;
       const onRoute = routeIndex >= 0;
       const classes = [
@@ -96,35 +119,33 @@ export default function MobileLeafletMapView({ spots, route, selectedSpotId, she
         onRoute && routeIndex === (route?.spots.length || 0) - 1 ? "is-end" : "",
       ].filter(Boolean).join(" ");
       const content = onRoute ? `<span class="route-number">${routeIndex + 1}</span>` : `<span class="photo-dot"></span>`;
-      const icon = L.divIcon({ className: "", html: `<div class="${classes}">${content}</div>`, iconSize: [40, 40], iconAnchor: [20, 20] });
-      const displayPosition = wgs84ToGcj02(spot.latitude, spot.longitude);
-      const marker = L.marker(displayPosition, { icon, keyboard: true, title: spot.name }).addTo(map);
+      const iconWidth = Math.max(68, Array.from(anchor.name).length * 10 + 18);
+      const icon = L.divIcon({
+        className: "",
+        html: `<div class="map-photo-marker-wrap"><div class="${classes}">${content}</div><span class="map-photo-marker-label">${anchor.name}</span></div>`,
+        iconSize: [iconWidth, 58],
+        iconAnchor: [iconWidth / 2, 22],
+      });
+      const marker = L.marker(anchorPosition(anchor), { icon, keyboard: true, title: anchor.name }).addTo(map);
       marker.on("click", () => onSelect(spot.id));
       return marker;
-    });
+    }).filter(Boolean);
 
-    const coordinates = orderedSpots.map((spot) => {
-      const [latitude, longitude] = wgs84ToGcj02(spot.latitude, spot.longitude);
-      return [longitude, latitude] as [number, number];
-    });
-    const routeGeoJSON: RouteGeoJSON = {
-      type: "FeatureCollection",
-      features: route && coordinates.length > 1 ? [{ type: "Feature", properties: { routeId: route.id }, geometry: { type: "LineString", coordinates } }] : [],
-    };
-    if (routeGeoJSON.features.length) {
-      layersRef.current.route = L.geoJSON(routeGeoJSON as any, { style: { className: "map-route-line", color: "#287f8d", weight: 4, opacity: 0.9, dashArray: "2 10", lineCap: "round" } }).addTo(map);
+    const routePositions = orderedSpots.map((spot) => anchors[spot.id]).filter(Boolean).map(anchorPosition);
+    if (route && routePositions.length > 1) {
+      layersRef.current.route = L.polyline(routePositions, { className: "map-route-line", color: "#287f8d", weight: 4, opacity: 0.9, dashArray: "2 10", lineCap: "round" }).addTo(map);
     }
-    if (route && coordinates.length > 1 && lastFittedRoute.current !== route.id) {
-      const bounds = L.latLngBounds(orderedSpots.map((spot) => wgs84ToGcj02(spot.latitude, spot.longitude)));
-      map.fitBounds(bounds, { paddingTopLeft: [35, 135], paddingBottomRight: [35, 140], maxZoom: 16, animate: true });
+    if (route && routePositions.length > 1 && lastFittedRoute.current !== route.id) {
+      const bounds = L.latLngBounds(routePositions);
+      map.fitBounds(bounds, { paddingTopLeft: [35, 135], paddingBottomRight: [35, 140], maxZoom: 0.25, animate: true });
       lastFittedRoute.current = route.id;
     }
     if (!route) lastFittedRoute.current = null;
     if (selectedSpotId) {
-      const selected = spots.find((spot) => spot.id === selectedSpotId);
-      if (selected) {
+      const anchor = anchors[selectedSpotId];
+      if (anchor) {
         const reduceMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        map.flyTo(wgs84ToGcj02(selected.latitude, selected.longitude), Math.max(map.getZoom(), 16), { duration: reduceMotion ? 0 : 0.65 });
+        map.flyTo(anchorPosition(anchor), Math.max(map.getZoom(), 0), { duration: reduceMotion ? 0 : 0.65 });
       }
     }
   }

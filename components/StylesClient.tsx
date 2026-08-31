@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import ChatAgent from "@/components/ChatAgent";
-import StyleAdvisor from "@/components/StyleAdvisor";
 import { CoralRule, Eyebrow, Pill, TopNav } from "@/components/guangying-ui";
 import type { SeasonPreference, StyleReference } from "@/types/planner";
 
@@ -49,7 +47,6 @@ export default function StylesClient() {
     <main className="gy-page">
       <div className="gy-container gy-styles-container">
         <TopNav active="风格" actionLabel="生成路线" actionHref="/planner" />
-        <StyleAdvisor />
         <section className="gy-styles-head">
           <div>
             <Eyebrow muted>STYLE REFERENCES</Eyebrow>
@@ -69,8 +66,8 @@ export default function StylesClient() {
         <section className="gy-agent-entry-band gy-panel" id="style-agent-entry">
           <div>
             <Eyebrow>STYLE AGENT</Eyebrow>
-            <h2>不确定选哪种风格，先和 Agent 聊出风格。</h2>
-            <p>说出人数、穿搭、喜欢和不喜欢的感觉，系统会把风格、季节和点位偏好带进路线生成。</p>
+            <h2>还没定风格？先和 Agent 聊出风格。</h2>
+            <p>确认人数、穿搭、偏好和避开方向后，再进入路线生成。</p>
           </div>
           <Link href="/agent" className="gy-primary-button">
             打开 Agent
@@ -102,7 +99,6 @@ export default function StylesClient() {
           </div>
 
           <div className="gy-style-aside-stack">
-            <ChatAgent />
             <aside className="gy-panel gy-style-trend-panel">
               <Eyebrow>NEW TREND</Eyebrow>
               <h2>新兴风格推荐</h2>

@@ -1,25 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import AppIcon, { type AppIconName } from "@/components/AppIcon";
+import AppIcon from "@/components/AppIcon";
 import HomePhotographers from "@/components/HomePhotographers";
 import PhotographySelections from "@/components/PhotographySelections";
+import { getHomeDecisionContext, getWeeklyRecommendations } from "@/data/recommendations";
 import { getCampusMedia } from "@/data/media";
-
-const weekly = [
-  { title: "凌水湖", detail: "日落倒影 · 湖边人像", media: "lake-golden", href: "/spot/ling-shui-lake/", className: "row-span-2", golden: true },
-  { title: "主楼广场", detail: "建筑全景 · 对称构图", media: "main-building", href: "/spot/main-building/" },
-  { title: "伯川图书馆", detail: "静谧阅读 · 建筑线条", media: "autumn-light", href: "/spot/bochuan/" },
-];
-
-const shortcuts: { label: string; icon: AppIconName; tone: string; href: string }[] = [
-  { label: "AI风格", icon: "sparkles", tone: "bg-[#fff7e8] text-[#b66a00]", href: "/agent/" },
-  { label: "凌水湖", icon: "location", tone: "bg-[#eef7f6] text-sea", href: "/map/?search=%E5%87%8C%E6%B0%B4%E6%B9%96" },
-  { label: "毕业照", icon: "graduation", tone: "bg-[#edf5f6] text-sea", href: "/map/?search=%E6%AF%95%E4%B8%9A%E7%85%A7" },
-  { label: "日落", icon: "sun", tone: "bg-[#fff7e8] text-[#d97706]", href: "/map/?search=%E6%97%A5%E8%90%BD" },
-  { label: "建筑", icon: "building", tone: "bg-[#eef3f7] text-[#397385]", href: "/map/?search=%E5%BB%BA%E7%AD%91" },
-  { label: "夜景", icon: "moon", tone: "bg-[#eef3f7] text-sea", href: "/map/?search=%E5%A4%9C%E6%99%AF" },
-];
 
 const guides = [
   { title: "毕业照怎么拍", subtitle: "4 个机位 · 构图技巧", media: "main-building", href: "/route/classic-graduation/" },
@@ -30,57 +16,71 @@ const guides = [
 
 export default function MobileHomeSections() {
   const atmosphere = getCampusMedia("autumn-walk");
+  const context = getHomeDecisionContext();
+  const weekly = getWeeklyRecommendations().sort((a, b) => a.priority - b.priority);
 
   return (
     <main className="gy-kelvin-mobile-home min-h-screen overflow-x-clip bg-mist pb-24 text-ink lg:pb-10">
       <div className="mx-auto max-w-3xl pb-8">
-        <header className="relative isolate h-[136px] overflow-hidden px-4 pt-[max(1.15rem,env(safe-area-inset-top))] sm:px-7">
-          <img src={atmosphere.src} alt="" className="absolute inset-y-0 right-0 -z-20 w-[62%] object-cover object-[70%_32%] opacity-45" />
+        <header className="relative isolate h-[132px] overflow-hidden px-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-7">
+          <img src={atmosphere.src} alt="" className="absolute inset-y-0 right-0 -z-20 w-[58%] object-cover object-[68%_34%] opacity-45" />
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-mist via-mist/95 to-mist/25" />
           <div className="absolute inset-x-0 bottom-0 -z-10 h-14 bg-gradient-to-t from-mist to-transparent" />
-          <h1 className="pt-4 text-[27px] font-bold tracking-[.08em]">光影大工</h1>
-          <p className="mt-2 flex items-center gap-2 text-[13px] font-medium text-slate-600">
-            <AppIcon name="sun" className="h-4 w-4 text-coral" strokeWidth={2} />
-            今日推荐 · 凌水湖适合拍倒影
-          </p>
+          <div className="flex items-center justify-between gap-4 pt-3">
+            <div>
+              <h1 className="text-[25px] font-bold leading-tight tracking-[.08em] text-[#101827]">光影大工</h1>
+              <p className="mt-2 flex items-center gap-2 text-[12px] font-medium text-slate-600">
+                <AppIcon name="sun" className="h-4 w-4 text-[#c47a34]" strokeWidth={2.1} />
+                今日推荐 · 凌水湖适合拍倒影
+              </p>
+            </div>
+            <Link href="/me/" aria-label="进入我的" className="overflow-hidden rounded-full border-2 border-white shadow-sm">
+              <img src="/photography/lake-couple.jpg" alt="" className="h-10 w-10 object-cover" />
+            </Link>
+          </div>
         </header>
 
         <div className="px-4 sm:px-7">
           <section className="relative z-10 -mt-3">
-            <form action="/map/" className="flex h-14 w-full items-center rounded-[20px] border border-slate-200/90 bg-white p-1.5 pl-4 shadow-[0_8px_22px_rgba(15,23,42,.09)]">
-              <AppIcon name="search" className="h-5 w-5 shrink-0 text-slate-400" strokeWidth={2} />
+            <form action="/map/" className="flex h-14 w-full items-center rounded-[18px] border border-slate-200 bg-white p-1.5 pl-4 shadow-[0_8px_24px_rgba(15,23,42,.09)]">
+              <AppIcon name="search" className="h-5 w-5 shrink-0 text-slate-400" strokeWidth={2.1} />
               <input name="search" aria-label="搜索地点、机位、拍摄主题" placeholder="搜索地点、机位、拍摄主题" className="min-w-0 flex-1 bg-transparent px-3 text-[14px] outline-none placeholder:text-slate-400" />
-              <button type="submit" className="h-11 rounded-[14px] bg-sea px-5 text-[14px] font-semibold text-white">搜索</button>
+              <button type="submit" className="h-11 rounded-[13px] bg-sea px-5 text-[13px] font-semibold text-white">搜索</button>
             </form>
-            <div className="scrollbar-none -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-              {shortcuts.map((item) => (
-                <Link key={item.label} href={item.href} className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-semibold ${item.tone}`}>
-                  <AppIcon name={item.icon} className="h-4 w-4" />
-                  {item.label}
-                </Link>
+            <div className="scrollbar-none -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+              {context.signals.slice(0, 3).map((signal) => (
+                <article key={signal.id} className="flex h-[66px] w-[126px] shrink-0 items-center gap-2.5 rounded-[15px] border border-slate-200/80 bg-white px-3 shadow-[0_2px_10px_rgba(15,23,42,.035)]">
+                  <span className={`grid h-8 w-8 shrink-0 place-items-center ${signal.tone === "warm" ? "text-[#d67a3f]" : "text-[#155e63]"}`}>
+                    <AppIcon name={signal.icon} className="h-[22px] w-[22px]" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[10px] font-semibold text-slate-600">{signal.label}</span>
+                    <strong className="mt-0.5 block truncate text-[11px] font-medium text-slate-500">{signal.value}</strong>
+                    <small className="mt-0.5 block truncate text-[8px] text-slate-300">{signal.note}</small>
+                  </span>
+                </article>
               ))}
             </div>
           </section>
 
           <ContentSection title="本周值得拍" action="地图探索" href="/map/">
-            <div className="grid h-[258px] grid-cols-[1.42fr_.95fr] grid-rows-2 gap-2.5">
-              {weekly.map((item) => {
-                const media = getCampusMedia(item.media);
+            <div className="grid h-[270px] grid-cols-[1.4fr_.95fr] grid-rows-2 gap-2.5">
+              {weekly.map((item, index) => {
                 return (
-                  <Link key={item.title} href={item.href} className={`group relative isolate min-h-0 overflow-hidden rounded-[16px] bg-slate-200 shadow-[0_5px_15px_rgba(15,23,42,.12)] ${item.className || ""}`}>
-                    <img src={media.src} alt={media.alt} className="h-full w-full object-cover transition duration-300 group-active:scale-[1.02]" />
+                  <Link key={item.location} href={item.href} className={`group relative isolate min-h-0 overflow-hidden rounded-[17px] bg-slate-200 shadow-[0_5px_16px_rgba(15,23,42,.11)] ${index === 0 ? "row-span-2" : ""}`}>
+                    <img src={item.image} alt={item.imageAlt} className="h-full w-full object-cover transition duration-300 group-active:scale-[1.02]" />
                     <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/8 to-transparent" />
-                    {item.golden ? (
+                    {index === 0 ? (
                       <>
-                        <span className="absolute left-3 top-3 rounded-md bg-black/38 px-2 py-1 text-[10px] font-semibold tracking-wide text-white backdrop-blur-sm">GOLDEN HOUR</span>
-                        <span className="absolute left-3 top-11 rounded-md bg-black/42 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">17:00-18:30</span>
+                        <span className="absolute left-3 top-3 rounded bg-black/30 px-2 py-1 text-[10px] font-semibold tracking-wide text-white">GOLDEN HOUR</span>
+                        <span className="absolute left-3 top-9 rounded bg-black/34 px-2 py-1 text-[11px] font-semibold text-white">17:00-18:30</span>
                       </>
                     ) : null}
                     <span className="absolute inset-x-3 bottom-3 text-white">
-                      <strong className={`block font-semibold ${item.golden ? "text-[20px]" : "text-[15px]"}`}>{item.title}</strong>
-                      <span className={`mt-0.5 flex items-end justify-between gap-2 ${item.golden ? "text-[12px]" : "text-[10px] leading-4"}`}>
-                        <span>{item.detail}</span>
-                        <AppIcon name="arrow" className="h-5 w-5 shrink-0" />
+                      <strong className={`block font-semibold ${index === 0 ? "text-[20px]" : "text-[14px]"}`}>{item.location}</strong>
+                      <span className={`mt-1 flex items-end justify-between gap-2 ${index === 0 ? "text-[11px]" : "text-[9px] leading-3.5"}`}>
+                        <span>{item.homeSubtitle}</span>
+                        <AppIcon name="arrow" className="h-4 w-4 shrink-0" />
                       </span>
                     </span>
                   </Link>
@@ -137,9 +137,9 @@ function ContentSection({ title, action, href, children }: { title: string; acti
   return (
     <section className="mt-7">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[20px] font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-[19px] font-semibold tracking-tight">{title}</h2>
         {action && href ? (
-          <Link href={href} className="flex items-center gap-1 text-[12px] font-semibold text-sea">
+          <Link href={href} className="flex items-center gap-1 text-[11px] font-semibold text-sea">
             {action}
             <AppIcon name="arrow" className="h-4 w-4" />
           </Link>

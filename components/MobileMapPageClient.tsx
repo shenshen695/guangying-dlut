@@ -6,10 +6,10 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import AppIcon from "@/components/AppIcon";
 import PrimaryHeader from "@/components/PrimaryHeader";
-import spotsData from "@/data/spots.json";
-import routesData from "@/data/routes.json";
+import spotsData from "@/data/map-spots.json";
+import routesData from "@/data/map-routes.json";
 import { getCampusMedia, spotMedia } from "@/data/media";
-import type { Spot } from "@/types/spot";
+import type { MapSpot as Spot } from "@/types/map-spot";
 import type { Route } from "@/types/route";
 
 const MobileLeafletMapView = dynamic(() => import("@/components/MobileLeafletMapView"), {
@@ -17,22 +17,24 @@ const MobileLeafletMapView = dynamic(() => import("@/components/MobileLeafletMap
   loading: () => <div className="grid h-full min-h-[390px] place-items-center bg-[#e7ece9] text-sm text-slate-500">地图加载中...</div>,
 });
 const spots = spotsData as Spot[];
-const baseRoute = (routesData as Route[])[0];
+const routes = routesData as Route[];
+const baseRoute = routes.find((route) => route.slug === "classic-graduation") || routes[0];
 
 const routePresets: { id: string; label: string; route: Route }[] = [
-  { id: "classic", label: "经典路线", route: baseRoute },
-  { id: "west", label: "西部路线", route: { ...baseRoute, id: "west-route", slug: "west-route", name: "校园西部慢拍", subtitle: "图书馆与教学楼", duration: "约 70 分钟", spots: ["bochuan", "main-building", "first-building"] } },
-  { id: "architecture", label: "建筑路线", route: { ...baseRoute, id: "architecture-route", slug: "architecture-route", name: "大工建筑线", subtitle: "从入口到主楼", duration: "约 90 分钟", spots: ["south-gate", "bochuan", "main-building", "first-building"] } },
-  { id: "sunset", label: "日落路线", route: { ...baseRoute, id: "sunset-route", slug: "sunset-route", name: "日落收尾线", subtitle: "把最好的光留给湖边", duration: "约 80 分钟", spots: ["main-building", "ling-shui-lake", "flower-wall"] } },
+  { id: "classic-graduation", label: "经典路线", route: routes.find((route) => route.slug === "classic-graduation") || baseRoute },
+  { id: "west-route", label: "西部路线", route: routes.find((route) => route.slug === "west-route") || baseRoute },
+  { id: "architecture-route", label: "建筑路线", route: routes.find((route) => route.slug === "architecture-route") || routes.find((route) => route.slug === "campus-architecture") || baseRoute },
+  { id: "sunset-route", label: "日落路线", route: routes.find((route) => route.slug === "sunset-route") || routes.find((route) => route.slug === "lingshui-sunset") || baseRoute },
 ];
 
 export default function MobileMapPageClient() {
   const searchParams = useSearchParams();
+  const routeParam = searchParams.get("route");
   const spotParam = searchParams.get("spot");
   const searchTerm = searchParams.get("search")?.trim() || "";
   const generatedIds = (searchParams.get("spots") || "").split(",").filter((id) => spots.some((spot) => spot.id === id));
-  const hasExplicitClassicRoute = searchParams.get("route") === "classic-graduation";
-  const initialRouteId = generatedIds.length ? "custom" : hasExplicitClassicRoute ? "classic" : null;
+  const routeParamMatch = routePresets.find((item) => item.id === routeParam || item.route.slug === routeParam);
+  const initialRouteId = generatedIds.length ? "custom" : routeParamMatch?.id || null;
   const [activeRouteId, setActiveRouteId] = useState<string | null>(initialRouteId);
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(spotParam && spots.some((spot) => spot.id === spotParam) ? spotParam : null);
   const [routeMenuOpen, setRouteMenuOpen] = useState(false);
@@ -51,6 +53,8 @@ export default function MobileMapPageClient() {
     name: searchParams.get("style") || "我的定制路线",
     subtitle: "已生成的拍摄顺序",
     duration: `约 ${generatedIds.length * 30} 分钟`,
+    walkingDistance: "按点位顺序估算",
+    recommendedTime: "以企划选择时间为准",
     spots: generatedIds,
   } : null, [generatedIds, searchParams]);
 

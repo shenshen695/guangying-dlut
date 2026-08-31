@@ -6,12 +6,13 @@ import { useSearchParams } from "next/navigation";
 import spotsData from "@/data/spots.json";
 import routesData from "@/data/routes.json";
 import WeatherRecommend from "@/components/WeatherRecommend";
+import PlannerMapPreview from "@/components/PlannerMapPreview";
 import { buildShootingPlan } from "@/lib/planner/buildPlan";
 import { parsePeopleCount } from "@/lib/planner/people";
 import type { PlannerInput, SeasonPreference, ShootingPlan, StyleReference, TimeSlot, WalkingTolerance } from "@/types/planner";
 import type { Route } from "@/types/route";
 import type { Spot } from "@/types/spot";
-import { CoralRule, Eyebrow, Field, IllustratedMap, Pill, TopNav } from "@/components/guangying-ui";
+import { CoralRule, Eyebrow, Field, Pill, TopNav } from "@/components/guangying-ui";
 
 const spots = spotsData as Spot[];
 const routes = routesData as Route[];
@@ -180,7 +181,7 @@ export default function PlannerClient() {
               <Pill>{selectedSpots.length} 个点位</Pill>
               <Pill>{input.walkingTolerance === "short" ? "短距离" : input.walkingTolerance === "medium" ? "中等步行" : "完整路线"}</Pill>
             </div>
-            <IllustratedMap selectedSlug={selectedSpots[0]?.slug || "south-gate"} compact />
+            <PlannerMapPreview spotIds={selectedSpots.map((spot) => spot.id)} title={resultPlan.style} />
             <div className="gy-field-grid gy-field-grid-compact">
               {selectedSpots.slice(0, 4).map((spot) => (
                 <Field key={spot.id} label={spot.name} value={`${spot.bestTime} · ${spot.actionSuggestion}`} />
