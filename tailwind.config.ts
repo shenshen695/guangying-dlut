@@ -5,7 +5,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: { sans: ["var(--font-manrope)", "ui-sans-serif", "system-ui"] },
-      colors: { ink: "#16202a", mist: "#f5f6f2", sea: "#4c8b8f", coral: "#de8068" },
+      // 光影大工 Product V2：深墨色、大工蓝青与少量 Golden Hour 暖色。
+      colors: { ink: "#0f172a", mist: "#f8fafc", sea: "#155e63", coral: "#f59e0b" },
     },
   },
   plugins: [],

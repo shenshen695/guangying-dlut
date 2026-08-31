@@ -1,20 +1,82 @@
 import Link from "next/link";
+import AppIcon, { type AppIconName } from "@/components/AppIcon";
+import BottomNav from "@/components/BottomNav";
+import PhotographySelections from "@/components/PhotographySelections";
+import { getCampusMedia } from "@/data/media";
 
-const scenes = [
-  { name: "校园开场", note: "从南门走进青春记忆", tone: "scene-mint", mark: "↘" },
-  { name: "建筑纪实", note: "把熟悉的教学楼写进一帧", tone: "scene-sand", mark: "▥" },
-  { name: "湖畔收尾", note: "在凌水湖留下毕业侧影", tone: "scene-blue", mark: "◒" },
-  { name: "花墙一帧", note: "用明亮色彩结束这段路", tone: "scene-coral", mark: "✳" },
+const weekly = [
+  { title: "凌水湖", detail: "日落倒影 · 湖边人像", media: "lake-golden", href: "/spot/ling-shui-lake/", className: "row-span-2", golden: true },
+  { title: "主楼广场", detail: "建筑全景 · 对称构图", media: "main-building", href: "/spot/main-building/" },
+  { title: "伯川图书馆", detail: "静谧阅读 · 建筑线条", media: "autumn-light", href: "/spot/bochuan/" },
 ];
-const routeStops = ["南门", "伯川", "主楼", "一馆", "凌水湖", "花墙"];
+
+const shortcuts: { label: string; icon: AppIconName; tone: string }[] = [
+  { label: "凌水湖", icon: "location", tone: "bg-[#eef7f6] text-sea" },
+  { label: "毕业照", icon: "graduation", tone: "bg-[#edf5f6] text-sea" },
+  { label: "日落", icon: "sun", tone: "bg-[#fff7e8] text-[#d97706]" },
+  { label: "建筑", icon: "building", tone: "bg-[#eef3f7] text-[#397385]" },
+  { label: "夜景", icon: "moon", tone: "bg-[#eef3f7] text-sea" },
+];
+
+const guides = [
+  { title: "毕业照怎么拍", subtitle: "4 个机位 · 构图技巧", media: "main-building", href: "/route/classic-graduation/" },
+  { title: "凌水湖日落攻略", subtitle: "时间 · 机位 · 参数", media: "lake-golden", href: "/route/lingshui-sunset/" },
+  { title: "建筑摄影指南", subtitle: "对称 · 线条 · 光影", media: "autumn-light", href: "/route/campus-architecture/" },
+  { title: "夜景拍摄", subtitle: "长曝光 · 参数", media: "lake-wide", href: "/route/campus-couple-walk/" },
+];
 
 export default function HomePage() {
-  return <main className="min-h-screen overflow-hidden bg-mist"><div className="mx-auto max-w-7xl px-5 py-7 sm:px-8 lg:px-12 lg:py-10">
-    <header className="flex items-center justify-between border-b border-ink/10 pb-5"><Link href="/" className="text-sm font-bold tracking-[.22em] text-ink">G•DUT / 2025</Link><span className="rounded-full border border-ink/10 bg-white/60 px-3 py-1.5 text-[11px] tracking-wide text-slate-500">校园毕业摄影地图</span></header>
-    <section className="relative pb-16 pt-16 sm:pb-20 sm:pt-24 lg:pt-28"><div className="pointer-events-none absolute right-0 top-10 hidden h-64 w-64 rounded-full border border-sea/20 sm:block" /><div className="pointer-events-none absolute right-16 top-24 hidden h-32 w-32 rounded-full border border-coral/25 sm:block" /><p className="mb-5 text-[11px] font-semibold tracking-[.3em] text-sea">DALIAN UNIVERSITY OF TECHNOLOGY</p><h1 className="max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.04em] text-ink sm:text-7xl lg:text-8xl">光影大工<span className="text-coral">.</span></h1><p className="mt-7 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">把校园摄影师熟悉的机位、光线和路线，变成每个人都能探索的毕业影像地图。</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/planner" className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-sea">生成我的毕业影像路线 <span aria-hidden>↗</span></Link><Link href="/map?route=classic-graduation" className="inline-flex items-center gap-3 rounded-full border border-ink/15 bg-white/40 px-6 py-3.5 text-sm font-semibold text-ink transition hover:border-sea hover:text-sea">探索毕业摄影地图</Link></div><div className="mt-12 flex items-center gap-4 text-xs text-slate-400"><span className="h-px w-12 bg-coral" /><span>6 个校园节点 · 企划与地图联动</span></div></section>
-    <section className="mb-8 flex items-end justify-between"><div><p className="text-[11px] font-semibold tracking-[.24em] text-sea">PHOTO MOODS</p><h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">把毕业日，走成一组照片</h2></div><span className="hidden text-xs text-slate-400 sm:block">FRAME YOUR CAMPUS</span></section>
-    <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">{scenes.map((scene, index) => <Link key={scene.name} href="/route/classic-graduation" className={`group relative aspect-[.88] overflow-hidden rounded-[1.4rem] border border-ink/5 ${scene.tone} p-4 transition hover:-translate-y-1 sm:p-5`}><span className="text-[11px] font-semibold tracking-[.18em] text-ink/45">0{index + 1}</span><span className="absolute right-5 top-4 text-2xl font-light text-ink/35 transition group-hover:rotate-12 group-hover:text-coral">{scene.mark}</span><div className="absolute inset-x-4 bottom-4 sm:inset-x-5 sm:bottom-5"><p className="text-lg font-semibold text-ink">{scene.name}</p><p className="mt-1 text-xs leading-5 text-slate-600">{scene.note}</p></div><span className="absolute bottom-0 left-0 h-1 w-0 bg-coral transition-all duration-300 group-hover:w-full" /></Link>)}</section>
-    <section className="mt-16 rounded-[1.75rem] border border-ink/10 bg-white/60 p-5 sm:mt-20 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-[11px] font-semibold tracking-[.24em] text-sea">FEATURED ROUTE</p><h2 className="mt-2 text-2xl font-semibold text-ink">工大经典毕业线</h2><p className="mt-1 text-sm text-slate-500">从南门走进青春记忆</p></div><Link href="/route/classic-graduation" className="text-sm font-semibold text-coral hover:text-ink">查看完整路线 →</Link></div><div className="mt-7 flex flex-wrap items-center gap-y-4">{routeStops.map((stop, index) => <div key={stop} className="flex items-center"><div className="flex items-center gap-2"><span className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[10px] font-bold text-white">{String(index + 1).padStart(2, "0")}</span><span className="text-sm font-medium text-ink">{stop}</span></div>{index < routeStops.length - 1 && <span className="mx-3 h-px w-5 bg-coral/50 sm:w-8" />}</div>)}</div></section>
-    <footer className="pb-2 pt-12 text-xs text-slate-400">光影大工 · 校园毕业影像地图与摄影师连接平台</footer>
-  </div></main>;
+  const atmosphere = getCampusMedia("autumn-walk");
+
+  return <main className="min-h-screen overflow-x-clip bg-mist pb-24 text-ink lg:pb-10">
+    <div className="mx-auto max-w-3xl pb-8">
+      <header className="relative isolate h-[136px] overflow-hidden px-4 pt-[max(1.15rem,env(safe-area-inset-top))] sm:px-7">
+        <img src={atmosphere.src} alt="" className="absolute inset-y-0 right-0 -z-20 w-[62%] object-cover object-[70%_32%] opacity-45" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-mist via-mist/95 to-mist/25" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-14 bg-gradient-to-t from-mist to-transparent" />
+        <h1 className="pt-4 text-[27px] font-bold tracking-[.08em]">光影大工</h1>
+        <p className="mt-2 flex items-center gap-2 text-[13px] font-medium text-slate-600"><AppIcon name="sun" className="h-4 w-4 text-coral" strokeWidth={2} />今日推荐 · 凌水湖适合拍倒影</p>
+      </header>
+
+      <div className="px-4 sm:px-7">
+        <section className="relative z-10 -mt-3">
+          <form action="/map/" className="flex h-14 w-full items-center rounded-[20px] border border-slate-200/90 bg-white p-1.5 pl-4 shadow-[0_8px_22px_rgba(15,23,42,.09)]">
+            <AppIcon name="search" className="h-5 w-5 shrink-0 text-slate-400" strokeWidth={2} />
+            <input name="search" aria-label="搜索地点、机位、拍摄主题" placeholder="搜索地点、机位、拍摄主题" className="min-w-0 flex-1 bg-transparent px-3 text-[14px] outline-none placeholder:text-slate-400" />
+            <button type="submit" className="h-11 rounded-[14px] bg-sea px-5 text-[14px] font-semibold text-white">搜索</button>
+          </form>
+          <div className="scrollbar-none -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">{shortcuts.map((item) => <Link key={item.label} href={`/map/?search=${encodeURIComponent(item.label)}`} className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-semibold ${item.tone}`}><AppIcon name={item.icon} className="h-4 w-4" />{item.label}</Link>)}</div>
+        </section>
+
+        <ContentSection title="本周值得拍" action="地图探索" href="/map/">
+          <div className="grid h-[258px] grid-cols-[1.42fr_.95fr] grid-rows-2 gap-2.5">{weekly.map((item) => {
+            const media = getCampusMedia(item.media);
+            return <Link key={item.title} href={item.href} className={`group relative isolate min-h-0 overflow-hidden rounded-[16px] bg-slate-200 shadow-[0_5px_15px_rgba(15,23,42,.12)] ${item.className || ""}`}>
+              <img src={media.src} alt={media.alt} className="h-full w-full object-cover transition duration-300 group-active:scale-[1.02]" />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/8 to-transparent" />
+              {item.golden && <span className="absolute left-3 top-3 rounded-md bg-black/38 px-2 py-1 text-[10px] font-semibold tracking-wide text-white backdrop-blur-sm">GOLDEN HOUR</span>}
+              {item.golden && <span className="absolute left-3 top-11 rounded-md bg-black/42 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">17:00–18:30</span>}
+              <span className="absolute inset-x-3 bottom-3 text-white"><strong className={`block font-semibold ${item.golden ? "text-[20px]" : "text-[15px]"}`}>{item.title}</strong><span className={`mt-0.5 flex items-end justify-between gap-2 ${item.golden ? "text-[12px]" : "text-[10px] leading-4"}`}><span>{item.detail}</span><AppIcon name="arrow" className="h-5 w-5 shrink-0" /></span></span>
+            </Link>;
+          })}</div>
+        </ContentSection>
+
+        <ContentSection title="大工摄影精选" action="查看全部" href="/me/#works"><PhotographySelections /></ContentSection>
+
+        <ContentSection title="摄影攻略" action="查看更多" href="/map/">
+          <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">{guides.map((guide) => {
+            const media = getCampusMedia(guide.media);
+            return <Link key={guide.title} href={guide.href} className="relative isolate aspect-[4/3] w-[58vw] max-w-[235px] shrink-0 overflow-hidden rounded-[14px] bg-slate-200 shadow-sm"><img src={media.src} alt={media.alt} className="h-full w-full object-cover" /><span className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" /><span className="absolute inset-x-3 bottom-3 text-white"><strong className="block text-[15px] font-semibold">{guide.title}</strong><span className="mt-1 block text-[11px] text-white/82">{guide.subtitle}</span></span></Link>;
+          })}</div>
+        </ContentSection>
+
+        <Link href="/planner/" className="mt-7 flex items-center justify-between border-y border-slate-200 py-4"><span className="flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-full bg-[#e7f1f1] text-sea"><AppIcon name="sparkles" className="h-[18px] w-[18px]" /></span><span><strong className="block text-[14px]">为我规划一次拍摄</strong><span className="mt-0.5 block text-[11px] text-slate-500">时间、地点与光线安排</span></span></span><AppIcon name="arrow" className="h-4 w-4 text-sea" /></Link>
+      </div>
+    </div>
+    <BottomNav />
+  </main>;
+}
+
+function ContentSection({ title, action, href, children }: { title: string; action?: string; href?: string; children: React.ReactNode }) {
+  return <section className="mt-7"><div className="mb-3 flex items-center justify-between"><h2 className="text-[20px] font-semibold tracking-tight">{title}</h2>{action && href && <Link href={href} className="flex items-center gap-1 text-[12px] font-semibold text-sea">{action}<AppIcon name="arrow" className="h-4 w-4" /></Link>}</div>{children}</section>;
 }

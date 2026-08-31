@@ -6,13 +6,14 @@ import type { Route } from "@/types/route";
 import type { RouteGeoJSON } from "@/types/geojson";
 import { wgs84ToGcj02 } from "@/lib/coordinates";
 
-type Props = { spots: Spot[]; route: Route; selectedSpotId: string | null; sheetExpanded: boolean; onSelect: (id: string) => void };
+type Props = { spots: Spot[]; route: Route | null; selectedSpotId: string | null; sheetExpanded: boolean; onSelect: (id: string) => void };
 
 export default function MapView({ spots, route, selectedSpotId, sheetExpanded, onSelect }: Props) {
   const mapRoot = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const layersRef = useRef<any>({ markers: [], route: null });
-  const orderedSpots = useMemo(() => route.spots.map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [route, spots]);
+  const lastFittedRoute = useRef<string | null>(null);
+  const orderedSpots = useMemo(() => route ? route.spots.map((id) => spots.find((spot) => spot.id === id)).filter(Boolean) as Spot[] : [], [route, spots]);
 
   useEffect(() => {
     let disposed = false;
@@ -63,8 +64,13 @@ export default function MapView({ spots, route, selectedSpotId, sheetExpanded, o
   function renderLayers(L: typeof import("leaflet"), map: any) {
     layersRef.current.markers.forEach((marker: any) => marker.remove());
     if (layersRef.current.route) layersRef.current.route.remove();
-    layersRef.current.markers = orderedSpots.map((spot, index) => {
-      const icon = L.divIcon({ className: "", html: `<div class="numbered-marker ${selectedSpotId === spot.id ? "is-selected" : ""}">${String(index + 1).padStart(2, "0")}</div>`, iconSize: [36, 36], iconAnchor: [18, 18] });
+    // 光影大工 Product V2：默认渲染探索 Marker；只有选择路线后才显示顺序层级与连线。
+    layersRef.current.markers = spots.map((spot) => {
+      const routeIndex = route?.spots.indexOf(spot.id) ?? -1;
+      const onRoute = routeIndex >= 0;
+      const classes = ["photo-marker", selectedSpotId === spot.id ? "is-selected" : "", route && !onRoute ? "is-muted" : "", onRoute ? "is-route" : "", onRoute && routeIndex === 0 ? "is-start" : "", onRoute && routeIndex === (route?.spots.length || 0) - 1 ? "is-end" : ""].filter(Boolean).join(" ");
+      const content = onRoute ? `<span class="route-number">${routeIndex + 1}</span>` : `<span class="photo-dot"></span>`;
+      const icon = L.divIcon({ className: "", html: `<div class="${classes}">${content}</div>`, iconSize: [40, 40], iconAnchor: [20, 20] });
       const displayPosition = wgs84ToGcj02(spot.latitude, spot.longitude);
       const marker = L.marker(displayPosition, { icon, keyboard: true, title: spot.name }).addTo(map);
       marker.on("click", () => onSelect(spot.id));
@@ -74,8 +80,14 @@ export default function MapView({ spots, route, selectedSpotId, sheetExpanded, o
       const [latitude, longitude] = wgs84ToGcj02(spot.latitude, spot.longitude);
       return [longitude, latitude] as [number, number];
     });
-    const routeGeoJSON: RouteGeoJSON = { type: "FeatureCollection", features: coordinates.length > 1 ? [{ type: "Feature", properties: { routeId: route.id }, geometry: { type: "LineString", coordinates } }] : [] };
-    if (routeGeoJSON.features.length) layersRef.current.route = L.geoJSON(routeGeoJSON as any, { style: { className: "map-route-line", color: "#de8068", weight: 3, opacity: 0.78, dashArray: "4 9", lineCap: "round" } }).addTo(map);
+    const routeGeoJSON: RouteGeoJSON = { type: "FeatureCollection", features: route && coordinates.length > 1 ? [{ type: "Feature", properties: { routeId: route.id }, geometry: { type: "LineString", coordinates } }] : [] };
+    if (routeGeoJSON.features.length) layersRef.current.route = L.geoJSON(routeGeoJSON as any, { style: { className: "map-route-line", color: "#287f8d", weight: 4, opacity: 0.9, dashArray: "2 10", lineCap: "round" } }).addTo(map);
+    if (route && coordinates.length > 1 && lastFittedRoute.current !== route.id) {
+      const bounds = L.latLngBounds(orderedSpots.map((spot) => wgs84ToGcj02(spot.latitude, spot.longitude)));
+      map.fitBounds(bounds, { paddingTopLeft: [35, 135], paddingBottomRight: [35, 140], maxZoom: 16, animate: true });
+      lastFittedRoute.current = route.id;
+    }
+    if (!route) lastFittedRoute.current = null;
     if (selectedSpotId) { const selected = spots.find((spot) => spot.id === selectedSpotId); if (selected) { const reduceMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches; map.flyTo(wgs84ToGcj02(selected.latitude, selected.longitude), Math.max(map.getZoom(), 16), { duration: reduceMotion ? 0 : 0.65 }); } }
   }
 

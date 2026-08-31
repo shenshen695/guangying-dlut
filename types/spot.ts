@@ -23,7 +23,7 @@ export type Spot = {
   bestTime: string;
   crowdLevel: CrowdLevel;
   shootingTips: string;
-  /** 用于企划模块筛选真实点位，避免 AI 编造地点。 */
+  /** 用于规划模块筛选真实点位，避免 AI 编造地点。 */
   tags: string[];
   recommendedTimeSlots: Array<"morning" | "afternoon" | "evening" | "golden_hour">;
   hasIndoorBackup: boolean;

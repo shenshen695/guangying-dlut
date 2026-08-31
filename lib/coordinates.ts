@@ -97,3 +97,14 @@ export function wgs84ToGcj02(latitude: number, longitude: number): [number, numb
 
   return [latitude + adjustedLatitude, longitude + adjustedLongitude];
 }
+
+/**
+ * Convert a point selected on the GCJ-02 AMap display back to WGS84 for data
+ * storage. The official Spot dataset remains WGS84; this is for user-created
+ * camera-position candidates only.
+ */
+export function gcj02ToWgs84(latitude: number, longitude: number): [number, number] {
+  if (isOutsideChina(latitude, longitude)) return [latitude, longitude];
+  const [convertedLatitude, convertedLongitude] = wgs84ToGcj02(latitude, longitude);
+  return [latitude * 2 - convertedLatitude, longitude * 2 - convertedLongitude];
+}

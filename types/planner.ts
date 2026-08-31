@@ -27,3 +27,20 @@ export type ShootingPlan = {
   avoid: string[];
   notice: string;
 };
+
+// 光影大工 Product V2：自然语言解析与未来真实 AI API 共用的数据边界。
+export type PlannerDuration = "30 分钟" | "1 小时" | "2 小时" | "半天";
+export type PlannerMood = "日落感" | "建筑感" | "青春感" | "湖边" | "自然纪实";
+export type PlannerShootType = "毕业照" | "校园写真" | "情侣照" | "风景" | "建筑";
+export type PlannerTime = "上午" | "下午" | "傍晚" | "时间灵活";
+
+export type PlannerDraft = {
+  sourcePrompt: string;
+  shootType: PlannerShootType;
+  peopleCount: number | null;
+  duration: PlannerDuration;
+  mood: PlannerMood;
+  timeOfDay: PlannerTime;
+  selectedSpotIds: string[];
+  uncertainFields: Array<"shootType" | "peopleCount" | "duration" | "mood" | "timeOfDay" | "selectedSpotIds">;
+};
