@@ -1,0 +1,49 @@
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f8fafc; color: #0f172a; -webkit-font-smoothing: antialiased; }
+img { display: block; }
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.leaflet-container { font-family: inherit; background: #e6ece8; }
+.leaflet-control-zoom { border: 0 !important; box-shadow: 0 8px 22px rgba(22,32,42,.14) !important; }
+.leaflet-control-zoom a { width: 34px !important; height: 34px !important; line-height: 34px !important; border: 0 !important; color: #16202a !important; background: rgba(255,255,255,.94) !important; }
+.leaflet-control-zoom a:first-child { border-radius: 12px 12px 0 0; }
+.leaflet-control-zoom a:last-child { border-radius: 0 0 12px 12px; }
+.numbered-marker { width: 36px; height: 36px; border-radius: 9999px; display: grid; place-items: center; background: #16202a; color: #fff; border: 3px solid #fff; box-shadow: 0 5px 16px rgba(22,32,42,.25); font-size: 11px; letter-spacing: .04em; font-weight: 800; transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.numbered-marker.is-selected { background: #de8068; transform: scale(1.16); box-shadow: 0 0 0 5px rgba(222,128,104,.18), 0 7px 20px rgba(22,32,42,.28); }
+.photo-marker { width: 38px; height: 38px; border-radius: 9999px; display: grid; place-items: center; background: #2f8490; color: #fff; border: 3px solid #fff; box-shadow: 0 5px 16px rgba(17,36,47,.24); transition: transform .2s ease, opacity .2s ease, background .2s ease, box-shadow .2s ease; }
+.photo-marker .photo-dot { width: 9px; height: 9px; border: 2px solid #fff; border-radius: 9999px; box-shadow: 0 0 0 2px rgba(255,255,255,.28); }
+.photo-marker .route-number { font-size: 11px; font-weight: 750; }
+.photo-marker.is-route { background: #287f8d; }
+.photo-marker.is-start { background: #172832; }
+.photo-marker.is-end { background: #d88858; }
+.photo-marker.is-muted { opacity: .38; transform: scale(.82); }
+.photo-marker.is-selected { opacity: 1; transform: scale(1.16); box-shadow: 0 0 0 5px rgba(40,127,141,.2), 0 8px 22px rgba(17,36,47,.3); }
+.submission-spot-marker, .submission-camera-marker { width: 42px; height: 42px; border-radius: 9999px; display: grid; place-items: center; border: 3px solid #fff; box-shadow: 0 5px 16px rgba(22,32,42,.25); font-size: 10px; font-weight: 800; }
+.submission-spot-marker { background: #16202a; color: #fff; }
+.submission-camera-marker { background: #de8068; color: #fff; font-size: 25px; line-height: 1; }
+.map-route-line { stroke-dasharray: 2 10; animation: route-flow 9s linear infinite; filter: drop-shadow(0 1px 1px rgba(255,255,255,.9)); }
+.spot-sheet { bottom: calc(4.65rem + env(safe-area-inset-bottom)); }
+.map-shell .leaflet-container { height: 100%; width: 100%; }
+.scene-mint { background: linear-gradient(145deg, #d9ece9, #f5f2e7); }
+.scene-sand { background: linear-gradient(145deg, #e9e3d6, #f8f7f1); }
+.scene-blue { background: linear-gradient(145deg, #dce8ee, #f7eee8); }
+.scene-coral { background: linear-gradient(145deg, #ead9d2, #f7eee8); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .numbered-marker { transition: none; }
+  .photo-marker { transition: none; }
+  .map-route-line { animation: none; }
+}
+@keyframes route-flow { to { stroke-dashoffset: -120; } }
+@media (max-width: 1023px) {
+  .map-shell .leaflet-bottom.leaflet-right { bottom: calc(var(--map-sheet-offset, 5rem) + env(safe-area-inset-bottom)); transition: bottom .25s ease; }
+  /* 光影大工 Product V2：地图控件分别避让底栏与紧凑 Spot Sheet。 */
+  .map-shell.is-sheet-collapsed { --map-sheet-offset: 4.8rem; }
+  .map-shell.is-sheet-expanded { --map-sheet-offset: 16.8rem; }
+}

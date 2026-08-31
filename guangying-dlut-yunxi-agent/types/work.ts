@@ -1,0 +1,21 @@
+export type PhotographyWork = {
+  workId: string;
+  image: string;
+  thumbnail: string;
+  title: string;
+  photographer: string;
+  photographerAvatar: string | null;
+  spotId: string | null;
+  spotName: string | null;
+  cameraPositionId: string | null;
+  shotTime: string | null;
+  tags: string[];
+  camera: string | null;
+  focalLength: string | null;
+  aperture: string | null;
+  shutterSpeed: string | null;
+  iso: number | null;
+  likes: number | null;
+  source: string;
+  sourceUrl: string;
+};
