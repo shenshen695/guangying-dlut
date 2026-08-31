@@ -1,7 +1,7 @@
 import type { SVGProps } from "react";
 
 // 光影大工 Product V2：统一使用同一套 24px 线性 SVG 图标，替代字符模拟图标。
-export type AppIconName = "home" | "map" | "planner" | "user" | "search" | "camera" | "upload" | "arrow" | "clock" | "route" | "close" | "send" | "bookmark" | "plus" | "sparkles" | "chevronDown" | "heart" | "location" | "rotate" | "sun" | "graduation" | "building" | "moon" | "check";
+export type AppIconName = "home" | "map" | "planner" | "user" | "search" | "camera" | "upload" | "arrow" | "clock" | "route" | "close" | "send" | "bookmark" | "plus" | "sparkles" | "chevronDown" | "heart" | "location" | "rotate" | "sun" | "graduation" | "building" | "moon" | "check" | "star";
 
 const paths: Record<AppIconName, React.ReactNode> = {
   home: <><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.7V21h13V9.7"/><path d="M9.5 21v-6h5v6"/></>,
@@ -28,6 +28,7 @@ const paths: Record<AppIconName, React.ReactNode> = {
   building: <><path d="M4 21V8l7-3v16M11 21V3l9 4v14M2 21h20"/><path d="M7 11h1M7 15h1M14 8h2M14 12h2M14 16h2"/></>,
   moon: <path d="M20 15.2A8.5 8.5 0 0 1 8.8 4a8.5 8.5 0 1 0 11.2 11.2z"/>,
   check: <path d="m5 12 4 4L19 6"/>,
+  star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z"/>,
 };
 
 export default function AppIcon({ name, ...props }: { name: AppIconName } & SVGProps<SVGSVGElement>) {

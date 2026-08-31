@@ -123,19 +123,6 @@ img {
   color: var(--ink);
 }
 
-.gy-seal {
-  display: inline-grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  margin-top: 3px;
-  border: 1px solid var(--coral);
-  border-radius: 2px;
-  color: var(--coral);
-  font-family: "Noto Sans SC", sans-serif;
-  font-size: 11px;
-}
-
 .gy-nav-links {
   display: flex;
   justify-content: center;
@@ -386,6 +373,19 @@ img {
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.gy-map-real-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  filter: saturate(0.72) contrast(0.94) brightness(1.04);
+  opacity: 0.82;
+  transform: scale(1.01);
 }
 
 .gy-map-road {
@@ -423,9 +423,11 @@ img {
 .gy-map-route {
   fill: none;
   stroke: var(--teal);
-  stroke-width: 4;
+  stroke-width: 1.05;
   stroke-linecap: round;
-  stroke-dasharray: 8 10;
+  stroke-linejoin: round;
+  stroke-dasharray: 2 2.4;
+  filter: drop-shadow(0 1px 0 rgba(255, 253, 249, 0.88));
 }
 
 .gy-map-distance {
@@ -3107,6 +3109,79 @@ img {
   gap: 10px;
 }
 
+.gy-map-route-menu {
+  position: relative;
+}
+
+.gy-map-route-menu > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  padding: 0 15px;
+  border: 1px solid rgba(222, 216, 206, 0.88);
+  border-radius: 7px;
+  background: rgba(255, 253, 249, 0.94);
+  color: var(--teal);
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(42, 36, 28, 0.055);
+  backdrop-filter: blur(8px);
+}
+
+.gy-map-route-menu > button span:last-child {
+  font-size: 14px;
+  transition: transform 160ms ease;
+}
+
+.gy-map-route-menu > button span:last-child.is-open {
+  transform: rotate(180deg);
+}
+
+.gy-map-route-icon {
+  color: var(--teal);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.gy-map-route-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 560;
+  width: 176px;
+  padding: 8px;
+  border: 1px solid rgba(222, 216, 206, 0.9);
+  border-radius: 7px;
+  background: rgba(255, 253, 249, 0.98);
+  box-shadow: 0 18px 42px rgba(42, 36, 28, 0.13);
+  backdrop-filter: blur(10px);
+}
+
+.gy-map-route-popover a {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 5px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.gy-map-route-popover a:hover,
+.gy-map-route-popover a.is-active {
+  background: rgba(22, 123, 117, 0.09);
+  color: var(--teal);
+}
+
+.gy-map-route-popover a.is-muted {
+  margin-top: 6px;
+  border-top: 1px solid rgba(222, 216, 206, 0.72);
+  border-radius: 0;
+  color: var(--muted);
+}
+
 .gy-map-mode-tabs {
   display: flex;
   gap: 2px;
@@ -5166,5 +5241,948 @@ img {
 
   .gy-weather-forecast {
     grid-template-columns: 1fr;
+  }
+}
+
+.gy-agent-container {
+  min-height: 100dvh;
+}
+
+.gy-agent-page-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  gap: 28px;
+  align-items: end;
+  margin-top: 30px;
+  margin-bottom: 22px;
+}
+
+.gy-agent-capability-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  padding: 20px;
+}
+
+.gy-agent-capability-list div {
+  min-width: 0;
+}
+
+.gy-agent-capability-list strong {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.gy-agent-capability-list p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.gy-agent-entry-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin: 18px 0 24px;
+  padding: 20px 22px;
+}
+
+.gy-agent-entry-band h2 {
+  margin: 4px 0 8px;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+.gy-agent-entry-band p {
+  margin: 0;
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.gy-agent-entry-band .gy-primary-button {
+  min-width: 150px;
+  justify-content: center;
+}
+
+.gy-agent-inline-link {
+  display: inline-flex;
+  align-items: center;
+  margin: 12px 0 18px;
+  padding: 8px 12px;
+  border: 1px solid rgba(22, 123, 117, 0.28);
+  border-radius: 8px;
+  background: rgba(247, 251, 250, 0.88);
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(52, 49, 43, 0.04);
+}
+
+.gy-agent-inline-link:hover {
+  border-color: rgba(22, 123, 117, 0.55);
+  background: #fffdf9;
+}
+
+@media (max-width: 860px) {
+  .gy-agent-page-head,
+  .gy-agent-entry-band {
+    grid-template-columns: 1fr;
+  }
+
+  .gy-agent-page-head {
+    margin-top: 18px;
+  }
+
+  .gy-agent-capability-list {
+    grid-template-columns: 1fr;
+  }
+
+  .gy-agent-entry-band .gy-primary-button {
+    width: 100%;
+  }
+}
+
+.gy-mobile-photographers {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .gy-photographers-page {
+    min-height: 100dvh;
+  }
+
+  .gy-photographers-desktop {
+    display: none !important;
+  }
+
+  .gy-mobile-photographers {
+    display: block;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: max(18px, env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
+    color: var(--ink);
+  }
+
+  .gy-mobile-photographers-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .gy-mobile-photographers-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 27px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-decoration: none;
+  }
+
+  .gy-mobile-photographers-brand span {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 1px solid rgba(220, 111, 91, 0.75);
+    border-radius: 4px;
+    color: var(--coral);
+    font-family: inherit;
+    font-size: 11px;
+  }
+
+  .gy-mobile-upload-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid rgba(22, 123, 117, 0.34);
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.84);
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(22, 123, 117, 0.06);
+  }
+
+  .gy-mobile-upload-chip svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .gy-mobile-photographers-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: end;
+    padding: 18px 0 14px;
+    border-bottom: 1px solid rgba(222, 216, 206, 0.8);
+  }
+
+  .gy-mobile-photographers-hero span {
+    display: block;
+    color: rgba(122, 118, 110, 0.72);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .gy-mobile-photographers-hero h1 {
+    margin: 7px 0 8px;
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .gy-mobile-photographers-hero p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .gy-mobile-photographers-hero a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 34px;
+    padding: 0 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.72);
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .gy-mobile-photographers-hero a svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .gy-mobile-source-note {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .gy-mobile-photographer-filters {
+    display: flex;
+    gap: 8px;
+    margin: 16px -16px 0;
+    overflow-x: auto;
+    padding: 0 16px 2px;
+    scrollbar-width: none;
+  }
+
+  .gy-mobile-photographer-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gy-mobile-photographer-filters button {
+    flex: 0 0 auto;
+    min-height: 33px;
+    padding: 0 13px;
+    border: 1px solid rgba(222, 216, 206, 0.92);
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.86);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .gy-mobile-photographer-filters button.is-active {
+    border-color: rgba(22, 123, 117, 0.45);
+    background: rgba(22, 123, 117, 0.1);
+    color: var(--teal);
+  }
+
+  .gy-mobile-featured-photographer {
+    position: relative;
+    display: block;
+    min-height: 180px;
+    margin-top: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(222, 216, 206, 0.75);
+    border-radius: 16px;
+    background: #eef0e9;
+    box-shadow: 0 12px 26px rgba(42, 36, 28, 0.08);
+  }
+
+  .gy-mobile-featured-photographer img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.82) contrast(0.96);
+  }
+
+  .gy-mobile-featured-photographer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(27, 28, 25, 0.02), rgba(27, 28, 25, 0.62));
+  }
+
+  .gy-mobile-featured-photographer > span {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+    z-index: 1;
+    color: #fff;
+  }
+
+  .gy-mobile-featured-photographer small,
+  .gy-mobile-featured-photographer strong,
+  .gy-mobile-featured-photographer em {
+    display: block;
+  }
+
+  .gy-mobile-featured-photographer small {
+    width: max-content;
+    margin-bottom: 8px;
+    padding: 4px 7px;
+    border-radius: 6px;
+    background: rgba(255, 253, 249, 0.2);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    backdrop-filter: blur(6px);
+  }
+
+  .gy-mobile-featured-photographer strong {
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 27px;
+    font-weight: 500;
+  }
+
+  .gy-mobile-featured-photographer em {
+    margin-top: 5px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 12px;
+    font-style: normal;
+  }
+
+  .gy-mobile-photographer-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .gy-mobile-photographer-card {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 13px;
+    min-height: 128px;
+    padding: 11px;
+    border: 1px solid rgba(222, 216, 206, 0.86);
+    border-radius: 16px;
+    background: rgba(255, 253, 249, 0.82);
+    color: var(--ink);
+    text-decoration: none;
+    box-shadow: 0 7px 20px rgba(42, 36, 28, 0.04);
+  }
+
+  .gy-mobile-photographer-card > img {
+    width: 82px;
+    height: 106px;
+    object-fit: cover;
+    border-radius: 12px;
+    filter: saturate(0.84) contrast(0.96);
+  }
+
+  .gy-mobile-photographer-card-main {
+    min-width: 0;
+  }
+
+  .gy-mobile-photographer-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .gy-mobile-photographer-card-head h2 {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 21px;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gy-mobile-photographer-card-head span {
+    flex: 0 0 auto;
+    padding: 4px 7px;
+    border-radius: 999px;
+    background: rgba(22, 123, 117, 0.1);
+    color: var(--teal);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .gy-mobile-photographer-card p {
+    display: -webkit-box;
+    min-height: 36px;
+    margin: 7px 0 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .gy-mobile-photographer-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 9px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .gy-mobile-photographer-tags::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gy-mobile-photographer-tags span {
+    flex: 0 0 auto;
+    padding: 4px 7px;
+    border: 1px solid rgba(222, 216, 206, 0.8);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .gy-mobile-work-preview {
+    display: flex;
+    gap: 5px;
+    margin-top: 9px;
+  }
+
+  .gy-mobile-work-preview img {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .gy-mobile-empty-card {
+    margin-top: 14px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 253, 249, 0.82);
+    text-align: center;
+  }
+
+  .gy-mobile-empty-card strong {
+    display: block;
+    font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .gy-mobile-empty-card p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gy-mobile-photographers {
+    display: none !important;
+  }
+}
+
+.gy-photographer-market-container {
+  min-height: 100dvh;
+}
+
+.gy-photographer-market-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(520px, 0.72fr);
+  align-items: end;
+  gap: 34px;
+  padding-top: 48px;
+}
+
+.gy-photographer-market-actions {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) max-content;
+  align-items: center;
+  gap: 18px;
+}
+
+.gy-photographer-search {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  min-height: 58px;
+  padding: 0 18px;
+  border: 1px solid rgba(222, 216, 206, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 253, 249, 0.86);
+  box-shadow: 0 10px 28px rgba(42, 36, 28, 0.05);
+}
+
+.gy-photographer-search span {
+  color: rgba(122, 118, 110, 0.72);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.gy-photographer-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.gy-photographer-search input::placeholder {
+  color: rgba(122, 118, 110, 0.58);
+}
+
+.gy-become-photographer-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 0 25px;
+  border: 1px solid rgba(22, 123, 117, 0.3);
+  border-radius: 14px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(22, 123, 117, 0.12);
+}
+
+.gy-source-note {
+  max-width: 640px;
+  margin: 14px 0 0;
+  color: rgba(122, 118, 110, 0.76);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.gy-source-note.is-connected {
+  color: var(--teal);
+}
+
+.gy-photographer-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.gy-photographer-tabs button {
+  min-height: 50px;
+  padding: 0 28px;
+  border: 1px solid rgba(222, 216, 206, 0.92);
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.82);
+  color: #5b6370;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 7px 18px rgba(42, 36, 28, 0.035);
+}
+
+.gy-photographer-tabs button.is-active {
+  border-color: #0c182a;
+  background: #0c182a;
+  color: #fff;
+}
+
+.gy-photographer-feed {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 26px;
+  padding-bottom: 40px;
+}
+
+.gy-photographer-feed-card {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid rgba(222, 216, 206, 0.9);
+  border-radius: 18px;
+  background: rgba(255, 253, 249, 0.88);
+  box-shadow: 0 13px 28px rgba(42, 36, 28, 0.055);
+}
+
+.gy-photographer-feed-profile {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 18px;
+}
+
+.gy-photographer-feed-profile > img {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(0.96);
+}
+
+.gy-photographer-name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.gy-photographer-name-row a {
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 25px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.gy-photographer-name-row span {
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: rgba(236, 241, 241, 0.88);
+  color: #7a8593;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gy-photographer-feed-profile p {
+  margin: 7px 0 0;
+  color: #7a8593;
+  font-size: 15px;
+}
+
+.gy-photographer-feed-profile button {
+  min-width: 82px;
+  min-height: 42px;
+  border: 1px solid rgba(22, 123, 117, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--teal);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.gy-photographer-feed-profile button.is-followed {
+  border-color: rgba(222, 216, 206, 0.85);
+  color: #7a8593;
+}
+
+.gy-photographer-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  color: #9aa2ad;
+  font-size: 15px;
+}
+
+.gy-photographer-stats strong {
+  color: #263140;
+  font-size: 19px;
+}
+
+.gy-photographer-work-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.gy-photographer-work-strip a {
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #edf1ef;
+}
+
+.gy-photographer-work-strip img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(0.96);
+  transition: transform 0.2s ease;
+}
+
+.gy-photographer-work-strip a:hover img {
+  transform: scale(1.025);
+}
+
+.gy-photographer-card-foot {
+  display: grid;
+  grid-template-columns: max-content max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.gy-photographer-card-foot span {
+  padding: 6px 10px;
+  border: 1px solid rgba(222, 216, 206, 0.86);
+  border-radius: 999px;
+  color: #7a8593;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gy-photographer-card-foot a {
+  justify-self: end;
+  color: var(--teal);
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+@media (max-width: 1180px) {
+  .gy-photographer-market-head {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .gy-photographer-market-actions {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .gy-photographer-feed {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .gy-photographer-market-page {
+    background: #f5f7f8;
+  }
+
+  .gy-photographer-market-page .gy-container {
+    width: 100%;
+    min-height: 100dvh;
+    padding: 24px 20px calc(96px + env(safe-area-inset-bottom));
+  }
+
+  .gy-photographer-market-page .gy-nav {
+    display: none;
+  }
+
+  .gy-photographer-market-head {
+    display: block;
+    padding-top: 28px;
+  }
+
+  .gy-photographer-market-head .gy-eyebrow,
+  .gy-photographer-market-head .gy-body-copy,
+  .gy-source-note {
+    display: none;
+  }
+
+  .gy-photographer-market-head .gy-page-title {
+    margin: 0 0 18px;
+    color: #101827;
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .gy-photographer-market-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 136px;
+    gap: 12px;
+  }
+
+  .gy-photographer-search {
+    min-height: 50px;
+    border-color: #e5e9ed;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(16, 24, 39, 0.04);
+  }
+
+  .gy-photographer-search span {
+    color: #9aa5b4;
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    font-size: 24px;
+  }
+
+  .gy-photographer-search input {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .gy-become-photographer-button {
+    min-height: 50px;
+    padding: 0 14px;
+    border-radius: 18px;
+    background: #167b75;
+    font-size: 14px;
+  }
+
+  .gy-photographer-tabs {
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin: 20px -20px 0;
+    overflow-x: auto;
+    padding: 0 20px 2px;
+    scrollbar-width: none;
+  }
+
+  .gy-photographer-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gy-photographer-tabs button {
+    flex: 0 0 auto;
+    min-height: 43px;
+    padding: 0 22px;
+    border-color: #e4e8ec;
+    border-radius: 999px;
+    background: #fff;
+    color: #445064;
+    font-size: 15px;
+    box-shadow: none;
+  }
+
+  .gy-photographer-tabs button.is-active {
+    border-color: #101827;
+    background: #101827;
+    color: #fff;
+  }
+
+  .gy-photographer-feed {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+    padding-bottom: 0;
+  }
+
+  .gy-photographer-feed-card {
+    gap: 14px;
+    padding: 18px;
+    border-color: #e5e9ed;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 10px 28px rgba(16, 24, 39, 0.05);
+  }
+
+  .gy-photographer-feed-profile {
+    grid-template-columns: 56px minmax(0, 1fr) 74px;
+    gap: 12px;
+  }
+
+  .gy-photographer-feed-profile > img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .gy-photographer-name-row {
+    gap: 8px;
+  }
+
+  .gy-photographer-name-row a {
+    max-width: 118px;
+    overflow: hidden;
+    color: #101827;
+    font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    font-size: 19px;
+    font-weight: 900;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gy-photographer-name-row span {
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+
+  .gy-photographer-feed-profile p {
+    margin-top: 4px;
+    overflow: hidden;
+    color: #7d8794;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gy-photographer-feed-profile button {
+    min-width: 70px;
+    min-height: 36px;
+    background: #fff;
+    font-size: 13px;
+  }
+
+  .gy-photographer-stats {
+    gap: 14px;
+    color: #98a2b1;
+    font-size: 13px;
+  }
+
+  .gy-photographer-stats strong {
+    color: #263140;
+    font-size: 15px;
+  }
+
+  .gy-photographer-work-strip {
+    gap: 8px;
+  }
+
+  .gy-photographer-work-strip a {
+    border-radius: 11px;
+  }
+
+  .gy-photographer-work-strip img {
+    aspect-ratio: 1.34 / 1;
+  }
+
+  .gy-photographer-card-foot {
+    grid-template-columns: 1fr auto;
+  }
+
+  .gy-photographer-card-foot span:nth-child(2) {
+    display: none;
+  }
+
+  .gy-photographer-card-foot span {
+    width: max-content;
+    padding: 0;
+    border: 0;
+    color: #98a2b1;
+    font-size: 12px;
+  }
+
+  .gy-photographer-card-foot a {
+    color: #167b75;
+    font-size: 18px;
+    line-height: 1;
   }
 }

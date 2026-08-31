@@ -37,7 +37,7 @@ export default function RouteDetailPage({ params }: { params: { slug: string } }
           <Eyebrow muted>ROUTE DETAIL</Eyebrow>
           <h1 className="gy-page-title">{route.name}</h1>
           <CoralRule />
-          <p className="gy-body-copy">{route.subtitle}。路线点位全部来自真实点位库，可直接进入地图查看。</p>
+          <p className="gy-body-copy">{route.subtitle}。路线点位均来自已收录的校园机位，可直接进入地图查看。</p>
           <div className="gy-pill-row">
             <Pill active>春</Pill>
             <Pill>清透</Pill>
@@ -54,7 +54,7 @@ export default function RouteDetailPage({ params }: { params: { slug: string } }
       </section>
 
       <section className="gy-route-overview gy-panel">
-        <img src="/assets/ui/route-cover-spring.png" alt={`${route.name}路线封面`} />
+        <img src="/images/spot-library/伯川前二月兰.jpg" alt={`${route.name}路线封面`} />
         <div>
           <Eyebrow>路线总览</Eyebrow>
           <h2>{route.name}</h2>

@@ -2,6 +2,7 @@ import type { StyleReference } from "@/types/planner";
 import type { Season } from "@/types/spot";
 
 export type WorkReviewStatus = "待审核" | "已通过" | "需补充";
+export type WorkCategory = "校园景观" | "人像" | "秋景" | "夜景";
 
 export type SubmittedWork = {
   id: string;
@@ -27,6 +28,7 @@ export type PhotographyWork = {
   thumbnail: string;
   title: string;
   photographer: string;
+  photographerId: string;
   photographerAvatar: string | null;
   spotId: string | null;
   spotName: string | null;
@@ -39,6 +41,8 @@ export type PhotographyWork = {
   shutterSpeed: string | null;
   iso: number | null;
   likes: number | null;
+  categories: WorkCategory[];
+  createdAt: string;
   source: string;
   sourceUrl: string;
 };

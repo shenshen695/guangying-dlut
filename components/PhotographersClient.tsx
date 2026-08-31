@@ -3,137 +3,179 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import photographersData from "@/data/photographers.json";
-import { Eyebrow, Pill, TopNav } from "@/components/guangying-ui";
+import { Eyebrow, TopNav } from "@/components/guangying-ui";
 import type { Photographer } from "@/types/photographer";
 import { listApprovedPhotographers } from "@/lib/supabase/backend";
 
-const photographers = photographersData as Photographer[];
+const fallbackPhotographers = photographersData as Photographer[];
+const categories = ["全部", "校园风光", "建筑", "人像", "秋景"];
+
+function getPhotographerStats(item: Photographer, index: number) {
+  return {
+    works: item.portfolio.length * 12 + 8 + index,
+    fans: index === 0 ? "1.3k" : index === 1 ? "968" : `${620 + index * 87}`,
+    following: 218 + index * 31,
+  };
+}
+
+function categoryMatches(item: Photographer, category: string) {
+  if (category === "全部") return true;
+  const text = [
+    item.identity,
+    item.intro,
+    item.familiarRoutes.join(" "),
+    item.familiarSpots.join(" "),
+    item.styles.join(" "),
+    item.seasons.join(" "),
+    item.portfolio.map((work) => `${work.title} ${work.spot} ${work.style} ${work.categories.join(" ")}`).join(" "),
+  ].join(" ");
+
+  if (category === "校园风光") return /校园|湖畔|凌水湖|南门|风光|清透|自然/.test(text);
+  if (category === "秋景") return item.seasons.includes("秋") || /秋|胶片|黄昏/.test(text);
+  return text.includes(category);
+}
+
+function searchMatches(item: Photographer, keyword: string) {
+  if (!keyword.trim()) return true;
+  const query = keyword.trim().toLowerCase();
+  const text = [
+    item.name,
+    item.identity,
+    item.intro,
+    item.familiarRoutes.join(" "),
+    item.familiarSpots.join(" "),
+    item.styles.join(" "),
+    item.portfolio.map((work) => `${work.title} ${work.spot} ${work.style}`).join(" "),
+  ].join(" ").toLowerCase();
+  return text.includes(query);
+}
 
 export default function PhotographersClient() {
-  const [directory, setDirectory] = useState<Photographer[]>(photographers);
+  const [directory, setDirectory] = useState<Photographer[]>(fallbackPhotographers);
   const [sourceMessage, setSourceMessage] = useState("");
-  const [season, setSeason] = useState("全部");
-  const [route, setRoute] = useState("全部");
-  const [availability, setAvailability] = useState("全部");
+  const [keyword, setKeyword] = useState("");
+  const [category, setCategory] = useState("全部");
   const [authOnly, setAuthOnly] = useState(false);
-  const [previewSlug, setPreviewSlug] = useState("ruoshui");
-  const [contactOpen, setContactOpen] = useState(false);
-
-  const routeOptions = useMemo(() => {
-    const names = new Set<string>();
-    directory.forEach((item) => item.familiarRoutes.forEach((name) => names.add(name)));
-    return ["全部", ...Array.from(names)];
-  }, [directory]);
+  const [followed, setFollowed] = useState<Set<string>>(new Set(["ming"]));
 
   useEffect(() => {
     listApprovedPhotographers().then((result) => {
-      if (result.photographers.length > 0 && result.mode === "supabase") {
-        setDirectory(result.photographers);
-      } else {
-        setDirectory(photographers);
-      }
+      setDirectory(result.photographers.length > 0 && result.mode === "supabase" ? result.photographers : fallbackPhotographers);
       setSourceMessage(result.message || "");
     });
   }, []);
 
   const filtered = useMemo(() => directory.filter((item) => {
-    if (season !== "全部" && !item.seasons.includes(season as Photographer["seasons"][number])) return false;
-    if (route !== "全部" && !item.familiarRoutes.some((value) => value.includes(route.replace("毕业线", "")) || route.includes(value))) return false;
-    if (availability !== "全部" && item.mutualStatus !== availability) return false;
+    if (!searchMatches(item, keyword)) return false;
+    if (!categoryMatches(item, category)) return false;
     if (authOnly && !item.authorized) return false;
     return true;
-  }), [directory, season, route, availability, authOnly]);
+  }), [authOnly, category, directory, keyword]);
 
-  const preview = directory.find((item) => item.slug === previewSlug && filtered.some((match) => match.slug === item.slug)) || filtered[0] || directory[0] || photographers[0];
-  const previewWorks = preview.portfolio.slice(0, 3).map((work) => work.title).join("、");
+  const visible = filtered;
 
-  function previewPhotographer(slug: string) {
-    setPreviewSlug(slug);
-    setContactOpen(false);
+  function toggleFollow(slug: string) {
+    setFollowed((current) => {
+      const next = new Set(current);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
   }
 
+  const isSupabaseNotice = sourceMessage.includes("Supabase") && !sourceMessage.includes("未配置 Supabase");
+
   return (
-    <main className="gy-page">
-      <div className="gy-container">
+    <main className="gy-page gy-photographer-market-page">
+      <div className="gy-container gy-photographer-market-container">
         <TopNav active="摄影者" actionLabel="上传作品" actionHref="/works/submit" />
-        <section className="gy-directory-head">
+
+        <section className="gy-photographer-market-head">
           <div>
             <Eyebrow muted>PHOTOGRAPHERS</Eyebrow>
-            <h1 className="gy-page-title">摄影者档案</h1>
-            <p className="gy-body-copy">查看熟悉大工点位的摄影者、作品风格与授权联系方式。</p>
-            {sourceMessage ? <p className="gy-backend-note">{sourceMessage}</p> : null}
-          </div>
-          <div className="gy-directory-tools">
-            <Link href="/contribute" className="gy-secondary-button">提交摄影者档案</Link>
-            <div className="gy-filter-bar">
-              <select value={season} onChange={(event) => setSeason(event.target.value)} aria-label="按季节筛选">
-                <option>全部</option>
-                <option>春</option>
-                <option>夏</option>
-                <option>秋</option>
-                <option>冬</option>
-              </select>
-              <select value={route} onChange={(event) => setRoute(event.target.value)} aria-label="按路线筛选">
-                {routeOptions.map((name) => <option key={name}>{name}</option>)}
-              </select>
-              <select value={availability} onChange={(event) => setAvailability(event.target.value)} aria-label="按互勉状态筛选">
-                <option>全部</option>
-                <option>可互勉</option>
-                <option>可约拍</option>
-                <option>暂不互勉</option>
-              </select>
-              <label><input type="checkbox" checked={authOnly} onChange={(event) => setAuthOnly(event.target.checked)} /> 已授权</label>
-            </div>
-          </div>
-        </section>
-
-        <section className="gy-photographer-layout">
-          <div className="gy-photographer-grid">
-            {filtered.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/photographers/${item.slug}`}
-                onMouseEnter={() => previewPhotographer(item.slug)}
-                onFocus={() => previewPhotographer(item.slug)}
-                className={item.slug === preview.slug ? "gy-panel gy-photographer-card gy-card-link is-active" : "gy-panel gy-photographer-card gy-card-link"}
-              >
-                <img src={item.avatar} alt={`${item.name}作品预览`} />
-                <h3>{item.name}</h3>
-                <p>{item.identity} · {item.styles.slice(0, 2).join(" / ")}</p>
-                <div className="gy-mini-pill-row">
-                  <Pill active={item.slug === preview.slug}>{item.familiarRoutes[0]}</Pill>
-                  <Pill>{item.mutualStatus}</Pill>
-                  {item.authorized ? <Pill>已授权</Pill> : null}
-                </div>
-              </Link>
-            ))}
-            {filtered.length === 0 ? (
-              <div className="gy-panel gy-empty-state">
-                <h3>暂无匹配摄影者</h3>
-                <p>可以放宽筛选条件，或先在共建页提交摄影者档案。</p>
-              </div>
+            <h1 className="gy-page-title">摄影师</h1>
+            <p className="gy-body-copy">搜索熟悉大工点位的摄影师，看作品、风格、路线和授权联系方式。</p>
+            {sourceMessage ? (
+              <p className={isSupabaseNotice ? "gy-source-note is-connected" : "gy-source-note"}>
+                {sourceMessage}
+              </p>
             ) : null}
           </div>
-
-          <aside className="gy-panel gy-side-panel gy-profile-panel">
-            <img src={preview.avatar} alt={`${preview.name}摄影作品预览`} />
-            <Eyebrow muted>{contactOpen ? "AUTHORIZED CONTACT" : "PROFILE PREVIEW"}</Eyebrow>
-            <h2>{preview.name}</h2>
-            <p className="gy-body-copy" style={{ marginTop: 14 }}>{preview.intro}</p>
-            <div className="gy-profile-row"><span>身份</span><p>{preview.identity}</p></div>
-            <div className="gy-profile-row"><span>熟悉路线</span><p>{preview.familiarRoutes.join(" / ")}</p></div>
-            <div className="gy-profile-row"><span>作品片段</span><p>{previewWorks}</p></div>
-            <div className="gy-profile-row"><span>互勉状态</span><p>{preview.mutualStatus === "可互勉" ? "开放互勉，需提前预约" : preview.mutualStatus}</p></div>
-            <div className="gy-profile-row"><span>联系方式</span><p>{contactOpen && preview.authorized ? `微信 ${preview.contact.wechat || "未填"} / 邮箱 ${preview.contact.email || "未填"}` : preview.authorized ? "已授权展示，点击后显示" : "暂未授权展示"}</p></div>
-            {contactOpen && preview.authorized ? <p className="gy-privacy-note">请说明来意，尊重摄影者时间，不进行骚扰或商业转载。</p> : null}
-            <div className="gy-profile-actions">
-              <Link href={`/photographers/${preview.slug}`} className="gy-primary-button">查看主页</Link>
-              <button type="button" className="gy-secondary-button" disabled={!preview.authorized} onClick={() => setContactOpen((value) => !value)}>
-                {contactOpen ? "收起联系方式" : preview.authorized ? "查看授权联系方式" : "暂未授权联系方式"}
-              </button>
+          <div className="gy-photographer-market-actions">
+            <div className="gy-photographer-search">
+              <span aria-hidden>⌕</span>
+              <input
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                placeholder="搜索摄影师"
+                aria-label="搜索摄影师"
+              />
             </div>
-          </aside>
+            <Link href="/photographer/apply" className="gy-become-photographer-button">成为摄影师</Link>
+          </div>
         </section>
+
+        <section className="gy-photographer-tabs" aria-label="摄影师分类">
+          {categories.map((item) => (
+            <button key={item} type="button" className={category === item ? "is-active" : ""} onClick={() => setCategory(item)}>
+              {item}
+            </button>
+          ))}
+          <button type="button" className={authOnly ? "is-active" : ""} onClick={() => setAuthOnly(!authOnly)}>
+            已授权
+          </button>
+        </section>
+
+        <section className="gy-photographer-feed" aria-label="摄影师列表">
+          {visible.map((item, index) => {
+            const stats = getPhotographerStats(item, index);
+            const isFollowed = followed.has(item.slug);
+            return (
+              <article key={item.slug} className="gy-photographer-feed-card">
+                <div className="gy-photographer-feed-profile">
+                  <img src={item.avatar} alt={`${item.name}头像`} />
+                  <div>
+                    <div className="gy-photographer-name-row">
+                      <Link href={`/photographers/${item.slug}`}>{item.name}</Link>
+                      <span>{item.identity}</span>
+                    </div>
+                    <p>{item.familiarSpots.slice(0, 2).join(" · ")} · {item.styles.slice(0, 2).join(" · ")}</p>
+                  </div>
+                  <button type="button" className={isFollowed ? "is-followed" : ""} onClick={() => toggleFollow(item.slug)}>
+                    {isFollowed ? "已关注" : "关注"}
+                  </button>
+                </div>
+
+                <div className="gy-photographer-stats">
+                  <span>作品 <strong>{stats.works}</strong></span>
+                  <span>粉丝 <strong>{stats.fans}</strong></span>
+                  <span>关注 <strong>{stats.following}</strong></span>
+                </div>
+
+                <div className="gy-photographer-work-strip">
+                  {item.portfolio.slice(0, 3).map((work) => (
+                    <Link key={work.id} href={`/photographers/${item.slug}`} aria-label={`查看作品：${work.title}`}>
+                      <img src={work.image} alt={work.title} />
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="gy-photographer-card-foot">
+                  <span>{item.mutualStatus}</span>
+                  <span>{item.authorized ? "联系方式已授权" : "联系方式未公开"}</span>
+                  <Link href={`/photographers/${item.slug}`}>查看主页 →</Link>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+
+        {filtered.length === 0 ? (
+          <section className="gy-panel gy-empty-state">
+            <h3>暂无匹配摄影师</h3>
+            <p>可以换一个分类，或先进入认证页面成为摄影师。</p>
+          </section>
+        ) : null}
       </div>
     </main>
   );

@@ -176,7 +176,7 @@ export default function WorkSubmitClient() {
                 ? backendState.user
                   ? `已连接 Supabase，当前账号：${backendState.user.email || "已登录用户"}`
                   : "已连接 Supabase，登录后可提交到真实作品审核队列。"
-                : "当前为演示模式，后端未连接；表单会写入本地待审核状态。"}
+                : "当前站点未配置 Supabase 环境变量，表单会写入本地演示待审核状态。"}
               {backendState?.configured && !backendState.user ? <Link href="/login">去登录</Link> : null}
             </p>
           </div>
@@ -264,7 +264,7 @@ export default function WorkSubmitClient() {
 
             <label className="gy-upload-box">
               <input type="file" accept="image/*" multiple onChange={(event) => setFiles(Array.from(event.target.files || []))} />
-              <span>{files.length > 0 ? files.map((file) => file.name).join(" / ") : "上传作品图片：演示模式本地记录，接入后写入 Supabase Storage"}</span>
+              <span>{files.length > 0 ? files.map((file) => file.name).join(" / ") : "上传作品图片，提交后进入审核队列"}</span>
             </label>
 
             <label className="gy-consent-line">

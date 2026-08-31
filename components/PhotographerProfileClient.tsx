@@ -106,7 +106,7 @@ export default function PhotographerProfileClient({ photographer, requestedSlug 
                   <p className="gy-privacy-note">请说明来意，尊重摄影者时间，不进行骚扰或商业转载。</p>
                 </>
               ) : (
-                <p className="gy-body-copy">联系方式默认隐藏，点击后展示演示授权信息。</p>
+                <p className="gy-body-copy">联系方式默认隐藏，点击后展示摄影者授权信息。</p>
               )
             ) : (
                 <p className="gy-body-copy">该摄影者暂未授权公开联系方式，可先查看作品风格。</p>
@@ -152,7 +152,7 @@ export default function PhotographerProfileClient({ photographer, requestedSlug 
             {filteredWorks.length === 0 ? (
               <div className="gy-empty-state gy-panel">
                 <h3>暂无该分类作品</h3>
-                <p>当前为演示占位数据，后续可替换真实授权作品。</p>
+                <p>换一个分类看看，或等待摄影者补充更多公开作品。</p>
               </div>
             ) : null}
           </div>

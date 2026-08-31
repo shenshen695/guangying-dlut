@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import AppIcon, { type AppIconName } from "@/components/AppIcon";
+import HomePhotographers from "@/components/HomePhotographers";
 import PhotographySelections from "@/components/PhotographySelections";
 import { getCampusMedia } from "@/data/media";
 
@@ -11,12 +12,13 @@ const weekly = [
   { title: "伯川图书馆", detail: "静谧阅读 · 建筑线条", media: "autumn-light", href: "/spot/bochuan/" },
 ];
 
-const shortcuts: { label: string; icon: AppIconName; tone: string }[] = [
-  { label: "凌水湖", icon: "location", tone: "bg-[#eef7f6] text-sea" },
-  { label: "毕业照", icon: "graduation", tone: "bg-[#edf5f6] text-sea" },
-  { label: "日落", icon: "sun", tone: "bg-[#fff7e8] text-[#d97706]" },
-  { label: "建筑", icon: "building", tone: "bg-[#eef3f7] text-[#397385]" },
-  { label: "夜景", icon: "moon", tone: "bg-[#eef3f7] text-sea" },
+const shortcuts: { label: string; icon: AppIconName; tone: string; href: string }[] = [
+  { label: "AI风格", icon: "sparkles", tone: "bg-[#fff7e8] text-[#b66a00]", href: "/agent/" },
+  { label: "凌水湖", icon: "location", tone: "bg-[#eef7f6] text-sea", href: "/map/?search=%E5%87%8C%E6%B0%B4%E6%B9%96" },
+  { label: "毕业照", icon: "graduation", tone: "bg-[#edf5f6] text-sea", href: "/map/?search=%E6%AF%95%E4%B8%9A%E7%85%A7" },
+  { label: "日落", icon: "sun", tone: "bg-[#fff7e8] text-[#d97706]", href: "/map/?search=%E6%97%A5%E8%90%BD" },
+  { label: "建筑", icon: "building", tone: "bg-[#eef3f7] text-[#397385]", href: "/map/?search=%E5%BB%BA%E7%AD%91" },
+  { label: "夜景", icon: "moon", tone: "bg-[#eef3f7] text-sea", href: "/map/?search=%E5%A4%9C%E6%99%AF" },
 ];
 
 const guides = [
@@ -52,7 +54,7 @@ export default function MobileHomeSections() {
             </form>
             <div className="scrollbar-none -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
               {shortcuts.map((item) => (
-                <Link key={item.label} href={`/map/?search=${encodeURIComponent(item.label)}`} className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-semibold ${item.tone}`}>
+                <Link key={item.label} href={item.href} className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-[12px] font-semibold ${item.tone}`}>
                   <AppIcon name={item.icon} className="h-4 w-4" />
                   {item.label}
                 </Link>
@@ -87,8 +89,12 @@ export default function MobileHomeSections() {
             </div>
           </ContentSection>
 
-          <ContentSection title="大工摄影精选" action="查看全部" href="/me/#works">
+          <ContentSection title="大工摄影精选" action="查看全部" href="/works/">
             <PhotographySelections />
+          </ContentSection>
+
+          <ContentSection title="摄影师" action="查看全部" href="/photographers/">
+            <HomePhotographers />
           </ContentSection>
 
           <ContentSection title="摄影攻略" action="查看更多" href="/map/">

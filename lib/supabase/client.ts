@@ -6,7 +6,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
-export const demoModeMessage = "当前为演示模式，后端未连接";
+export const demoModeMessage = "当前站点未配置 Supabase 环境变量，正在使用演示数据";
 
 let browserClient: SupabaseClient | null = null;
 

@@ -35,6 +35,17 @@ function getSeasonHint(text: string) {
   return "春";
 }
 
+function getLocalPreference() {
+  const cached = localStorage.getItem("guangying_style_agent_last_result");
+  if (!cached) return null;
+  try {
+    return JSON.parse(cached) as AgentResponse;
+  } catch {
+    localStorage.removeItem("guangying_style_agent_last_result");
+    return null;
+  }
+}
+
 export default function ChatAgent() {
   const router = useRouter();
   const initialized = useRef(false);
@@ -74,16 +85,29 @@ export default function ChatAgent() {
     getBackendUserState()
       .then(async (state) => {
         setBackendState(state);
-        const realUserId = state.user?.id || userId.current;
-        const preferences = await getPreferences(realUserId);
-        if (preferences?.disliked_styles?.length) setDisliked(preferences.disliked_styles);
-        if (preferences?.preferred_style) {
-          setMessages([{ id: createId("assistant"), role: "assistant", content: `根据你上次的选择，我记得你偏向「${preferences.preferred_style}」。这次要沿用它，还是换一个方向？` }]);
-          return;
+        if (state.user?.id) {
+          const preferences = await getPreferences(state.user.id);
+          if (preferences?.disliked_styles?.length) setDisliked(preferences.disliked_styles);
+          if (preferences?.preferred_style) {
+            setMessages([{ id: createId("assistant"), role: "assistant", content: `根据你上次的选择，我记得你偏向「${preferences.preferred_style}」。这次要沿用它，还是换一个方向？` }]);
+            return;
+          }
+        } else {
+          const localPreference = getLocalPreference();
+          if (localPreference?.memory_update?.disliked_styles?.length) setDisliked(localPreference.memory_update.disliked_styles);
+          if (localPreference?.confirmed_style) {
+            setMessages([{ id: createId("assistant"), role: "assistant", content: `我记得你上次偏向「${localPreference.confirmed_style}」。这次要沿用它，还是换一个方向？` }]);
+            return;
+          }
         }
         setMessages([{ id: createId("assistant"), role: "assistant", content: STYLE_AGENT_FIRST_MESSAGE }]);
       })
       .catch(() => {
+        const localPreference = getLocalPreference();
+        if (localPreference?.confirmed_style) {
+          setMessages([{ id: createId("assistant"), role: "assistant", content: `我记得你上次偏向「${localPreference.confirmed_style}」。这次要沿用它，还是换一个方向？` }]);
+          return;
+        }
         setMessages([{ id: createId("assistant"), role: "assistant", content: STYLE_AGENT_FIRST_MESSAGE }]);
       })
       .finally(() => setLoading(false));
@@ -110,10 +134,10 @@ export default function ChatAgent() {
         userTurns: userHistory.length + 1,
         dislikedStyles: disliked,
       });
-      const realUserId = backendState?.user?.id || userId.current;
-      if (payload.memory_update) {
+      const realUserId = backendState?.user?.id;
+      if (realUserId && payload.memory_update) {
         await upsertPreferences({ user_id: realUserId, ...payload.memory_update });
-      } else if (disliked.length) {
+      } else if (realUserId && disliked.length) {
         await updateDisliked(realUserId, disliked);
       }
       appendAssistant(payload, allUserText);
@@ -153,7 +177,7 @@ export default function ChatAgent() {
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder="例如：我想要明亮一点，5 个人，有白裙子"
-            aria-label="输入你的毕业照风格偏好"
+            aria-label="输入你的风格偏好"
           />
           <button type="submit" className="gy-primary-button" disabled={loading || !input.trim()}>
             发送
@@ -162,7 +186,7 @@ export default function ChatAgent() {
       </div>
 
       <aside className="gy-chat-agent-side gy-panel">
-        <h2>Agent 会记住这些</h2>
+        <h2>偏好会用于路线生成</h2>
         <div>
           <strong>风格偏好</strong>
           <p>从你的描述里锁定青春清透、学院风制服、端庄复古或学位纪实。</p>

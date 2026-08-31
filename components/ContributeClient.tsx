@@ -79,7 +79,7 @@ export default function ContributeClient() {
               ? backendState.user
                 ? `已连接 Supabase，当前账号：${backendState.user.email || "已登录用户"}`
                 : "已连接 Supabase，登录后可提交到真实审核队列。"
-              : "当前为演示模式，后端未连接；表单会写入本地待审核状态。"}
+              : "当前站点未配置 Supabase 环境变量，表单会写入本地演示待审核状态。"}
             {backendState?.configured && !backendState.user ? <Link href="/login">去登录</Link> : null}
           </p>
         </section>
@@ -113,7 +113,7 @@ export default function ContributeClient() {
           </form>
 
           <aside id="review" className="gy-panel gy-side-panel">
-            <h2>审核状态演示</h2>
+            <h2>审核状态</h2>
             <div style={{ marginTop: 22 }}>
               {reviews.map((item) => (
                 <div className="gy-review-item" key={`${item.name}-${item.status}`}>

@@ -179,7 +179,7 @@ export default function StyleAgentPanel() {
           <span>AI STYLE AGENT</span>
           <h2>风格问答</h2>
         </div>
-        <small>{backendState?.configured ? "Supabase 偏好已预留" : "演示模式"}</small>
+        <small>{backendState?.configured ? "登录后同步偏好" : "本次会话记录"}</small>
       </div>
       <p className="gy-style-agent-note">{STYLE_AGENT_RULE_SUMMARY}</p>
       <div className="gy-style-agent-stream">

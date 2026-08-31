@@ -43,7 +43,7 @@ export default function PhotographerDashboardClient() {
   useEffect(() => {
     getPhotographerDashboard().then((result) => {
       setAllowed(result.allowed);
-      setMessage(result.message || (result.mode === "demo" ? "当前为演示模式，后端未连接。" : "已连接 Supabase 摄影师管理后台。"));
+      setMessage(result.message || (result.mode === "demo" ? "当前站点未配置 Supabase 环境变量，正在使用演示后台。" : "已连接 Supabase 摄影师管理后台。"));
       setProfile(result.data.photographerProfile || emptyProfile);
       setPublicProfile(result.data.publicProfile);
       setSpotSubmissions(result.data.spotSubmissions);

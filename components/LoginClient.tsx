@@ -17,7 +17,7 @@ export default function LoginClient() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("大工摄影者");
+  const [displayName, setDisplayName] = useState("管理员");
   const [registerChoice, setRegisterChoice] = useState<RegisterChoice>("user");
   const [state, setState] = useState<BackendUserState | null>(null);
   const [message, setMessage] = useState("");
@@ -106,7 +106,7 @@ export default function LoginClient() {
             </div>
 
             <p className="gy-backend-note">
-              {isDemoMode ? "后端未连接，当前为演示状态。" : state?.configured ? "Supabase 已连接。" : "正在连接后端..."}
+              {isDemoMode ? "当前站点使用本地演示数据，登录后可查看完整入口。" : state?.configured ? "账号系统已连接。" : "正在连接账号系统..."}
             </p>
 
             {currentEmail ? (

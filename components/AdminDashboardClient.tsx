@@ -235,7 +235,7 @@ export default function AdminDashboardClient() {
         {!allowed ? (
           <section className="gy-panel gy-admin-empty">
             <h2>无权限访问</h2>
-            <p className="gy-body-copy">只有管理员账号可以进入内容管理工作台。请先登录 role=admin 的账号。</p>
+            <p className="gy-body-copy">只有管理员账号可以进入内容管理工作台。请先登录管理员账号。</p>
             <div className="gy-admin-actions">
               <Link href="/login" className="gy-primary-button">去登录</Link>
               <Link href="/" className="gy-secondary-button">返回首页</Link>

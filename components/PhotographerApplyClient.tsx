@@ -39,7 +39,7 @@ export default function PhotographerApplyClient() {
         ? state.user
           ? `已连接 Supabase，当前账号：${state.user.email || "已登录用户"}`
           : "已连接 Supabase，请先登录后提交认证。"
-        : "当前为演示模式，后端未连接；提交会进入本地待审核状态。");
+        : "当前站点未配置 Supabase 环境变量，提交会进入本地演示待审核状态。");
       if (state.profile?.display_name && !form.name) {
         setForm((current) => ({ ...current, name: state.profile?.display_name || current.name }));
       }

@@ -54,7 +54,7 @@ export const STYLE_DEFINITIONS = {
 export type GraduationStyle = keyof typeof STYLE_DEFINITIONS;
 export type RealSpot = (typeof REAL_SPOTS)[number];
 
-export const STYLE_AGENT_FIRST_MESSAGE = "你有想好的毕业照风格吗？可以简单描述你喜欢的画面感觉。";
+export const STYLE_AGENT_FIRST_MESSAGE = "你有想好的风格吗？可以简单描述你喜欢的画面感觉。";
 
 export const STYLE_AGENT_SYSTEM_PROMPT = `
 你是“光影大工”的风格确定 Agent，负责通过对话帮用户锁定毕业照风格，并输出严格 JSON。

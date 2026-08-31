@@ -23,6 +23,12 @@ const MapView = dynamic(() => import("@/components/MapView"), {
 const spots = spotsData as Spot[];
 const routes = routesData as Route[];
 const mapPoints = mapPointsData as MapPoint[];
+const routeMenuItems = [
+  { label: "经典路线", slug: "classic-graduation", aliases: [] },
+  { label: "西部路线", slug: "west-route", aliases: [] },
+  { label: "建筑路线", slug: "architecture-route", aliases: ["campus-architecture"] },
+  { label: "日落路线", slug: "sunset-route", aliases: ["lingshui-sunset", "campus-couple-walk"] },
+];
 
 export default function MapPageClient() {
   const searchParams = useSearchParams();
@@ -55,7 +61,7 @@ export default function MapPageClient() {
       name: generatedStyle ? `${generatedStyle}企划路线` : "我的毕业影像路线",
       subtitle: "根据人数、时间、风格和步行接受度生成",
       duration: `约 ${validIds.length * 25} 分钟`,
-      walkingDistance: "演示估算",
+      walkingDistance: "按点位顺序估算",
       recommendedTime: "以企划选择时间为准",
       spots: validIds,
     };
@@ -80,11 +86,14 @@ export default function MapPageClient() {
   const isGeneratedRoute = route.id === "generated-plan";
   const isExploreMode = route.id === "campus-highlights";
   const routeModeLabel = isGeneratedRoute ? "PLAN / 企划路线" : isCustomMode ? "CUSTOM / 定制路线" : isExploreMode ? "MAP / 特色地标" : "ROUTE / 经典毕业线";
+  const activeRouteItem = routeMenuItems.find((item) => item.slug === routeSlug || item.aliases.includes(routeSlug));
+  const routeButtonLabel = isGeneratedRoute || isCustomMode ? "定制路线" : activeRouteItem?.label || "路线";
   const routeSpots = useMemo(() => route.spots.map((id) => allSpots.find((spot) => spot.id === id)).filter(Boolean) as Spot[], [allSpots, route]);
   const initialId = spotParam && allSpots.some((spot) => spot.id === spotParam) ? spotParam : routeSpots[0]?.id || null;
   const [selectedSpotId, setSelectedSpotId] = useState<string | null>(initialId);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [routeMenuOpen, setRouteMenuOpen] = useState(false);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const selectedSpot = allSpots.find((spot) => spot.id === selectedSpotId) || routeSpots[0];
   const selectedIndex = Math.max(0, routeSpots.findIndex((spot) => spot.id === selectedSpotId));
@@ -157,11 +166,31 @@ export default function MapPageClient() {
         <section className="gy-live-campus-workspace">
           <div className={`gy-live-map-shell map-shell ${sheetExpanded ? "is-sheet-expanded" : "is-sheet-collapsed"}`}>
             <div className="gy-map-toolbar">
-              <nav className="gy-map-mode-tabs" aria-label="地图模式">
-                <Link href="/map?route=campus-highlights" className={isExploreMode ? "is-active" : ""}>地标探索</Link>
-                <Link href="/map?route=classic-graduation" className={!isExploreMode && !isCustomMode ? "is-active" : ""}>经典路线</Link>
-                <Link href="/map?route=custom" className={isCustomMode ? "is-active" : ""}>定制路线</Link>
-              </nav>
+              <div className="gy-map-route-menu">
+                <button type="button" onClick={() => setRouteMenuOpen((open) => !open)} aria-expanded={routeMenuOpen}>
+                  <span className="gy-map-route-icon" aria-hidden>⌁</span>
+                  {routeButtonLabel}
+                  <span className={routeMenuOpen ? "is-open" : ""} aria-hidden>⌃</span>
+                </button>
+                {routeMenuOpen ? (
+                  <div className="gy-map-route-popover">
+                    {routeMenuItems.map((item) => {
+                      const active = item.slug === routeSlug || item.aliases.includes(routeSlug);
+                      return (
+                        <Link key={item.slug} href={`/map?route=${item.slug}`} className={active ? "is-active" : ""}>
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                    {isGeneratedRoute ? (
+                      <Link href={`/map?${searchParams.toString()}`} className="is-active">定制路线</Link>
+                    ) : (
+                      <Link href="/planner">＋ 定制路线</Link>
+                    )}
+                    <Link href="/map?route=campus-highlights" className="is-muted">清除路线</Link>
+                  </div>
+                ) : null}
+              </div>
               <Link href="/map-editor" className="gy-map-editor-link">编辑点位</Link>
             </div>
 

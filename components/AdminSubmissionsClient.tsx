@@ -35,7 +35,7 @@ export default function AdminSubmissionsClient() {
     const result = await listAdminSubmissions();
     setItems({ spot: result.spots, work: result.works, photographer: result.photographers });
     setAllowed(result.allowed);
-    setMessage(result.message || (result.mode === "demo" ? "当前为演示模式，后端未连接。" : "已连接 Supabase 审核队列。"));
+    setMessage(result.message || (result.mode === "demo" ? "当前站点使用本地演示审核队列。" : "已连接审核队列。"));
     setSelectedId(result.photographers[0]?.id || result.spots[0]?.id || result.works[0]?.id || "");
     setIsLoading(false);
   }
@@ -95,7 +95,7 @@ export default function AdminSubmissionsClient() {
         {!allowed ? (
           <section className="gy-panel gy-admin-empty">
             <h2>无权限访问</h2>
-            <p className="gy-body-copy">当前账号不是管理员。请使用 role=admin 的账号登录，或在演示模式下查看审核流程。</p>
+            <p className="gy-body-copy">当前账号不是管理员。请使用管理员账号登录，或在本地演示状态下查看审核流程。</p>
           </section>
         ) : (
           <section className="gy-admin-workbench">

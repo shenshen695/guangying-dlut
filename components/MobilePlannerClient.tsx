@@ -149,6 +149,10 @@ export default function MobilePlannerClient() {
               <p className="text-[10px] font-medium text-slate-400">描述需求，生成一份可执行路线</p>
             </div>
           </div>
+          <Link href="/agent/" className="mb-2.5 flex items-center justify-between rounded-[13px] border border-[#167b75]/25 bg-[#f7fbfa] px-3 py-2 text-[11px] font-semibold text-sea">
+            <span>不确定风格？先和风格 Agent 聊一下</span>
+            <AppIcon name="arrow" className="h-4 w-4" />
+          </Link>
           {cameraSelection ? <div className="mb-2.5 flex items-center gap-2 rounded-[12px] bg-[#e7f1f1] px-3 py-2 text-[11px] font-semibold text-sea"><AppIcon name="camera" className="h-4 w-4" />已带入：凌水湖 · {cameraSelection}</div> : null}
           <form onSubmit={analyze} className="rounded-[16px] border border-slate-200 bg-white p-3 shadow-[0_5px_18px_rgba(15,23,42,.06)]">
             <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={3} placeholder="我想和 3 个人周六下午拍毕业照，想去主楼和凌水湖……" aria-label="拍摄需求" className="w-full resize-none bg-transparent px-1 text-[14px] leading-6 outline-none placeholder:text-slate-400" />
