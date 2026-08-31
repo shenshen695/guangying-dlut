@@ -1,3 +1,6 @@
 [
-  {"id":"classic-graduation","slug":"classic-graduation","name":"春日花阶毕业线","subtitle":"从南门走进青春记忆，再沿伯川、主楼和湖畔完成毕业路线","duration":"约 150 分钟","walkingDistance":"Demo估算 · 约 2.6 km","recommendedTime":"上午 08:00 出发，清晨优先完成南门、伯川与主楼，后段可在凌水湖和花墙收尾","spots":["south-gate","bochuan","main-building","first-building","ling-shui-lake","flower-wall"]}
+  {"id":"classic-graduation","slug":"classic-graduation","name":"春日花阶毕业线","subtitle":"从南门走进青春记忆，再沿伯川、主楼和湖畔完成毕业路线","duration":"约 150 分钟","walkingDistance":"Demo估算 · 约 2.6 km","recommendedTime":"上午 08:00 出发，清晨优先完成南门、伯川与主楼，后段可在凌水湖和花墙收尾","spots":["south-gate","bochuan","main-building","first-building","ling-shui-lake","flower-wall"]},
+  {"id":"campus-couple-walk","slug":"campus-couple-walk","name":"校园夜景慢拍线","subtitle":"从建筑长廊走到湖边，保留蓝调时刻与夜景反光","duration":"约 60 分钟","walkingDistance":"Demo估算 · 约 1.1 km","recommendedTime":"傍晚 18:30 后，从伯川图书馆走向凌水湖","spots":["bochuan","ling-shui-lake"]},
+  {"id":"campus-architecture","slug":"campus-architecture","name":"校园建筑摄影线","subtitle":"用中轴、台阶与长廊组织画面","duration":"约 90 分钟","walkingDistance":"Demo估算 · 约 1.6 km","recommendedTime":"上午或下午侧光时段，避开主楼广场人流高峰","spots":["south-gate","bochuan","main-building","first-building"]},
+  {"id":"lingshui-sunset","slug":"lingshui-sunset","name":"凌水湖日落攻略","subtitle":"逆光、人像与水面倒影","duration":"约 45 分钟","walkingDistance":"凌水湖环湖短线","recommendedTime":"16:30-18:30，按当日日落时间调整","spots":["ling-shui-lake"]}
 ]

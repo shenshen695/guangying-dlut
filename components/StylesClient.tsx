@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import ChatAgent from "@/components/ChatAgent";
 import StyleAdvisor from "@/components/StyleAdvisor";
-import StyleAgentPanel from "@/components/StyleAgentPanel";
 import { CoralRule, Eyebrow, Pill, TopNav } from "@/components/guangying-ui";
 import type { SeasonPreference, StyleReference } from "@/types/planner";
 
@@ -91,7 +91,7 @@ export default function StylesClient() {
           </div>
 
           <div className="gy-style-aside-stack">
-            <StyleAgentPanel />
+            <ChatAgent />
             <aside className="gy-panel gy-style-trend-panel">
               <Eyebrow>NEW TREND</Eyebrow>
               <h2>新兴风格推荐</h2>

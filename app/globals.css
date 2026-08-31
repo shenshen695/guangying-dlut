@@ -3687,6 +3687,191 @@ img {
   display: none;
 }
 
+.gy-kelvin-mobile-home,
+.gy-kelvin-mobile-planner,
+.gy-kelvin-mobile-map {
+  display: none;
+}
+
+.photo-marker {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 9999px;
+  background: #2f8490;
+  color: #fff;
+  box-shadow: 0 5px 16px rgba(17, 36, 47, 0.24);
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.photo-marker .photo-dot {
+  width: 9px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+
+.photo-marker .route-number {
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.photo-marker.is-route {
+  background: #287f8d;
+}
+
+.photo-marker.is-start {
+  background: #172832;
+}
+
+.photo-marker.is-end {
+  background: #d88858;
+}
+
+.photo-marker.is-muted {
+  opacity: 0.38;
+  transform: scale(0.82);
+}
+
+.photo-marker.is-selected {
+  opacity: 1;
+  transform: scale(1.16);
+  box-shadow: 0 0 0 5px rgba(40, 127, 141, 0.2), 0 8px 22px rgba(17, 36, 47, 0.3);
+}
+
+.map-shell .leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+.gy-chat-agent {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.8fr);
+  gap: 14px;
+}
+
+.gy-chat-agent-main {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.gy-chat-stream {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  max-height: 260px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.gy-chat-row {
+  display: flex;
+}
+
+.gy-chat-row.is-user {
+  justify-content: flex-end;
+}
+
+.gy-chat-bubble {
+  max-width: 92%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.82);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.gy-chat-row.is-user .gy-chat-bubble {
+  border-color: rgba(22, 123, 117, 0.34);
+  background: rgba(225, 238, 233, 0.62);
+  color: var(--ink);
+}
+
+.gy-chat-bubble span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--teal);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.gy-chat-bubble p {
+  margin: 0;
+}
+
+.gy-chat-bubble.is-loading {
+  opacity: 0.72;
+}
+
+.gy-chat-error {
+  margin: 0;
+  color: var(--coral);
+  font-size: 12px;
+}
+
+.gy-chat-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.gy-chat-form input {
+  min-height: 38px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 253, 249, 0.72);
+  color: var(--ink);
+  outline: none;
+}
+
+.gy-chat-form input:focus {
+  border-color: rgba(22, 123, 117, 0.56);
+}
+
+.gy-chat-form .gy-primary-button {
+  min-height: 38px;
+  padding: 0 16px;
+}
+
+.gy-chat-agent-side {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 18px;
+}
+
+.gy-chat-agent-side h2 {
+  margin: 0;
+  font-family: "Noto Serif SC", "Songti SC", SimSun, serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.gy-chat-agent-side strong {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.gy-chat-agent-side p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.gy-style-aside-stack .gy-chat-agent {
+  grid-template-columns: 1fr;
+}
+
 .gy-style-aside-stack {
   display: grid;
   gap: 14px;
@@ -4482,6 +4667,36 @@ img {
 }
 
 @media (max-width: 1023px) {
+  .gy-home-desktop,
+  .gy-planner-desktop,
+  .gy-map-desktop {
+    display: none;
+  }
+
+  .gy-kelvin-mobile-home,
+  .gy-kelvin-mobile-planner,
+  .gy-kelvin-mobile-map {
+    display: block;
+  }
+
+  .gy-kelvin-mobile-map .spot-sheet {
+    bottom: calc(4.65rem + env(safe-area-inset-bottom));
+    border-radius: 14px;
+  }
+
+  .gy-kelvin-mobile-map .leaflet-bottom.leaflet-right {
+    bottom: calc(var(--map-sheet-offset, 5rem) + env(safe-area-inset-bottom));
+    transition: bottom 0.25s ease;
+  }
+
+  .gy-kelvin-mobile-map.is-sheet-collapsed {
+    --map-sheet-offset: 4.8rem;
+  }
+
+  .gy-kelvin-mobile-map.is-sheet-expanded {
+    --map-sheet-offset: 16.8rem;
+  }
+
   .gy-map-side-panel {
     display: none;
   }
@@ -4624,6 +4839,14 @@ img {
 
   .gy-live-campus-workspace .qmap-stage.is-zoomed .qmap-marker.is-zoomed .qmap-marker-label {
     display: inline-flex !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gy-kelvin-mobile-home,
+  .gy-kelvin-mobile-planner,
+  .gy-kelvin-mobile-map {
+    display: none !important;
   }
 }
 

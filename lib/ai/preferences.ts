@@ -59,3 +59,30 @@ export async function upsertPreferences(update: PreferenceUpdate): Promise<void>
     { onConflict: "user_id" },
   );
 }
+
+export async function updateDisliked(userId: string, styles: GraduationStyle[]): Promise<GraduationStyle[]> {
+  const uniqueStyles = Array.from(new Set(styles));
+  if (!userId || uniqueStyles.length === 0) return uniqueStyles;
+
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) return uniqueStyles;
+
+  const existing = await getPreferences(userId);
+  const dislikedStyles = Array.from(new Set([...(existing?.disliked_styles ?? []), ...uniqueStyles]));
+
+  await supabase.from("user_preferences").upsert(
+    {
+      user_id: userId,
+      preferred_style: existing?.preferred_style ?? null,
+      preferred_colors: existing?.preferred_colors ?? null,
+      preferred_scenes: existing?.preferred_scenes ?? null,
+      people_preference: existing?.people_preference ?? null,
+      clothing_mentioned: existing?.clothing_mentioned ?? null,
+      disliked_styles: dislikedStyles,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" },
+  );
+
+  return dislikedStyles;
+}
